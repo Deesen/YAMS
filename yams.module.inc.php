@@ -1075,6 +1075,15 @@ if ( count( $errorText ) > 0 )
               </dl>
               <p><strong>New in this version</strong>:</p>
 <ul>
+<li><strong>Bug Fix</strong>: Fixed a bug whereby YAMS would revert to the default language instead
+  of staying on the current language when using the 'MODx URLs' configuration
+  parameter (set to '*', for example)</li>
+<li><strong>Bug Fix</strong>: Fixed bug with incorrect (over-zealous) use of urldecode and urlencode.
+  $_GET and $_POST are automatically url-decoded by PHP, whereas
+  $_SERVER['REQUEST_URI'] is not.</li>
+</ul>
+              <p><strong>New in version 1.2.0 RC1</strong>:</p>
+<ul>
 <li>Added a file called yams.integration.inc.php that defines a constant
   containing YAMS configuration parameters that can be used to help
   integration of YAMS with other multilingual software.</li>

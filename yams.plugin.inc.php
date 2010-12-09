@@ -108,6 +108,21 @@ case 'OnWebPageInit':
       {
         $docIdFoundByYAMS = FALSE;
         $docId = $modx->documentIdentifier;
+        // However, in that case, the langauge will not have been
+        // determined, so in the absense of other information...
+        if ( is_null( $langId ) )
+        {
+          if ( $yams->IsMultilingualDocument( $docId ) )
+          {
+            // Keep to the current language...
+            $langId = $yams->GetCurrentLangId();
+          }
+          else
+          {
+            // Use the default.
+            $langId = $yams->GetDefaultLangId();
+          }
+        }
       }
     }
 

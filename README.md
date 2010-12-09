@@ -1,10 +1,10 @@
 YAMS: Yet Another Multilingual Solution
 ---------------------------------------
 
-Version: 1.2.0 RC1
+Version: 1.2.0 RC2
 Author: PMS
         The original multilingual alias code was written by mgbowman.
-Date: 2010/06/09
+Date: 2010/06/19
 
 ** Please check that the plugin is activated on the correct events ***
 
@@ -200,6 +200,14 @@ YAMS in first place - that is before PHx - on all associated events.
 
 7. History
 ----------
+
+Version 1.2.0 RC2
+- Bug Fix: Fixed a bug whereby YAMS would revert to the default language instead
+  of staying on the current language when using the 'MODx URLs' configuration
+  parameter (set to '*', for example)
+- Bug Fix: Fixed bug with incorrect (over-zealous) use of urldecode and urlencode.
+  $_GET and $_POST are automatically url-decoded by PHP, whereas
+  $_SERVER['REQUEST_URI'] is not.
 
 Version 1.2.0 RC1
 - Added a file called yams.integration.inc.php that defines a constant

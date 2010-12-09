@@ -87,7 +87,7 @@ if ( ! class_exists( 'YAMS' ) )
 
     public function GetVersion()
     {
-      return '1.2.0 RC1';
+      return '1.2.0 RC2';
     }
 
     public function GetDuplicateAliasDocIdMono( $alias, $docId, $langId )
@@ -283,11 +283,7 @@ if ( ! class_exists( 'YAMS' ) )
 
       if ( $includeGetParams )
       {
-        foreach ( $_GET as $name => $value )
-        {
-          $decodedQueryParams[ YamsUtils::UrlDecode( $name ) ] =
-            YamsUtils::UrlDecode( $value );
-        }
+        $decodedQueryParams = $_GET;
 
         if ( ! YamsUtils::IsValidId( $docId ) )
         {
@@ -799,9 +795,9 @@ if ( ! class_exists( 'YAMS' ) )
       if ( ! $this->itsUseLanguageQueryParam )
       {
         // First check to see if the lang has been set as a query parameter
-        if ( isset( $_GET[ YamsUtils::UrlEncode( $this->itsLangQueryParam, FALSE )] ) )
+        if ( isset( $_GET[ $this->itsLangQueryParam] ) )
         {
-          $langId = YamsUtils::UrlDecode( $_GET[ YamsUtils::UrlEncode($this->itsLangQueryParam, FALSE) ] );
+          $langId = $_GET[ $this->itsLangQueryParam ];
           if ( $this->IsActiveLangId( $langId ) )
           {
             return $langId;
@@ -2008,11 +2004,11 @@ if ( ! class_exists( 'YAMS' ) )
 
       // If there has been a request to change language,
       // via a get or post, but not a cookie, do so...
-      if ( isset( $_GET[ YamsUtils::UrlEncode( $this->itsChangeLangQueryParam ) ] ) )
+      if ( array_key_exists( $this->itsChangeLangQueryParam, $_GET ) )
       {
-        $newLangId = YamsUtils::UrlDecode( $_GET[ YamsUtils::UrlEncode( $this->itsChangeLangQueryParam ) ] );
+        $newLangId = $_GET[ $this->itsChangeLangQueryParam ];
       }
-      elseif ( isset( $_POST[ $this->itsChangeLangQueryParam ] ) )
+      elseif ( array_key_exists( $this->itsChangeLangQueryParam, $_POST ) )
       {
         $newLangId = $_POST[ $this->itsChangeLangQueryParam ];
       }
@@ -2022,9 +2018,9 @@ if ( ! class_exists( 'YAMS' ) )
       }
       if ( $this->itsUseLanguageQueryParam )
       {
-        if ( isset( $_GET[ YamsUtils::UrlEncode( $this->itsLangQueryParam, FALSE ) ] ) )
+        if ( array_key_exists( $this->itsLangQueryParam, $_GET ) )
         {
-          $oldLangId = YamsUtils::UrlDecode( $_GET[ YamsUtils::UrlEncode( $this->itsLangQueryParam, FALSE ) ] );
+          $oldLangId = $_GET[ $this->itsLangQueryParam ];
         }
         else
         {
@@ -2087,7 +2083,9 @@ if ( ! class_exists( 'YAMS' ) )
 //          );
 //      }
 
-      $isManagerPreviewPage = isset( $_GET['z'] ) && YamsUtils::UrlDecode( $_GET['z'] ) == 'manprev';
+      $isManagerPreviewPage =
+        array_key_exists( 'z', $_GET )
+        && ( $_GET['z'] == 'manprev' );
       if ( $isManagerPreviewPage )
       {
         // This is a manager preview page.
@@ -2385,9 +2383,9 @@ if ( ! class_exists( 'YAMS' ) )
 
       if ( $this->itsUseLanguageQueryParam )
       {
-        if ( isset( $_GET[ YamsUtils::UrlEncode( $this->itsChangeLangQueryParam, FALSE ) ] ) )
+        if ( array_key_exists( $this->itsChangeLangQueryParam, $_GET ) )
         {
-          $langId = YamsUtils::UrlDecode( $_GET[ YamsUtils::UrlEncode( $this->itsChangeLangQueryParam, FALSE ) ] );
+          $langId = $_GET[ $this->itsChangeLangQueryParam ];
           if ( in_array( $langId, $this->itsActiveLangIds ) )
           {
             $outLangId = $langId;
@@ -2399,9 +2397,9 @@ if ( ! class_exists( 'YAMS' ) )
           $this->itsIsValidMultilingualDocument = FALSE;
           return $this->itsIsValidMultilingualDocument;
         }
-        if ( isset( $_GET[ YamsUtils::UrlEncode( $this->itsLangQueryParam, FALSE ) ] ) )
+        if ( array_key_exists( $this->itsLangQueryParam, $_GET ) )
         {
-          $langId = YamsUtils::UrlDecode( $_GET[ YamsUtils::UrlEncode( $this->itsLangQueryParam, FALSE ) ] );
+          $langId = $_GET[ $this->itsLangQueryParam ];
           if ( in_array( $langId, $this->itsActiveLangIds ) )
           {
             $outLangId = $langId;
@@ -2424,6 +2422,8 @@ if ( ! class_exists( 'YAMS' ) )
         // Get the host name of the request...
         $hostName = $this->GetHostName();
         // Get the request URI, without any query stuff
+        // Note that the request URI is not url-decoded,
+        // where as $_GET and $_POST are.
         $requestURI = $_SERVER['REQUEST_URI'];
         $splitRequestURI = preg_split(
           '/\?/'
@@ -2613,14 +2613,11 @@ if ( ! class_exists( 'YAMS' ) )
       // mgb: split $q on '/' to create the 'path' the the resource
       $path = preg_split('/\//' . $modifier, $path );
       // mgb: grab the 'target' alias from the end of the path
-      // pms: and escape it
-      $aliasDecoded = array_pop( $path );
-      $alias = YamsUtils::UrlDecode( $aliasDecoded );
-      $aliasEncoded = YamsUtils::UrlEncode( $aliasDecoded );
+      $alias = array_pop( $path );
 
       // If no filename is specified then it must be the site start
       // document in the default language
-      if ( $aliasEncoded == '' )
+      if ( $alias == '' )
       {
         $langId = $this->itsDefaultLangId;
         $this->itsCurrentLangId = $langId;
@@ -2688,10 +2685,8 @@ if ( ! class_exists( 'YAMS' ) )
       }
 
       $path = array_reverse( $path );
-      foreach ( $path as $virtualAliasDecoded )
+      foreach ( $path as $virtualAlias )
       {
-        $virtualAlias = YamsUtils::UrlDecode( $virtualAliasDecoded );
-//        $virtualAliasEncoded = YamsUtils::UrlEncode( $virtualAliasDecoded );
         // This should be the virtual alias of the parent of the previous
         // document...
         $parentId = $this->itsDocParentIds[ $docId ];
@@ -2734,15 +2729,14 @@ if ( ! class_exists( 'YAMS' ) )
       $path = preg_split('/\//' . $modifier, $path );
       // mgb: grab the 'target' alias from the end of the path
       // pms: and escape it
-      $aliasDecoded = array_pop( $path );
-      $alias = YamsUtils::UrlDecode( $aliasDecoded );
-      $aliasEncoded = YamsUtils::UrlEncode( $aliasDecoded );
+      $alias = array_pop( $path );
+      // $aliasEncoded = YamsUtils::UrlEncode( $aliasDecoded );
 
       // Handle the case where no filename is specified.
       // This is only valid if it is the site start...
       // and, if multilingual aliases are being used,
       // only for the default language...
-      if ( $aliasEncoded == '' )
+      if ( $alias == '' )
       {
         if (
           $this->itsUseMultilingualAliases
@@ -2764,7 +2758,7 @@ if ( ! class_exists( 'YAMS' ) )
         }
         // Continue using the alias of the site start document...
         $alias = $docAliasInfo['alias'];
-        $aliasEncoded = YamsUtils::UrlEncode( $alias );
+        // $aliasEncoded = YamsUtils::UrlEncode( $alias );
       }
 
       if ( $this->itsUseMimeDependentSuffixes )
@@ -2833,10 +2827,8 @@ if ( ! class_exists( 'YAMS' ) )
           foreach ( $matchingDocIds as $docId )
           {
             $currentId = $docId;
-            foreach ( $path as $virtualAliasDecoded )
+            foreach ( $path as $virtualAlias )
             {
-              $virtualAlias = YamsUtils::UrlDecode( $virtualAliasDecoded );
-      //        $virtualAliasEncoded = YamsUtils::UrlEncode( $virtualAliasDecoded );
               // This should be the virtual alias of the parent of the previous
               // document...
               $parentId = $this->itsDocParentIds[ $currentId ];
