@@ -10,10 +10,10 @@
  *
  */
 
+require_once( 'yams.utils.class.inc.php' );
 require_once( 'yams.class.inc.php' );
 require_once( 'yams.error.mgr.class.inc.php' );
 require_once( 'yams.lang.mgr.class.inc.php' );
-require_once( 'yams.documentation.mgr.class.inc.php' );
 require_once( 'templator.class.inc.php' );
 
 if ( ! class_exists( 'YamsModuleMgr' ) )
@@ -34,7 +34,6 @@ if ( ! class_exists( 'YamsModuleMgr' ) )
       $yams = YAMS::GetInstance( );
       $YEM = YamsErrorMgr::GetInstance( );
       $YLM = YamsLangMgr::GetInstance( );
-      $YDM = YamsDocumentationMgr::GetInstance( );
       
       // Load the module template
       $tpl = new Templator( );
@@ -46,7 +45,7 @@ if ( ! class_exists( 'YamsModuleMgr' ) )
        return;
       }
 
-      if ( $yams->IsHTTPS() )
+      if ( YamsUtils::IsHTTPS() )
       {
         $protocol = 'https://';
       }
@@ -54,7 +53,7 @@ if ( ! class_exists( 'YamsModuleMgr' ) )
       {
         $protocol = 'http://';
       }
-      $requestURL = $yams->Escape(
+      $requestURL = YamsUtils::Escape(
         $protocol
           . $_SERVER['SERVER_NAME']
           . $_SERVER['REQUEST_URI']
@@ -64,7 +63,6 @@ if ( ! class_exists( 'YamsModuleMgr' ) )
       $tpl->RegisterPlaceholder( 'form_action', '[+request_url+]' );
       $tpl->RegisterPlaceholder( 'error_messages', $YEM->GetOutput() );
       $tpl->RegisterPlaceholder( 'lang_chooser', $YLM->GetOutput() );
-      $tpl->RegisterPlaceholder( 'tab_documentation', $YDM->GetOutput() );
 
       // Parse non-language placeholders
       $tpl->Parse( NULL, true );
@@ -87,7 +85,7 @@ if ( ! class_exists( 'YamsModuleMgr' ) )
       $tpl->RegisterPlaceholder( 'yams_author', '<a href="[+yams_author_url+]" target="_blank">PMS</a>' );
       $tpl->RegisterPlaceholder( 'yams_copyright', '<a href="http://nashi.podzone.org/" target="_blank">Nashi Power</a> 2009' );
       $tpl->RegisterPlaceholder( 'yams_licence', 'GPL v3' );
-      $tpl->RegisterPlaceholder( 'yams_version', $yams->Escape(
+      $tpl->RegisterPlaceholder( 'yams_version', YamsUtils::Escape(
           $yams->GetVersion()
         ) );
 

@@ -10,6 +10,7 @@
  *
  */
 
+require_once( dirname( __FILE__ ) . '/class/yams.utils.class.inc.php' );
 require_once( dirname( __FILE__ ) . '/class/yams.class.inc.php' );
 require_once( dirname( __FILE__ ) . '/yams.module.funcs.inc.php' );
 
@@ -103,7 +104,7 @@ case 'OnWebPageInit':
       // If no docId was found...
       // but a standard MODx url matches... then use that.
       // This is for compatibility with standard MODx resources
-      if ( $yams->IsValidId( $modx->documentIdentifier ) )
+      if ( YamsUtils::IsValidId( $modx->documentIdentifier ) )
       {
         $docIdFoundByYAMS = FALSE;
         $docId = $modx->documentIdentifier;

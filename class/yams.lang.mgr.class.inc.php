@@ -12,6 +12,7 @@
  */
 
 require_once( 'templator.class.inc.php');
+require_once( 'yams.utils.class.inc.php');
 
 define('YAMSLANGMGR_RE_LANG','[a-z][a-z-0-9]+');
 
@@ -62,11 +63,11 @@ if ( ! class_exists( 'YamsLangMgr' ) )
 
         $langDetails = $this->GetLangDetails( $lang );
         
-        $cleanName = $yams->Clean(
-          strip_tags( $langDetails['name'] )
+        $cleanName = YamsUtils::Clean(
+          $langDetails['name']
           );
-        $langDir = $yams->Clean(
-          strip_tags( $langDetails['dir'] )
+        $langDir = YamsUtils::Clean(
+          $langDetails['dir']
           );
 
         $langChooserOptions .= '<option ' . $selected . ' value="' . $lang . '" dir="' . $langDir . '">' . $cleanName . '</option>';
@@ -75,7 +76,7 @@ if ( ! class_exists( 'YamsLangMgr' ) )
       $tpl = new Templator();
       $tpl->LoadTemplateFromFile('yams/module/yams.lang.chooser.tpl.html');
       $tpl->RegisterPlaceholder('lang_chooser_options', $langChooserOptions );
-      $tpl->RegisterPlaceholder('lang_post_param', $yams->Escape(
+      $tpl->RegisterPlaceholder('lang_post_param', YamsUtils::Escape(
           $this->itsGetLangPostParam
           ) );
       return $tpl->Parse( );

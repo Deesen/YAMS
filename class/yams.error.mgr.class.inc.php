@@ -11,6 +11,7 @@
  */
 
 require_once( 'templator.class.inc.php' );
+require_once( 'yams.utils.class.inc.php' );
 
 if ( ! class_exists( 'YamsErrorMgr' ) )
 {
@@ -36,7 +37,7 @@ if ( ! class_exists( 'YamsErrorMgr' ) )
         {
           $errorList .=
             '<li>'
-            . $yams->Escape( $msg )
+            . YamsUtils::Escape( $msg )
             . '</li>';
         }
         $errorList .= '</ul>';

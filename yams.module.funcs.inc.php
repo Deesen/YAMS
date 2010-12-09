@@ -10,6 +10,7 @@
  *
  */
 
+require_once( dirname( __FILE__ ) . '/class/yams.utils.class.inc.php' );
 require_once( dirname( __FILE__ ) . '/class/yams.class.inc.php' );
 
 if ( !function_exists( 'YAMSGetTempVarId' ) )
@@ -155,12 +156,11 @@ if ( !function_exists( 'YamsAddAssociationsForTV' ) )
   function YamsAddAssociationForTV( $tvId, $templateId )
   {
     global $modx;
-    $yams = YAMS::GetInstance();
-    if ( ! $yams->IsValidId( $tvId ) )
+    if ( ! YamsUtils::IsValidId( $tvId ) )
     {
       return FALSE;
     }
-    if ( ! $yams->IsValidId( $templateId ) )
+    if ( ! YamsUtils::IsValidId( $templateId ) )
     {
       return FALSE;
     }
@@ -193,7 +193,7 @@ if ( !function_exists( 'YamsRemoveAssociationsForTV' ) )
     }
     foreach ( $templateIds as &$templateId )
     {
-      if ( ! $yams->IsValidId( $templateId ) )
+      if ( ! YamsUtils::IsValidId( $templateId ) )
       {
         return FALSE;
       }

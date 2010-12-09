@@ -1,10 +1,10 @@
 YAMS: Yet Another Multilingual Solution
 ---------------------------------------
 
-Version: 1.1.9
+Version: 1.2.0 RC1
 Author: PMS
         The original multilingual alias code was written by mgbowman.
-Date: 2010/05/21
+Date: 2010/06/09
 
 ** Please check that the plugin is activated on the correct events ***
 
@@ -151,8 +151,9 @@ Module code:
 to obtain a tabbed document interface then follow the instructions below (point
 5.) to set it up.
 
-7. Go to Modules > YAMS and follow the instructions on the Documentation > Setup
-tab to set-up your multilingual site.
+7. Browse to
+   http://svn.modxcms.com/docs/display/ADDON/YAMS+Setup
+   for help setting up your multilingual site.
 
 5. ManagerManager Setup
 -----------------------
@@ -199,6 +200,32 @@ YAMS in first place - that is before PHx - on all associated events.
 
 7. History
 ----------
+
+Version 1.2.0 RC1
+- Added a file called yams.integration.inc.php that defines a constant
+  containing YAMS configuration parameters that can be used to help
+  integration of YAMS with other multilingual software.
+- Bug Fix: Added protection against errors if the YAMS config file is accessed
+  directly.
+- Bug Fix: Fixed a problem whereby nested YAMS placeholders were not getting
+  evaluated.
+- Updated the readme.txt.
+- Added three new placeholders (yams_multi), (yams_mono) and (yams_type)
+  in order to help filter documents by type.
+- Moved the documentation of language settings and configuration options from the
+  module interface to the online documentation.
+- Major code tidy up and reorganisation:
+  - Utility methods moved into the a new YamsUtils class (yams.utils.class.inc.php).
+  - Some methods have been updated for improved security, by including checks for
+    bad UTF-8 byte streams and by stripping control codes where appropriate.
+  - All config file manipulation methods (getters, setters, etc..) have been moved
+    into a YamsConfigMgrAbstract abstract class (yams.config.mgr.class.inc.php),
+    which the main YAMS class now inherets. This in turn inherits from a singleton
+    abstract class.
+  - The escaping that YAMS was doing when writing the PHP config file was not entirely
+    correct and this could have been taken advantage of by someone with malicious
+    intent that managed to obtain access to the YAMS Module interface. This has
+    now been fixed.
 
 Version 1.1.9
 - Bug Fix: Fixed a bug introduced at version 1.1.8, which breaks ((yams_data:..))

@@ -14,6 +14,9 @@
  *
  */
 
+require_once(dirname(__FILE__) . '/yams.utils.class.inc.php');
+require_once(dirname(__FILE__) . '/yams.config.mgr.class.inc.php');
+
 define(
   'YAMS_DOC_LIMIT'
   , 50 );
@@ -75,7 +78,7 @@ define(
 
 if ( ! class_exists( 'YAMS' ) )
 {
-  class YAMS
+  class YAMS extends YamsConfigMgr
   {
 
     // --
@@ -84,23 +87,7 @@ if ( ! class_exists( 'YAMS' ) )
 
     public function GetVersion()
     {
-      return '1.1.9';
-    }
-
-    public function Escape( $string )
-    {
-      // Escapes a string for insertion as content in html...
-      return htmlspecialchars(
-        $string
-        , ENT_QUOTES
-        , $this->itsMODx->config['modx_charset']
-        );
-    }
-
-    public function Clean( $string )
-    {
-      // Cleans a string and escapes it for insertion as content in html...
-      return $this->Escape( strip_tags( $string ) );
+      return '1.2.0 RC1';
     }
 
     public function GetDuplicateAliasDocIdMono( $alias, $docId, $langId )
@@ -210,7 +197,7 @@ if ( ! class_exists( 'YAMS' ) )
 
     public function SetYamsCounter( $num )
     {
-      if ( ! $this->IsValidId( $num ) )
+      if ( ! YamsUtils::IsValidId( $num ) )
       {
         return FALSE;
       }
@@ -237,7 +224,7 @@ if ( ! class_exists( 'YAMS' ) )
       }
 
       // Get the servername and port
-      $isHTTPS = $this->IsHTTPS();
+      $isHTTPS = YamsUtils::IsHTTPS();
       if ( $isHTTPS )
       {
         $protocol = 'https://';
@@ -298,11 +285,11 @@ if ( ! class_exists( 'YAMS' ) )
       {
         foreach ( $_GET as $name => $value )
         {
-          $decodedQueryParams[ $this->UrlDecode( $name ) ] =
-            $this->UrlDecode( $value );
+          $decodedQueryParams[ YamsUtils::UrlDecode( $name ) ] =
+            YamsUtils::UrlDecode( $value );
         }
 
-        if ( ! $this->IsValidId( $docId ) )
+        if ( ! YamsUtils::IsValidId( $docId ) )
         {
           return '';
         }
@@ -355,9 +342,9 @@ if ( ! class_exists( 'YAMS' ) )
         foreach ( $decodedQueryParams as $name => $value )
         {
           $encodedQueryParams[] =
-            $this->UrlEncode( $name )
+            YamsUtils::UrlEncode( $name )
               . '='
-              . $this->UrlEncode( $value );
+              . YamsUtils::UrlEncode( $value );
         }
         unset( $decodedQueryParams );
         $querySeparator = $this->itsInputQuerySeparator;
@@ -379,7 +366,7 @@ if ( ! class_exists( 'YAMS' ) )
         . $requestURI;
       if ( $isHTMLOutput )
       {
-        return $this->Escape( $url );
+        return YamsUtils::Escape( $url );
       }
       return $url;
     }
@@ -410,40 +397,6 @@ if ( ! class_exists( 'YAMS' ) )
         return 'text';
       }
       return $this->itsDocVarTypes[ $docVarName ];
-    }
-
-    public function GetRolesAccessList( $langId )
-    {
-      if ( ! array_key_exists( $langId, $this->itsLangRolesAccessMap ) )
-      {
-        return '';
-      }
-      return $this->itsLangRolesAccessMap[ $langId ];
-    }
-
-    public function GetRolesNoAccessList( $langId )
-    {
-      if ( ! array_key_exists( $langId, $this->itsLangRolesAccessMap ) )
-      {
-        return '!';
-      }
-      $rolesList = $this->itsLangRolesAccessMap[ $langId ];
-      if (
-        preg_match(
-          '/^\!/' . $this->itsEncodingModifier
-          , $rolesList
-        ) == 1 )
-      {
-        $rolesList = preg_replace(
-          '/^\!/' . $this->itsEncodingModifier
-          , ''
-          , $rolesList );
-      }
-      else
-      {
-        $rolesList = '!' . $rolesList;
-      }
-      return $rolesList;
     }
 
     public function GetDocVarCaption( $docVarName, $langId )
@@ -528,166 +481,13 @@ if ( ! class_exists( 'YAMS' ) )
     {
       // The encoding modifier ('u' or '') to use with
       // preg functions
-      return $this->itsEncodingModifier;
-    }
-
-    public function GetLangQueryParam()
-    {
-      // Gets the name of the query parameter to use
-      // when the current language group id is being specified by
-      // a query parameter
-      return $this->itsLangQueryParam;
-    }
-
-    public function GetChangeLangQueryParam()
-    {
-      // Gets the name of the query parameter to used to specify a change
-      // of language
-      return $this->itsChangeLangQueryParam;
-    }
-
-    public function SetChangeLangQueryParam(
-      $name
-      , $save = TRUE )
-    {
-      // Sets the name of the query parameter to used to specify a change
-      // of language
-      if ( ! is_string( $name ) )
-      {
-        return FALSE;
-      }
-      if ( $name == $this->itsLangQueryParam )
-      {
-        return FALSE;
-      }
-      if ( $name == '' )
-      {
-        return FALSE;
-      }
-      if ( $name != $this->itsChangeLangQueryParam )
-      {
-        $this->itsChangeLangQueryParam = $name;
-        if ( $save )
-        {
-          return $this->SaveCurrentSettings();
-        }
-      }
-      return TRUE;
+      return $this->itsUTF8Modifier;
     }
 
     public function Reload()
     {
       // Reinitialises YAMS
       $this->Initialise();
-    }
-
-    public function SetLangQueryParam(
-      $name
-      , $save = TRUE )
-    {
-      // Sets the query parameter used to specify the current language group
-      // id when in query param mode
-      if ( ! is_string( $name ) )
-      {
-        return FALSE;
-      }
-      if ( $name == $this->itsChangeLangQueryParam )
-      {
-        return FALSE;
-      }
-      if ( $name == '' )
-      {
-        return FALSE;
-      }
-      if ( $name != $this->itsLangQueryParam )
-      {
-        $this->itsLangQueryParam = $name;
-        if ( $save )
-        {
-          return $this->SaveCurrentSettings();
-        }
-      }
-      return TRUE;
-    }
-
-    public function SetMODxSubdirectory(
-      $subdir
-      , $save = TRUE )
-    {
-      // Either an empty string
-      // or string of the form sub1/sub2/sub3
-      // ie; no starting or trailing slash
-      if ( ! is_string( $subdir ) )
-      {
-        return FALSE;
-      }
-      if ( $subdir != strip_tags( $subdir ) )
-      {
-        return FALSE;
-      }
-      if ( preg_match(
-          '/^(|[^\n\/]|[^\n\/][^\n]*[^\n\/])$/D'
-            . $this->itsEncodingModifier
-          , $subdir
-          ) != 1 )
-      {
-        return FALSE;
-      }
-      if ( $subdir != $this->itsMODxSubdirectory )
-      {
-        $this->itsMODxSubdirectory = $subdir;
-        if ( $save )
-        {
-          return $this->SaveCurrentSettings();
-        }
-      }
-      return TRUE;
-    }
-
-    public function GetMODxSubdirectory(
-      $trailingSlash = false
-      , $leadingSlash = false
-      , $encoded = true
-      )
-    {
-      if ( $this->itsMODxSubdirectory == '' )
-      {
-        return '';
-      }
-
-      if ( $encoded )
-      {
-        $modxSubdirectoryArray =
-          preg_split(
-            '/\//' . $this->itsEncodingModifier
-            , $this->itsMODxSubdirectory
-            );
-        foreach ( $modxSubdirectoryArray as &$part )
-        {
-          $part = $this->UrlEncode( $part );
-        }
-        $modxSubdirectory = implode( '/', $modxSubdirectoryArray );
-        unset( $modxSubdirectoryArray );        
-      }
-      else
-      {
-        $modxSubdirectory = $this->itsMODxSubdirectory;
-      }
-
-      $leadingSlashSymbol = '';
-      $trailingSlashSymbol = '';
-      if ( $leadingSlash )
-      {
-        $leadingSlashSymbol = '/';
-      }
-      if ( $trailingSlash )
-      {
-        $trailingSlashSymbol = '/';
-      }
-      return
-        $leadingSlashSymbol
-        . $modxSubdirectory
-        . $trailingSlashSymbol;
     }
 
     public function GetServerConfig()
@@ -746,7 +546,7 @@ if ( ! class_exists( 'YAMS' ) )
         $inputQuerySeparator =
           preg_replace(
             '/^(.)/'
-              . $this->itsEncodingModifier
+              . $this->itsUTF8Modifier
             , '\1'
             , $inputQuerySeparator
           );
@@ -775,7 +575,7 @@ if ( ! class_exists( 'YAMS' ) )
         $counter = 0;
         $serverNameMode = $this->GetUseLanguageDependentServerNames();
         $rootNameMode = $this->GetUseLanguageDependentRootNames();
-        $isHTTPS = $this->IsHTTPS();
+        $isHTTPS = YamsUtils::IsHTTPS();
         if ( $isHTTPS )
         {
           $protocol = 'https://';
@@ -999,9 +799,9 @@ if ( ! class_exists( 'YAMS' ) )
       if ( ! $this->itsUseLanguageQueryParam )
       {
         // First check to see if the lang has been set as a query parameter
-        if ( isset( $_GET[ $this->UrlEncode( $this->itsLangQueryParam, FALSE )] ) )
+        if ( isset( $_GET[ YamsUtils::UrlEncode( $this->itsLangQueryParam, FALSE )] ) )
         {
-          $langId = $this->UrlDecode( $_GET[ $this->UrlEncode($this->itsLangQueryParam, FALSE) ] );
+          $langId = YamsUtils::UrlDecode( $_GET[ YamsUtils::UrlEncode($this->itsLangQueryParam, FALSE) ] );
           if ( $this->IsActiveLangId( $langId ) )
           {
             return $langId;
@@ -1077,870 +877,6 @@ if ( ! class_exists( 'YAMS' ) )
       return TRUE;
     }
 
-    public function IsValidId( $id )
-    {
-      return ctype_digit( (string) $id );
-//      return (
-//        preg_match(
-//          '/^[0-9]+$/D'
-//          . $this->itsEncodingModifier
-//          , strval( $id )
-//          )
-//        == 1
-//        );
-    }
-
-    public function IsValidLangGroupId( $langId )
-    {
-      return (
-        preg_match(
-          '/^[a-zA-Z0-9]+$/D'
-          . $this->itsEncodingModifier
-          , $langId
-          )
-        == 1
-        );
-    }
-
-    public function IsValidRedirectionMode( $redirectionMode )
-    {
-      if ( !is_string( $redirectionMode ) )
-      {
-        return FALSE;
-      }
-      switch ( $redirectionMode )
-      {
-      case 'none':
-      case 'default':
-      case 'current':
-      case 'current_else_browser':
-      case 'browser':
-        return TRUE;
-        break;
-      default:
-        return FALSE;
-      }
-    }
-
-    public function IsValidURLConversionMode( $urlConversionMode )
-    {
-      if ( !is_string( $urlConversionMode ) )
-      {
-        return FALSE;
-      }
-      switch ( $urlConversionMode )
-      {
-      case 'none':
-      case 'default':
-      case 'resolve':
-        return TRUE;
-        break;
-      default:
-        return FALSE;
-      }
-    }
-
-    public function SaveCurrentSettings()
-    {
-
-      $contents = '<?php' . PHP_EOL;
-
-      //----------------------------
-      // itsActiveLangIds
-      //----------------------------
-      $contents .=
-        '  // The ids of the active languages' . PHP_EOL
-        . '  $this->itsActiveLangIds = array(' . PHP_EOL;
-
-      $firstLangId = TRUE;
-      foreach ( $this->itsActiveLangIds as $langId )
-      {
-        $comma = ', ';
-        if ( $firstLangId )
-        {
-          $comma = '';
-          $firstLangId = FALSE;
-        }
-        $contents .=
-          '    '
-          . $comma
-          . '\''
-          . addcslashes( $langId, '\'' )
-          . '\''
-          . PHP_EOL;
-      }
-      $contents .= '  );' . PHP_EOL;
-
-      //----------------------------
-      // itsInactiveLangIds
-      //----------------------------
-      $contents .=
-        '  // The ids of the inactive languages' . PHP_EOL
-        . '  $this->itsInactiveLangIds = array(' . PHP_EOL;
-
-      $firstLangId = TRUE;
-      foreach ( $this->itsInactiveLangIds as $langId )
-      {
-        $comma = ', ';
-        if ( $firstLangId )
-        {
-          $comma = '';
-          $firstLangId = FALSE;
-        }
-        $contents .=
-          '    '
-          . $comma
-          . '\''
-          . addcslashes( $langId, '\'' )
-          . '\''
-          . PHP_EOL;
-      }
-      $contents .= '  );' . PHP_EOL;
-
-      //----------------------------
-      // itsIsLTR
-      //----------------------------
-      $contents .=
-        '  // The language direction (ltr or rtl)' . PHP_EOL
-        . '  $this->itsIsLTR = array(' . PHP_EOL;
-      $firstIsLTR = TRUE;
-      foreach ( $this->itsIsLTR as $langId => $isLTR )
-      {
-        $comma = ', ';
-        if ( $firstIsLTR )
-        {
-          $comma = '';
-          $firstIsLTR = FALSE;
-        }
-        if ( $isLTR )
-        {
-          $isLTRText = 'TRUE';
-        }
-        else
-        {
-          $isLTRText = 'FALSE';
-        }
-        $contents .=
-          '    '
-          . $comma
-          . '\''
-          . $langId
-          . '\''
-          . ' => '
-          . $isLTRText
-          . PHP_EOL;
-      }
-      $contents .= '  );' . PHP_EOL;
-
-      //----------------------------
-      // itsDefaultLangId
-      //----------------------------
-      $contents .=
-        '  // The default language id' . PHP_EOL
-        . '  $this->itsDefaultLangId = \''
-        . addcslashes( $this->itsDefaultLangId, '\'' )
-        . '\';' . PHP_EOL;
-
-      //----------------------------
-      // itsRootName
-      //----------------------------
-      $contents .=
-        '  // The name of the root folder' . PHP_EOL
-        . '  $this->itsRootName = array(' . PHP_EOL;
-      $firstRootName = TRUE;
-      foreach ( $this->itsRootName as $langId => $rootName )
-      {
-        $comma = ', ';
-        if ( $firstRootName )
-        {
-          $comma = '';
-          $firstRootName = FALSE;
-        }
-        $contents .=
-          '    '
-          . $comma
-          . '\''
-          . addcslashes( $langId, '\'' )
-          . '\''
-          . ' => '
-          . '\''
-          . addcslashes( $rootName, '\'' )
-          . '\''
-          . PHP_EOL;
-      }
-      $contents .= '  );' . PHP_EOL;
-
-      //----------------------------
-      // itsMonoServerName
-      //----------------------------
-      $contents .=
-        '  // The monolingual page server name' . PHP_EOL
-        . '  $this->itsMonoServerName = \''
-        . addcslashes( $this->itsMonoServerName, '\'' )
-        . '\';' . PHP_EOL;
-
-      //----------------------------
-      // itsMultiServerName
-      //----------------------------
-      $contents .=
-        '  // The server name for each language' . PHP_EOL
-        . '  $this->itsMultiServerName = array(' . PHP_EOL;
-      $firstServerName = TRUE;
-      foreach ( $this->itsMultiServerName as $langId => $serverName )
-      {
-        $comma = ', ';
-        if ( $firstServerName )
-        {
-          $comma = '';
-          $firstServerName = FALSE;
-        }
-        $contents .=
-          '    '
-          . $comma
-          . '\''
-          . addcslashes( $langId, '\'' )
-          . '\''
-          . ' => '
-          . '\''
-          . addcslashes( $serverName, '\'' )
-          . '\''
-          . PHP_EOL;
-      }
-      $contents .= '  );' . PHP_EOL;
-
-      //----------------------------
-      // itsLangNames
-      //----------------------------
-      $contents .=
-        '  // The name of each language in all languages' . PHP_EOL
-        . '  $this->itsLangNames = array(' . PHP_EOL;
-      $firstLangId = TRUE;
-      foreach ( $this->itsLangNames as $langId => $langArray )
-      {
-        $comma = ', ';
-        if ( $firstLangId )
-        {
-          $comma = '';
-          $firstLangId = FALSE;
-        }
-        if ( !is_array( $langArray ) )
-        {
-          continue;
-        }
-        $contents .=
-          '    '
-          . $comma
-          . '\''
-          . addcslashes( $langId, '\'' )
-          . '\''
-          . ' => array(' . PHP_EOL;
-        $innerFirstLangId = TRUE;
-        foreach ( $langArray as $innerLangId => $langName )
-        {
-          $innerComma = ', ';
-          if ( $innerFirstLangId )
-          {
-            $innerComma = '';
-            $innerFirstLangId = FALSE;
-          }
-          $contents .=
-            '      '
-            . $innerComma
-            . '\''
-            . addcslashes( $innerLangId, '\'' )
-            . '\''
-            . ' => \''
-            . addcslashes( $langName, '\'' )
-            . '\'' . PHP_EOL;
-        }
-        $contents .=
-          '    )' . PHP_EOL;
-      }
-      $contents .= '  );' . PHP_EOL;
-
-      //----------------------------
-      // itsChooseLangText
-      //----------------------------
-      // 'Select language' or 'Choose language' text
-      // in each language
-      $contents .=
-        '  $this->itsChooseLangText = array(' . PHP_EOL;
-      $firstLang = TRUE;
-      foreach ( $this->itsChooseLangText as $langId => $text )
-      {
-        $comma = ', ';
-        if ( $firstLang )
-        {
-          $firstLang = FALSE;
-          $comma = '';
-        }
-        $contents .=
-          '    '
-          . $comma
-          . '\''
-          . addcslashes( $langId, '\'' )
-          . '\''
-          . ' => '
-          . '\''
-          . addcslashes( $text, '\'' )
-          . '\''
-          . PHP_EOL;
-      }
-      $contents .=
-        '    );' . PHP_EOL;
-
-      //----------------------------
-      // itsLangTags
-      //----------------------------
-      $contents .=
-        '  // The languages that should be directed to this language root.' . PHP_EOL
-        . '  // These should be in priority order' . PHP_EOL
-        . '  // The tag is in the format provided by the HTTP Accept-Language header:' . PHP_EOL
-        . '  // xx, or xx-yy, where' . PHP_EOL
-        . '  // xx: is a two letter language abbreviation' . PHP_EOL
-        . '  //     http://www.loc.gov/standards/iso639-2/php/code_list.php' . PHP_EOL
-        . '  // yy: is a two letter country code' . PHP_EOL
-        . '  //     http://www.iso.org/country_codes/iso_3166_code_lists/english_country_names_and_code_elements.htm' . PHP_EOL
-        . '  // xx on its own matches an xx Accept-Language header' . PHP_EOL
-        . '  // with any country code' . PHP_EOL
-        . '  // At least one language tag must be specified.' . PHP_EOL
-        . '  $this->itsLangTags = array('  . PHP_EOL;
-      $firstLang = TRUE;
-      foreach ( $this->itsLangTags as $langId => $tagArray )
-      {
-        $comma = ', ';
-        if ( $firstLang )
-        {
-          $comma = '';
-          $firstLang = FALSE;
-        }
-        $contents .=
-          '    '
-          . $comma
-          . '\''
-          . addcslashes( $langId, '\'' )
-          . '\' => array(' . PHP_EOL;
-        $firstTag = TRUE;
-        foreach ( $tagArray as $tag )
-        {
-          $innerComma = ', ';
-          if ( $firstTag )
-          {
-            $innerComma = '';
-            $firstTag = FALSE;
-          }
-          $contents .=
-            '      '
-            . $innerComma
-            . '\''
-            . addcslashes( $tag, '\'' )
-            . '\' '
-            . PHP_EOL;
-        }
-        $contents .=
-          '      )' . PHP_EOL;
-      }
-      $contents .=
-        '    );' . PHP_EOL;
-
-      //----------------------------
-      // itsMODxLangName
-      //----------------------------
-      $contents .=
-        '  // The MODx manager language name for each language group.' . PHP_EOL
-        . '  $this->itsMODxLangName = array('  . PHP_EOL;
-      $firstLang = TRUE;
-      foreach ( $this->itsMODxLangName as $langId => $modxLangName )
-      {
-        $comma = ', ';
-        if ( $firstLang )
-        {
-          $comma = '';
-          $firstLang = FALSE;
-        }
-        $contents .=
-          '    '
-          . $comma
-          . '\''
-          . addcslashes( $langId, '\'' )
-          . '\' => \''
-          . addcslashes( $modxLangName, '\'' )
-          . '\''
-          . PHP_EOL;
-      }
-      $contents .=
-        '    );' . PHP_EOL;
-
-      //----------------------------
-      // itsEncodingModifierMode
-      //----------------------------
-      $contents .=
-        '  // The encoding modifier.' . PHP_EOL
-        . '  // \'manager\' means use the manager setting' . PHP_EOL
-        . '  // \'u\' if webpage content is in UTF-8' . PHP_EOL
-        . '  // \'\' otherwise' . PHP_EOL
-        . '  $this->itsEncodingModifierMode = \''
-        . addcslashes( $this->itsEncodingModifierMode, '\'' )
-        . '\';' . PHP_EOL;
-
-      //----------------------------
-      // itsActiveTemplates
-      //----------------------------
-      $contents .=
-        '  // a comma separated list of active template ids' . PHP_EOL
-        . '  // if the default activity is none' . PHP_EOL
-        . '  $this->itsActiveTemplates = array(' . PHP_EOL;
-      $firstTemplate = TRUE;
-      foreach ( $this->itsActiveTemplates as $templateId => $activeTVs )
-      {
-        $comma = ', ';
-        if ( $firstTemplate )
-        {
-          $comma = '';
-          $firstTemplate = FALSE;
-        }
-        $contents .=
-          '    '
-          . $comma
-          . preg_replace(
-            '[^0-9]'
-            , ''
-            , $templateId
-            )
-          . ' => ';
-        if ( is_null( $activeTVs ) )
-        {
-          $contents .= 'NULL' . PHP_EOL;
-        }
-        elseif ( is_array( $activeTVs ) )
-        {
-          $contents .= 'array(' . PHP_EOL;
-          $tvFirst = TRUE;
-          foreach ( $activeTVs as $tv )
-          {
-            $comma = ', ';
-            if ( $tvFirst )
-            {
-              $comma = '';
-              $tvFirst = FALSE;
-            }
-            $contents .=
-              '        '
-              . $comma
-              . '\''
-              . addcslashes( $tv, '\'' )
-              . '\'' . PHP_EOL;
-          }
-          $contents .= ')' . PHP_EOL;
-        }
-        else
-        {
-          $contents .= '        array()' . PHP_EOL;
-        }
-      }
-      $contents .=
-        '      );' . PHP_EOL;
-
-      //----------------------------
-      // itsManageTVs
-      //----------------------------
-      if ( $this->itsManageTVs )
-      {
-        $manageTVsText = 'TRUE';
-      }
-      else
-      {
-        $manageTVsText = 'FALSE';
-      }
-      $contents .=
-        '  // Whether or not to manage template variables automatically' . PHP_EOL
-        .  '  $this->itsManageTVs = '
-        . $manageTVsText
-        . ';' . PHP_EOL;
-
-      //----------------------------
-      // itsLangQueryParam
-      //----------------------------
-      $contents .=
-        '  // The yams current lang query parameter name' . PHP_EOL
-        . '  $this->itsLangQueryParam = \''
-        . addcslashes( $this->itsLangQueryParam, '\'' )
-        . '\';' . PHP_EOL;
-
-      //----------------------------
-      // itsChangeLangQueryParam
-      //----------------------------
-      $contents .=
-        '  // The yams change lang query parameter name' . PHP_EOL
-        . '  $this->itsChangeLangQueryParam = \''
-        . addcslashes( $this->itsChangeLangQueryParam, '\'' )
-        . '\';' . PHP_EOL;
-
-      //----------------------------
-      // itsRedirectionMode
-      //----------------------------
-      $contents .=
-        '  // Turn on/off redirection from existing pages to multilingual pages' . PHP_EOL
-        . '  // You can set to false if you are developing a site from scratch' . PHP_EOL
-        . '  // - although leaving as TRUE does not harm in this instance' . PHP_EOL
-        . '  // Set to TRUE if you are converting a website' . PHP_EOL
-        . '  // that has already been made public' . PHP_EOL
-        . '  $this->itsRedirectionMode = \''
-        . addcslashes( $this->itsRedirectionMode, '\'' )
-        . '\';' . PHP_EOL;
-
-      //----------------------------
-      // itsHTTPStatus
-      //----------------------------
-      $contents .=
-        '  // The type of http redirection to perform when redirecting to the default language' . PHP_EOL
-        . '  $this->itsHTTPStatus = '
-        . preg_replace(
-          '[^0-9]'
-          , ''
-          , $this->itsHTTPStatus
-          )
-        .';' . PHP_EOL;
-
-      //----------------------------
-      // itsHTTPStatusNotDefault
-      //----------------------------
-      $contents .=
-        '  // The type of http redirection to perform when redirecting to a non-default language' . PHP_EOL
-        . '  $this->itsHTTPStatusNotDefault = '
-        . preg_replace(
-          '[^0-9]'
-          , ''
-          , $this->itsHTTPStatusNotDefault
-          )
-        .';' . PHP_EOL;
-
-      //----------------------------
-      // itsHTTPStatusChangeLang
-      //----------------------------
-      $contents .=
-        '  // The type of http redirection to perform when responding to a request to change language' . PHP_EOL
-        . '  $this->itsHTTPStatusChangeLang = '
-        . preg_replace(
-          '[^0-9]'
-          , ''
-          , $this->itsHTTPStatusChangeLang
-          )
-        .';' . PHP_EOL;
-
-      //----------------------------
-      // itsHideFields
-      //----------------------------
-      if ( $this->itsHideFields )
-      {
-        $hideFieldsText = 'TRUE';
-      }
-      else
-      {
-        $hideFieldsText = 'FALSE';
-      }
-      $contents .=
-        '  // Whether or not to hide the original fields' . PHP_EOL
-        . '  $this->itsHideFields = '
-        . $hideFieldsText
-        . ';' . PHP_EOL;
-
-      //----------------------------
-      // itsTabifyLangs
-      //----------------------------
-      if ( $this->itsTabifyLangs )
-      {
-        $tabifyLangsText = 'TRUE';
-      }
-      else
-      {
-        $tabifyLangsText = 'FALSE';
-      }
-      $contents .=
-        '  // Whether or not to place tvs for individual languages on separate tabs' . PHP_EOL
-        . '  $this->itsTabifyLangs = '
-        . $tabifyLangsText
-        . ';' . PHP_EOL;
-
-      //----------------------------
-      // itsSynchronisePagetitle
-      //----------------------------
-      if ( $this->itsSynchronisePagetitle )
-      {
-        $synchronisePagetitleText = 'TRUE';
-      }
-      else
-      {
-        $synchronisePagetitleText = 'FALSE';
-      }
-      $contents .=
-        '  // Whether or not to synchronise the document pagetitle with the default language pagetitle' . PHP_EOL
-        . '  $this->itsSynchronisePagetitle = '
-        . $synchronisePagetitleText
-        . ';' . PHP_EOL;
-
-      //----------------------------
-      // itsEasyLingualCompatibility
-      //----------------------------
-      if ( $this->itsEasyLingualCompatibility )
-      {
-        $easyLingualCompatibilityText = 'TRUE';
-      }
-      else
-      {
-        $easyLingualCompatibilityText = 'FALSE';
-      }
-      $contents .=
-        '  // Whether or not to to use EasyLingual Compatiblity Mode' . PHP_EOL
-        . '  $this->itsEasyLingualCompatibility = '
-        . $easyLingualCompatibilityText
-        . ';' . PHP_EOL;
-
-      //----------------------------
-      // itsShowSiteStartAlias
-      //----------------------------
-      if ( $this->itsShowSiteStartAlias )
-      {
-        $showSiteStartAliasText = 'TRUE';
-      }
-      else
-      {
-        $showSiteStartAliasText = 'FALSE';
-      }
-      $contents .=
-        '  // Whether or not to show the site_start document alias.' . PHP_EOL
-        . '  $this->itsShowSiteStartAlias = '
-        . $showSiteStartAliasText
-        . ';' . PHP_EOL;
-
-      //----------------------------
-      // itsRewriteContainersAsFolders
-      //----------------------------
-      if ( $this->itsRewriteContainersAsFolders )
-      {
-        $rewriteContainersAsFoldersText = 'TRUE';
-      }
-      else
-      {
-        $rewriteContainersAsFoldersText = 'FALSE';
-      }
-      $contents .=
-        '  // Whether or not to rewrite containers as folders.' . PHP_EOL
-        . '  $this->itsRewriteContainersAsFolders = '
-        . $rewriteContainersAsFoldersText
-        . ';' . PHP_EOL;
-
-      //----------------------------
-      // itsMODxSubdirectory
-      //----------------------------
-      $contents .=
-        '  // If MODx is installed into a subdirectory then this param' . PHP_EOL
-        . '  // can be used to specify the path to that directory.' . PHP_EOL
-        . '  // (with a trailing slash and no leading slash)' . PHP_EOL
-        . '  $this->itsMODxSubdirectory = \''
-        . addcslashes( $this->itsMODxSubdirectory, '\'' )
-        . '\';' . PHP_EOL;
-
-      //----------------------------
-      // itsURLConversionMode
-      //----------------------------
-      $contents .=
-        '  // The URL conversion mode' . PHP_EOL
-        . '  // none: Don\'t do any automatic conversion of MODx URLs.' . PHP_EOL
-        . '  // default: Convert MODx URLs surrounded by double quotes to (yams_doc:id) placeholders' . PHP_EOL
-        . '  // resolve: Convert MODx URLs surrounded by double quotes to (yams_docr:id) placeholders' . PHP_EOL
-        . '  $this->itsURLConversionMode = \''
-        . addcslashes( $this->itsURLConversionMode, '\'' )
-        . '\';' . PHP_EOL;
-
-      //----------------------------
-      // itsUseMultilingualAliases
-      //----------------------------
-      if ( $this->itsUseMultilingualAliases )
-      {
-        $useMultilingualAliasesText = 'TRUE';
-      }
-      else
-      {
-        $useMultilingualAliasesText = 'FALSE';
-      }
-      $contents .=
-        '  // Whether or not to use multilingual aliases.' . PHP_EOL
-        . '  $this->itsUseMultilingualAliases = '
-        . $useMultilingualAliasesText
-        . ';' . PHP_EOL;
-
-      //----------------------------
-      // itsMultilingualAliasesAreUnique
-      //----------------------------
-      if ( $this->itsMultilingualAliasesAreUnique )
-      {
-        $multilingualAliasesAreUniqueText = 'TRUE';
-      }
-      else
-      {
-        $multilingualAliasesAreUniqueText = 'FALSE';
-      }
-      $contents .=
-        '  // Whether or not multilingual aliases are unique.' . PHP_EOL
-        . '  $this->itsMultilingualAliasesAreUnique = '
-        . $multilingualAliasesAreUniqueText
-        . ';' . PHP_EOL;
-
-      //----------------------------
-      // itsUseMimeDependentSuffixes
-      //----------------------------
-      if ( $this->itsUseMimeDependentSuffixes )
-      {
-        $useMimeDependentSuffixesText = 'TRUE';
-      }
-      else
-      {
-        $useMimeDependentSuffixesText = 'FALSE';
-      }
-      $contents .=
-        '  // Whether or not to use mime-dependent URL suffixes.' . PHP_EOL
-        . '  $this->itsUseMimeDependentSuffixes = '
-        . $useMimeDependentSuffixesText
-        . ';' . PHP_EOL;
-
-      //----------------------------
-      // itsMimeSuffixMap
-      //----------------------------
-      $contents .=
-        '  // The mime-type to suffix mapping.' . PHP_EOL
-        . '  $this->itsMimeSuffixMap = array('  . PHP_EOL;
-      $firstMimeType = TRUE;
-      foreach ( $this->itsMimeSuffixMap as $mimeType => $suffix )
-      {
-        $comma = ', ';
-        if ( $firstMimeType )
-        {
-          $comma = '';
-          $firstMimeType = FALSE;
-        }
-        $contents .=
-          '    '
-          . $comma
-          . '\''
-          . addcslashes( $mimeType, '\'' )
-          . '\' => \''
-          . addcslashes( $suffix, '\'' )
-          . '\''
-          . PHP_EOL;
-      }
-      $contents .=
-        '    );' . PHP_EOL;
-
-      //----------------------------
-      // itsLangRolesAccessMap
-      //----------------------------
-      $contents .=
-        '  // A mapping from langIds to roles.' . PHP_EOL
-        . '  // Says which roles have access to each language.' . PHP_EOL
-        . '  // If an empty string is provided all roles have access' . PHP_EOL
-        . '  // If no key is provided for a language all roles have access' . PHP_EOL
-        . '  $this->itsLangRolesAccessMap = array('  . PHP_EOL;
-      $firstLangId = TRUE;
-      foreach ( $this->itsLangRolesAccessMap as $langId => $roles )
-      {
-        $comma = ', ';
-        if ( $firstLangId )
-        {
-          $comma = '';
-          $firstLangId = FALSE;
-        }
-        $contents .=
-          '    '
-          . $comma
-          . '\''
-          . addcslashes( $langId, '\'' )
-          . '\' => \''
-          . addcslashes( $roles, '\'' )
-          . '\''
-          . PHP_EOL;
-      }
-      $contents .=
-        '    );' . PHP_EOL;
-      
-      //----------------------------
-      // itsUseStripAlias
-      //----------------------------
-      if ( $this->itsUseStripAlias )
-      {
-        $useStripAliasText = 'TRUE';
-      }
-      else
-      {
-        $useStripAliasText = 'FALSE';
-      }
-      $contents .=
-        '  // Whether or not to use stripAlias on multilingual aliases.' . PHP_EOL
-        . '  $this->itsUseStripAlias = '
-        . $useStripAliasText
-        . ';' . PHP_EOL;
-
-      //----------------------------
-      // itsAcceptMODxURLDocIds
-      //----------------------------
-      $contents .=
-        '  // An array of doc ids for which URLs of the form index.php?id= ... will be'
-        . '  // accepted - even if friendly aliases are being used.' . PHP_EOL
-        . '  // A * entry means all docIds.' . PHP_EOL
-        . '  $this->itsAcceptMODxURLDocIds = array('  . PHP_EOL;
-      $firstDocId = TRUE;
-      foreach ( $this->itsAcceptMODxURLDocIds as $docId )
-      {
-        $comma = ', ';
-        if ( $firstDocId )
-        {
-          $comma = '';
-          $firstDocId = FALSE;
-        }
-        if ( ctype_digit( strval( $docId ) ) )
-        {
-          $contents .= '    ' . $comma . $docId . PHP_EOL;
-        }
-        else
-        {
-          $contents .= '    ' . $comma . '\'*\'' . PHP_EOL;
-        }
-      }
-      $contents .=
-        '    );' . PHP_EOL;
-        
-      //----------------------------
-
-      $contents .=
-        '?>';
-
-
-      $file = fopen(
-        dirname( __FILE__ ) . '/../yams.config.inc.php'
-        , 'wb'
-      );
-      if ( $file === FALSE )
-      {
-        return FALSE;
-      }
-      $nBytes = fwrite(
-        $file
-
-        , $contents
-      );
-
-      if ( $nBytes === FALSE )
-      {
-        fclose( $file );
-        return FALSE;
-      }
-      fflush( $file );
-      fclose( $file );
-
-      return TRUE;
-
-    }
-
     public function GetSiteURL(
       $langId = NULL
       , $includeTrailingSlash = TRUE )
@@ -1992,26 +928,6 @@ if ( ! class_exists( 'YAMS' ) )
       return TRUE;
     }
 
-    public function GetIsLTR( $langId = NULL )
-    {
-      if ( is_null( $langId ) )
-      {
-        $langId = $this->itsDefaultLangId;
-      }
-      if (
-        ! $this->IsActiveLangId( $langId )
-        && ! $this->IsInactiveLangId( $langId )
-        )
-      {
-        return TRUE;
-      }
-      if ( ! array_key_exists( $langId, $this->itsIsLTR ) )
-      {
-        return TRUE;
-      }
-      return $this->itsIsLTR[ $langId ];
-    }
-
     public function GetLangDir( $langId = NULL )
     {
       $isLTR = $this->GetIsLTR( $langId );
@@ -2038,102 +954,6 @@ if ( ! class_exists( 'YAMS' ) )
       }
     }
 
-    public function SetIsLTR(
-      $langId
-      , $isLTR
-      , $save = TRUE )
-    {
-      if (
-        ! $this->IsActiveLangId( $langId )
-        && ! $this->IsInactiveLangId( $langId )
-        )
-      {
-        return FALSE;
-      }
-      $exists = array_key_exists( $langId, $this->itsIsLTR );
-      if (
-        ( $exists && $this->itsIsLTR[ $langId ] != $isLTR ) || ! $exists )
-      {
-        if ( $isLTR )
-        {
-          $this->itsIsLTR[ $langId ] = TRUE;
-        }
-        else
-        {
-          $this->itsIsLTR[ $langId ] = FALSE;
-        }
-        if ( $save )
-        {
-          return $this->SaveCurrentSettings();
-        }
-      }
-      return TRUE;
-    }
-
-    public function SetRolesAccessList(
-      $langId
-      , $rolesAccessList
-      , $save = TRUE )
-    {
-      if (
-        ! $this->IsActiveLangId( $langId )
-        && ! $this->IsInactiveLangId( $langId )
-        )
-      {
-        return FALSE;
-      }
-      $exists = array_key_exists( $langId, $this->itsLangRolesAccessMap );
-      if (
-        ( $exists && $this->itsLangRolesAccessMap[ $langId ] != $rolesAccessList )
-        || ! $exists
-        )
-      {
-        if ( preg_match(
-          '/^(|\!?[0-9]+(,\!?[0-9]+)*)$/'
-            . $this->itsEncodingModifier
-          , $rolesAccessList
-          ) != 1
-        )
-        {
-          return FALSE;
-        }
-        $this->itsLangRolesAccessMap[ $langId ] = $rolesAccessList;
-        if ( $save )
-        {
-          return $this->SaveCurrentSettings();
-        }
-      }
-      return TRUE;
-    }
-
-    public function GetRootName( $langId = NULL, $encoded = TRUE )
-    {
-      if ( is_null( $langId ) )
-      {
-        return '';
-      }
-      // Removed for improvement in efficiency.
-//      if (
-//        ! $this->IsActiveLangId( $langId )
-//        && ! $this->IsInactiveLangId( $langId )
-//        )
-//      {
-//        return '';
-//      }
-      if ( ! array_key_exists( $langId, $this->itsRootName ) )
-      {
-        return '';
-      }
-      if ( $encoded )
-      {
-        return $this->UrlEncode( $this->itsRootName[ $langId ] );
-      }
-      else
-      {
-        return $this->itsRootName[ $langId ];
-      }
-    }
-
     public function GetActiveRootName( $langId = NULL, $encoded = TRUE )
     {
       // like GetRootName, but returns an empty string
@@ -2155,68 +975,14 @@ if ( ! class_exists( 'YAMS' ) )
       {
         return '';
       }
-      if ( ! $this->IsValidLangGroupId( $langId ) )
+      if ( ! YamsUtils::IsValidLangGroupId( $langId ) )
       {
         return '';
       }
       return
-        $this->UrlEncode( $this->itsLangQueryParam )
+        YamsUtils::UrlEncode( $this->itsLangQueryParam )
          . '='
-         . $this->UrlEncode( $langId );
-    }
-
-    public function SetRootName(
-      $langId
-      , $name
-      , $save = TRUE )
-    {
-      if (
-        ! $this->IsActiveLangId( $langId )
-        && ! $this->IsInactiveLangId( $langId )
-        )
-      {
-        return FALSE;
-      }
-      if ( ! is_string( $name ) || ( ! ctype_graph( $name ) && $name != '') )
-      {
-        return FALSE;
-      }
-      $this->itsRootName[ $langId ] = $name;
-      $this->UpdateLanguageDependentRootNamesMode();
-      $this->UpdateLanguageQueryParamMode();
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    public function GetServerName(
-      $langId = NULL
-      , $ignoreQueryParamMode = FALSE
-      )
-    {
-      // The registered server name for a given language
-      // If $langId is NULL, then returns the monolingual server name
-      if ( is_null( $langId ) )
-      {
-        return $this->itsMonoServerName;
-      }
-      else
-      {
-        if (
-          ! $this->IsActiveLangId( $langId )
-          && ! $this->IsInactiveLangId( $langId )
-          )
-        {
-          return '';
-        }
-        if ( ! array_key_exists( $langId, $this->itsMultiServerName ) )
-        {
-          return '';
-        }
-        return $this->itsMultiServerName[ $langId ];
-      }
+         . YamsUtils::UrlEncode( $langId );
     }
 
     public function GetActiveServerName(
@@ -2242,121 +1008,6 @@ if ( ! class_exists( 'YAMS' ) )
       return $serverName;
     }
 
-    public function SetMonoServerName( $name, $save = TRUE )
-    {
-      if (
-        ! is_string( $name )
-        || preg_match(
-          '/^' . YAMS_RE_SERVER_NAME . '$/i'
-          . $this->itsEncodingModifier
-          , $name
-          ) != 1)
-      {
-        return FALSE;
-      }
-      $this->itsMonoServerName = $name;
-      // Update the language dependent server name mode
-      $this->UpdateLanguageDependentServerNamesMode();
-      $this->UpdateLanguageQueryParamMode();
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    public function SetServerName(
-      $langId
-      , $name
-      , $save = TRUE )
-    {
-      if (
-        ! $this->IsActiveLangId( $langId )
-        && ! $this->IsInactiveLangId( $langId )
-        )
-      {
-        return FALSE;
-      }
-      if (
-        ! is_string( $name )
-        || preg_match(
-          '/^' . YAMS_RE_SERVER_NAME . '$/i'
-          . $this->itsEncodingModifier
-          , $name
-          ) != 1)
-      {
-        return FALSE;
-      }
-      $this->itsMultiServerName[ $langId ] = $name;
-      // Update the language dependent server name mode
-      $this->UpdateLanguageDependentServerNamesMode();
-      $this->UpdateLanguageQueryParamMode();
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    public function GetLangName( $inLangId, $whichLangId = NULL )
-    {
-      if (
-        ! $this->IsActiveLangId( $inLangId )
-        && ! $this->IsInactiveLangId( $inLangId )
-        )
-      {
-        return '';
-      }
-      if ( is_null( $whichLangId ) )
-      {
-        $whichLangId = $inLangId;
-      }
-      if (
-        ! $this->IsActiveLangId( $whichLangId )
-        && ! $this->IsInactiveLangId( $whichLangId )
-        )
-      {
-        return '';
-      }
-      if ( ! array_key_exists( $inLangId, $this->itsLangNames ) )
-      {
-        return '';
-      }
-      $langNames = $this->itsLangNames[ $inLangId ];
-      if ( ! array_key_exists( $whichLangId, $langNames ) )
-      {
-        return '';
-      }
-      return $langNames[ $whichLangId ];
-
-    }
-
-    public function IsActiveLangId( $langId )
-    {
-//      if ( ! is_string( $langId ) )
-//      {
-//        return FALSE;
-//      }
-      if ( in_array( $langId, $this->itsActiveLangIds ) )
-      {
-        return TRUE;
-      }
-      return FALSE;
-    }
-
-    public function IsInactiveLangId( $langId )
-    {
-      if ( ! is_string( $langId ) )
-      {
-        return FALSE;
-      }
-      if ( in_array( $langId, $this->itsInactiveLangIds ) )
-      {
-        return TRUE;
-      }
-      return FALSE;
-    }
-
     public function MultiLangExpand(
       $get
       , $from
@@ -2370,7 +1021,7 @@ if ( ! class_exists( 'YAMS' ) )
       $multiLangString = TRUE;
       $langNameArray = preg_split(
         '/\|\|/'
-          . $this->itsEncodingModifier
+          . $this->itsUTF8Modifier
         , $from
         , -1
         );
@@ -2378,7 +1029,7 @@ if ( ! class_exists( 'YAMS' ) )
       {
         $result = preg_match(
           '/^[a-zA-Z0-9]+::/DU'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
           , $langName
           );
         if ( $result != 1 )
@@ -2403,7 +1054,7 @@ if ( ! class_exists( 'YAMS' ) )
         $select = array();
         if (
           ( $get == 'content' )
-          && $this->IsValidId($docId)
+          && YamsUtils::IsValidId($docId)
           && ! $this->IsMultilingualDocument( $docId ) )
         {
           foreach ( $this->GetActiveLangIds() as $langId )
@@ -2432,373 +1083,6 @@ if ( ! class_exists( 'YAMS' ) )
 
     }
 
-    public function GetChooseLangText( $langId = NULL )
-    {
-      if ( is_null( $langId ) )
-      {
-        $langId = $this->itsCurrentLangId;
-      }
-      if ( ! array_key_exists( $langId, $this->itsChooseLangText ) )
-      {
-        return '';
-      }
-      return $this->itsChooseLangText[ $langId ];
-    }
-
-    public function GetMODxLangName( $langId = NULL )
-    {
-      if ( is_null( $langId ) )
-      {
-        $langId = $this->itsCurrentLangId;
-      }
-      if ( ! array_key_exists( $langId, $this->itsMODxLangName ) )
-      {
-        return '';
-      }
-      return $this->itsMODxLangName[ $langId ];
-    }
-
-    public function GetAcceptMODxURLDocIdsString( )
-    {
-      return implode( ',', $this->itsAcceptMODxURLDocIds );
-    }
-
-    public function SetChooseLangText( $langId, $text, $save = TRUE )
-    {
-      if (
-        ! $this->IsActiveLangId( $langId )
-        && ! $this->IsInactiveLangId( $langId )
-        )
-      {
-        return FALSE;
-      }
-      if ( !is_string( $text ) )
-      {
-        return FALSE;
-      }
-      $this->itsChooseLangText[ $langId ] = $text;
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-
-    }
-
-    public function SetMODxLangName( $langId, $name, $save = TRUE )
-    {
-      if (
-        ! $this->IsActiveLangId( $langId )
-        && ! $this->IsInactiveLangId( $langId )
-        )
-      {
-        return FALSE;
-      }
-      if ( !is_string( $name ) )
-      {
-        return FALSE;
-      }
-      $this->itsMODxLangName[ $langId ] = $name;
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-
-    }
-
-    public function SetAcceptMODxURLDocIdsString( $acceptMODxURLDocIdsString, $save = TRUE )
-    {
-      if ( !is_string( $acceptMODxURLDocIdsString ) )
-      {
-        return FALSE;
-      }
-      $newAcceptMODxURLDocIds = preg_split(
-        '/\s*,\s*/x'
-          . $this->itsEncodingModifier
-        , $acceptMODxURLDocIdsString
-        , -1
-        , PREG_SPLIT_NO_EMPTY
-        );
-      if ( $newAcceptMODxURLDocIds === FALSE )
-      {
-        return FALSE;
-      }
-      foreach ( $newAcceptMODxURLDocIds as $id => $docId )
-      {
-        if ( $docId == '*' )
-        {
-          continue;
-        }
-        if ( $this->IsValidId( $docId ) )
-        {
-          continue;
-        }
-        unset( $newAcceptMODxURLDocIds[ $id ] );
-      }
-      $this->itsAcceptMODxURLDocIds = array_unique( $newAcceptMODxURLDocIds );
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-
-    }
-
-    public function GetHideFields()
-    {
-      return $this->itsHideFields;
-    }
-
-    public function GetTabifyLangs()
-    {
-      return $this->itsTabifyLangs;
-    }
-
-    public function GetSynchronisePagetitle()
-    {
-      return $this->itsSynchronisePagetitle;
-    }
-
-    public function GetEasyLingualCompatibility()
-    {
-      return $this->itsEasyLingualCompatibility;
-    }
-
-    public function GetUseMimeDependentSuffixes()
-    {
-      return $this->itsUseMimeDependentSuffixes;
-    }
-
-    public function GetUseStripAlias()
-    {
-      return $this->itsUseStripAlias;
-    }
-
-    public function GetShowSiteStartAlias()
-    {
-      return $this->itsShowSiteStartAlias;
-    }
-
-    public function GetRewriteContainersAsFolders()
-    {
-      return $this->itsRewriteContainersAsFolders;
-    }
-
-    public function GetUseMultilingualAliases()
-    {
-      return $this->itsUseMultilingualAliases;
-    }
-
-    public function GetMultilingualAliasesAreUnique()
-    {
-      return $this->itsMultilingualAliasesAreUnique;
-    }
-
-    public function SetHideFields( $hideFields, $save = TRUE )
-    {
-      if ( $hideFields != $this->itsHideFields )
-      {
-        if ( $hideFields )
-        {
-          $this->itsHideFields = TRUE;
-        }
-        else
-        {
-          $this->itsHideFields = FALSE;
-        }
-        if ( $save )
-        {
-          return $this->SaveCurrentSettings();
-        }
-      }
-      return TRUE;
-    }
-
-    public function SetTabifyLangs( $tabifyLangs, $save = TRUE )
-    {
-      if ( $tabifyLangs != $this->itsTabifyLangs )
-      {
-        if ( $tabifyLangs )
-        {
-          $this->itsTabifyLangs = TRUE;
-        }
-        else
-        {
-          $this->itsTabifyLangs = FALSE;
-        }
-        if ( $save )
-        {
-          return $this->SaveCurrentSettings();
-        }
-      }
-      return TRUE;
-    }
-
-    public function SetSynchronisePagetitle( $synchronisePagetitle, $save = TRUE )
-    {
-      if ( $synchronisePagetitle != $this->itsSynchronisePagetitle )
-      {
-        if ( $synchronisePagetitle )
-        {
-          $this->itsSynchronisePagetitle = TRUE;
-        }
-        else
-        {
-          $this->itsSynchronisePagetitle = FALSE;
-        }
-        if ( $save )
-        {
-          return $this->SaveCurrentSettings();
-        }
-      }
-      return TRUE;
-    }
-
-    public function SetEasyLingualCompatibility( $easyLingualCompatibility, $save = TRUE )
-    {
-      if ( $easyLingualCompatibility != $this->itsEasyLingualCompatibility )
-      {
-        if ( $easyLingualCompatibility )
-        {
-          $this->itsEasyLingualCompatibility = TRUE;
-        }
-        else
-        {
-          $this->itsEasyLingualCompatibility = FALSE;
-        }
-        if ( $save )
-        {
-          return $this->SaveCurrentSettings();
-        }
-      }
-      return TRUE;
-    }
-
-    public function SetUseMimeDependentSuffixes( $useMimeDependentSuffixes, $save = TRUE )
-    {
-      if ( $useMimeDependentSuffixes != $this->itsUseMimeDependentSuffixes )
-      {
-        if ( $useMimeDependentSuffixes )
-        {
-          $this->itsUseMimeDependentSuffixes = TRUE;
-        }
-        else
-        {
-          $this->itsUseMimeDependentSuffixes = FALSE;
-        }
-        if ( $save )
-        {
-          return $this->SaveCurrentSettings();
-        }
-      }
-      return TRUE;
-    }
-
-    public function SetUseStripAlias( $useStripAlias, $save = TRUE )
-    {
-      if ( $useStripAlias != $this->itsUseStripAlias )
-      {
-        if ( $useStripAlias )
-        {
-          $this->itsUseStripAlias = TRUE;
-        }
-        else
-        {
-          $this->itsUseStripAlias = FALSE;
-        }
-        if ( $save )
-        {
-          return $this->SaveCurrentSettings();
-        }
-      }
-      return TRUE;
-    }
-
-    public function SetShowSiteStartAlias( $showSiteStartAlias, $save = TRUE )
-    {
-      if ( $showSiteStartAlias != $this->itsShowSiteStartAlias )
-      {
-        if ( $showSiteStartAlias )
-        {
-          $this->itsShowSiteStartAlias = TRUE;
-        }
-        else
-        {
-          $this->itsShowSiteStartAlias = FALSE;
-        }
-        if ( $save )
-        {
-          return $this->SaveCurrentSettings();
-        }
-      }
-      return TRUE;
-    }
-
-    public function SetRewriteContainersAsFolders( $rewriteContainersAsFolders, $save = TRUE )
-    {
-      if ( $rewriteContainersAsFolders != $this->itsRewriteContainersAsFolders )
-      {
-        if ( $rewriteContainersAsFolders )
-        {
-          $this->itsRewriteContainersAsFolders = TRUE;
-        }
-        else
-        {
-          $this->itsRewriteContainersAsFolders = FALSE;
-        }
-        if ( $save )
-        {
-          return $this->SaveCurrentSettings();
-        }
-      }
-      return TRUE;
-    }
-
-    public function SetUseMultilingualAliases(
-      $useMultilingualAliases
-      , $save = TRUE )
-    {
-      if ( $useMultilingualAliases != $this->itsUseMultilingualAliases )
-      {
-        if ( $useMultilingualAliases )
-        {
-          $this->itsUseMultilingualAliases = TRUE;
-        }
-        else
-        {
-          $this->itsUseMultilingualAliases = FALSE;
-        }
-        if ( $save )
-        {
-          return $this->SaveCurrentSettings();
-        }
-      }
-      return TRUE;
-    }
-
-    public function SetMultilingualAliasesAreUnique(
-      $multilingualAliasesAreUnique
-      , $save = TRUE )
-    {
-      if ( $multilingualAliasesAreUnique != $this->itsMultilingualAliasesAreUnique )
-      {
-        if ( $multilingualAliasesAreUnique )
-        {
-          $this->itsMultilingualAliasesAreUnique = TRUE;
-        }
-        else
-        {
-          $this->itsMultilingualAliasesAreUnique = FALSE;
-        }
-        if ( $save )
-        {
-          return $this->SaveCurrentSettings();
-        }
-      }
-      return TRUE;
-    }
-
     public function IsMultilingualTemplate(
       $templateId
     )
@@ -2819,7 +1103,7 @@ if ( ! class_exists( 'YAMS' ) )
       {
         $docId = $this->itsMODx->documentIdentifier;
       }
-      if ( ! $this->IsValidId( $docId ) )
+      if ( ! YamsUtils::IsValidId( $docId ) )
       {
         return FALSE;
       }
@@ -2898,565 +1182,9 @@ if ( ! class_exists( 'YAMS' ) )
 
     }
 
-    public function GetManageTVs()
-    {
-      return $this->itsManageTVs;
-    }
-
-    public function SetManageTVs( $manageTVs, $save = TRUE )
-    {
-      if ( $manageTVs != $this->itsManageTVs )
-      {
-        if ( $manageTVs )
-        {
-          $this->itsManageTVs = TRUE;
-        }
-        else
-        {
-          $this->itsManageTVs = FALSE;
-        }
-        if ( $save )
-        {
-          return $this->SaveCurrentSettings();
-        }
-      }
-      return TRUE;
-
-    }
-
-    public function SetRedirectionMode( $redirectionMode, $save = TRUE )
-    {
-      if ( ! $this->IsValidRedirectionMode( $redirectionMode ) )
-      {
-        return FALSE;
-      }
-      $this->itsRedirectionMode = $redirectionMode;
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    public function GetRedirectionMode()
-    {
-      return $this->itsRedirectionMode;
-    }
-
-    public function SetURLConversionMode( $urlConversionMode, $save = TRUE )
-    {
-      if ( ! $this->IsValidURLConversionMode( $urlConversionMode ) )
-      {
-        return FALSE;
-      }
-      $this->itsURLConversionMode = $urlConversionMode;
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    public function GetURLConversionMode()
-    {
-      return $this->itsURLConversionMode;
-    }
-
-    public function GetHTTPStatus()
-    {
-      return $this->itsHTTPStatus;
-    }
-
-    public function GetHTTPStatusNotDefault()
-    {
-      return $this->itsHTTPStatusNotDefault;
-    }
-
-    public function GetHTTPStatusChangeLang()
-    {
-      return $this->itsHTTPStatusChangeLang;
-    }
-
-    public function SetHTTPStatus( $status, $save = TRUE )
-    {
-      switch ( $status )
-      {
-      case 300: // multiple choices
-      case 301: // permanent
-      case 302: // found
-      case 303: // see other
-      case 307: // temporary redirect
-        break;
-      default:
-        return FALSE;
-      }
-      $this->itsHTTPStatus = $status;
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    public function SetHTTPStatusNotDefault( $status, $save = TRUE )
-    {
-      switch ( $status )
-      {
-      case 300: // multiple choices
-      case 301: // permanent
-      case 302: // found
-      case 303: // see other
-      case 307: // temporary redirect
-        break;
-      default:
-        return FALSE;
-      }
-      $this->itsHTTPStatusNotDefault = $status;
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    public function SetHTTPStatusChangeLang( $status, $save = TRUE )
-    {
-      switch ( $status )
-      {
-      case 300: // multiple choices
-      case 301: // permanent
-      case 302: // found
-      case 303: // see other
-      case 307: // temporary redirect
-        break;
-      default:
-        return FALSE;
-      }
-      $this->itsHTTPStatusChangeLang = $status;
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    public function GetActiveTemplates()
-    {
-      return array_keys( $this->itsActiveTemplates );
-    }
-
-    public function GetActiveTemplatesList()
-    {
-      return implode( ',', array_keys( $this->itsActiveTemplates ) );
-    }
-
-    public function SetActiveTemplates( $activeTemplates, $save = TRUE )
-    {
-      if ( !is_array( $activeTemplates ) )
-      {
-        return FALSE;
-      }
-      foreach ( $activeTemplates as $templateId => $activeTVs )
-      {
-        if ( ! $this->IsValidId( $templateId ) )
-        {
-          return FALSE;
-        }
-        if ( is_null( $activeTVs ) )
-        {
-          break;
-        }
-        if ( !is_array( $activeTVs ) )
-        {
-          return FALSE;
-        }
-        foreach ( $activeTVs as $tv )
-        {
-          if ( ! is_string( $tv ) )
-          {
-            return FALSE;
-          }
-          if ( ! in_array( $tv, $this->itsDocVarNames ) )
-          {
-            return FALSE;
-          }
-//          switch ( $tv )
-//          {
-//          case 'pagetitle':
-//          case 'longtitle':
-//          case 'description':
-//          case 'introtext':
-//          case 'menutitle':
-//          case 'content':
-//            break;
-//          default:
-//            return FALSE;
-//          }
-        }
-      }
-      $this->itsActiveTemplates = $activeTemplates;
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
     public function GetCurrentLangId()
     {
       return $this->itsCurrentLangId;
-    }
-
-    public function GetDefaultLangId()
-    {
-      return $this->itsDefaultLangId;
-    }
-
-    public function SetDefaultLangId( $langId, $save = TRUE )
-    {
-      if ( $langId != $this->itsDefaultLangId )
-      {
-        if ( ! $this->IsActiveLangId( $langId ) )
-        {
-          return FALSE;
-        }
-        $this->itsDefaultLangId = $langId;
-        if ( $save )
-        {
-          return $this->SaveCurrentSettings();
-        }
-      }
-      return TRUE;
-    }
-
-    public function GetLangNames()
-    {
-      return $this->itsLangNames;
-    }
-
-    public function GetActiveLangIds()
-    {
-      return $this->itsActiveLangIds;
-    }
-
-    public function GetInactiveLangIds()
-    {
-      return $this->itsInactiveLangIds;
-    }
-
-    public function GetPrimaryLangTag( $langId = NULL )
-    {
-      if ( is_null( $langId ) )
-      {
-        $langId = $this->itsCurrentLangId;
-      }
-      if ( ! array_key_exists( $langId, $this->itsLangTags ) )
-      {
-        return '';
-      }
-      return $this->itsLangTags[ $langId ][ 0 ];
-    }
-
-    public function GetLangTagsText( $langId = NULL )
-    {
-      if ( is_null( $langId ) )
-      {
-        $langId = $this->itsCurrentLangId;
-      }
-      if ( !array_key_exists( $langId, $this->itsLangTags ) )
-      {
-        return '';
-      }
-      return implode(',', $this->itsLangTags[ $langId ] );
-    }
-
-    public function ActivateLangId(
-      $langId
-      , $save = TRUE
-      )
-    {
-      $success = $this->RemoveInactiveLangId( $langId );
-      if ( !$success )
-      {
-        return FALSE;
-      }
-      $success = $this->AddActiveLangId( $langId );
-      if ( !$success )
-      {
-        return FALSE;
-      }
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-
-    }
-
-    public function DeactivateLangId(
-      $langId
-      , $save = TRUE
-      )
-    {
-      $success = $this->RemoveActiveLangId( $langId );
-      if ( !$success )
-      {
-        return FALSE;
-      }
-      $success = $this->AddInactiveLangId( $langId );
-      if ( !$success )
-      {
-        return FALSE;
-      }
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-
-    }
-
-    public function AddLang(
-      $langId
-      , $tags
-      , $chooseLangText
-      , $modxLangName
-      , $rootName
-      , $serverName
-      , $langNames
-      , $isLTR
-      , $save = TRUE
-    )
-    {
-      if ( !is_string( $langId ) || ! ctype_graph( $langId ) )
-      {
-        return FALSE;
-      }
-      if ( $this->IsActiveLangId( $langId ) )
-      {
-        return FALSE;
-      }
-      if ( $this->IsInactiveLangId( $langId ) )
-      {
-        return FALSE;
-      }
-      if ( !is_array( $langNames ) )
-      {
-        return FALSE;
-      }
-
-      $success = $this->AddActiveLangId( $langId );
-      if ( ! $success )
-      {
-        $this->Reload();
-        return FALSE;
-      }
-
-      $success = $this->SetLangTagsText( $langId, $tags, FALSE );
-      if ( ! $success )
-      {
-        $this->Reload();
-        return FALSE;
-      }
-
-      $success = $this->SetRootName( $langId, $rootName, FALSE );
-      if ( ! $success )
-      {
-        $this->Reload();
-        return FALSE;
-      }
-
-      $success = $this->SetServerName( $langId, $serverName, FALSE );
-      if ( ! $success )
-      {
-        $this->Reload();
-        return FALSE;
-      }
-
-      $success = $this->SetIsLTR( $langId, $isLTR, FALSE );
-      if ( ! $success )
-      {
-        $this->Reload();
-        return FALSE;
-      }
-
-      $success = $this->SetChooseLangText( $langId, $chooseLangText, FALSE );
-      if ( ! $success )
-      {
-        $this->Reload();
-        return FALSE;
-      }
-
-      foreach ( $langNames as $whichLangId => $name )
-      {
-        $success = $this->SetLangName( $langId, $name, $whichLangId, FALSE );
-        if ( ! $success )
-        {
-          $this->Reload();
-          return FALSE;
-        }
-      }
-
-      $success = $this->SetMODxLangName( $langId, $modxLangName, FALSE );
-      if ( ! $success )
-      {
-        $this->Reload();
-        return FALSE;
-      }
-
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    public function DeleteLang(
-      $langId
-      , $save = TRUE
-    )
-    {
-      if ( ! $this->IsInactiveLangId( $langId ) )
-      {
-        return FALSE;
-      }
-
-      $success = $this->RemoveInactiveLangId( $langId );
-      if ( ! $success )
-      {
-        $this->Reload();
-        return FALSE;
-      }
-
-      $success = $this->RemoveLangTagsText( $langId );
-      if ( ! $success )
-      {
-        $this->Reload();
-        return FALSE;
-      }
-
-      $success = $this->RemoveRootName( $langId );
-      if ( ! $success )
-      {
-        $this->Reload();
-        return FALSE;
-      }
-
-      $success = $this->RemoveServerName( $langId );
-      if ( ! $success )
-      {
-        $this->Reload();
-        return FALSE;
-      }
-
-      $success = $this->RemoveIsLTR( $langId );
-      if ( ! $success )
-      {
-        $this->Reload();
-        return FALSE;
-      }
-
-      $success = $this->RemoveChooseLangText( $langId );
-      if ( ! $success )
-      {
-        $this->Reload();
-        return FALSE;
-      }
-
-      $success = $this->RemoveMODxLangName( $langId );
-      if ( ! $success )
-      {
-        $this->Reload();
-        return FALSE;
-      }
-
-      $success = $this->RemoveLangNames( $langId );
-      if ( ! $success )
-      {
-        $this->Reload();
-        return FALSE;
-      }
-
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    public function SetLangName(
-      $inLangId
-      , $name
-      , $whichLangId = NULL
-      , $save = TRUE
-    )
-    {
-      if (
-        ! $this->IsActiveLangId( $inLangId )
-        && ! $this->IsInactiveLangId( $inLangId )
-        )
-      {
-        return FALSE;
-      }
-      if ( is_null( $whichLangId ) )
-      {
-        $whichLangId = $inLangId;
-      }
-      if (
-        ! $this->IsActiveLangId( $whichLangId )
-        && ! $this->IsInactiveLangId( $whichLangId )
-        )
-      {
-        return FALSE;
-      }
-      if ( !is_string( $name ) )
-      {
-        return FALSE;
-      }
-      if ( ! array_key_exists( $inLangId, $this->itsLangNames ) )
-      {
-        $this->itsLangNames[ $inLangId ] = array();
-      }
-      $this->itsLangNames[ $inLangId ][ $whichLangId ] = $name;
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    public function SetLangTagsText(
-      $langId
-      , $langTags
-      , $save = TRUE
-    )
-    {
-      if (
-        ! $this->IsActiveLangId( $langId )
-        && ! $this->IsInactiveLangId( $langId )
-        )
-      {
-        return FALSE;
-      }
-      if ( !is_string( $langTags ) )
-      {
-        return FALSE;
-      }
-      preg_match_all(
-        '/([a-z]{1,8}(-[a-z]{1,8})?)/i'
-        , $langTags
-        , $parsedLangTags
-      );
-      if ( count( $parsedLangTags[1] ) < 1 )
-      {
-        return FALSE;
-      }
-      $this->itsLangTags[ $langId ] = $parsedLangTags[1];
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
     }
 
     public function Snippet(
@@ -3626,7 +1354,7 @@ if ( ! class_exists( 'YAMS' ) )
           );
       }
 
-      if ( ! $this->IsValidId( $docId ) )
+      if ( ! YamsUtils::IsValidId( $docId ) )
       {
         $docId = $this->itsMODx->documentIdentifier;
       }
@@ -3683,7 +1411,7 @@ if ( ! class_exists( 'YAMS' ) )
         $content
           = preg_replace_callback(
             '/\[(\+|\*)(#?)(' . $multilingualPlaceHolderList . ')((:.*)?)\1\]/U'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
             , array( $this, 'MultiLangCallback' )
             , $content
             , -1
@@ -3731,7 +1459,7 @@ if ( ! class_exists( 'YAMS' ) )
               . '|'
               . ')'
               . '\[~(.*)~\]"/U'
-              . $this->itsEncodingModifier
+              . $this->itsUTF8Modifier
             , $outputURLFormat
             , $content
             , -1
@@ -3740,7 +1468,7 @@ if ( ! class_exists( 'YAMS' ) )
 
       $content = $this->itsMODx->mergeSettingsContent( $content );
 
-      $yamsPlaceHolderTypes = '(id|tag|root|root\/|\/root|site|server|doc|docr|dir|align|mname|confirm|change|name|(name_in_)([a-zA-Z0-9]+)|choose)';
+      $yamsPlaceHolderTypes = '(id|tag|root|root\/|\/root|site|server|doc|docr|dir|align|mname|confirm|change|name|(name_in_)([a-zA-Z0-9]+)|choose|multi|mono|type)';
       $easyLingualPlaceHolderTypes = '(lang|language|LANG|LANGUAGE|dir|align)';
       $this->itsCallbackDocId = $docId;
       $this->itsCallbackIsMultilingualDocument = $isMultilingualDocument;
@@ -3750,7 +1478,7 @@ if ( ! class_exists( 'YAMS' ) )
       $content
         = preg_replace_callback(
           '/\(yams_' . $yamsPlaceHolderTypes . '(|\+)(:([0-9]+))?\)/U'
-          . $this->itsEncodingModifier
+          . $this->itsUTF8Modifier
           , array($this, 'MultiLangYamsCallbackMulti')
           , $content
           , -1
@@ -3764,7 +1492,7 @@ if ( ! class_exists( 'YAMS' ) )
         $content
           = preg_replace_callback(
             '/\[\%' . $easyLingualPlaceHolderTypes . '(|\+)\%\]/U'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
             , $callback
             , $content
             , -1
@@ -3816,6 +1544,26 @@ if ( ! class_exists( 'YAMS' ) )
         return FALSE;
       }
       
+      $this->itsCallbackDocId = $docId;
+      $this->itsCallbackIsMultilingualDocument = $isMultilingualDocument;
+
+      // Nested yams placeholders are possible, and preparse optimisation
+      // may have sorted out some more, so try again...
+      $hash = md5( $content );
+      $content
+        = preg_replace_callback(
+          '/\(yams_' . $yamsPlaceHolderTypes . '(|\+)(:([0-9]+))?\)/U'
+          . $this->itsEncodingModifier
+          , array($this, 'MultiLangYamsCallbackMulti')
+          , $content
+          , -1
+        );
+      if ( md5( $content ) != $hash )
+      {
+        // Try again
+        return FALSE;
+      }
+
       // At this stage all chunks, tvs and YAMS placeholders
       // have been resolved...
       // Time to let MODx take over with the snippet calls...
@@ -3844,7 +1592,7 @@ if ( ! class_exists( 'YAMS' ) )
       // if there are nested yams-selects
       if ( preg_match(
           '/^\(yams-select(|\+):[0-9]{1,10}\)/'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
           , $content
           , $match
         ) == 1 )
@@ -3853,7 +1601,7 @@ if ( ! class_exists( 'YAMS' ) )
         // See if there is a second match...
         if ( preg_match(
             '/\(yams-select(|\+):[0-9]{1,10}\)/'
-              . $this->itsEncodingModifier
+              . $this->itsUTF8Modifier
             , $content
             , $match
             , PREG_OFFSET_CAPTURE
@@ -3872,7 +1620,7 @@ if ( ! class_exists( 'YAMS' ) )
           );
       }
 
-      if ( ! $this->IsValidId( $docId ) )
+      if ( ! YamsUtils::IsValidId( $docId ) )
       {
         $docId = $this->itsMODx->documentIdentifier;
       }
@@ -3893,7 +1641,7 @@ if ( ! class_exists( 'YAMS' ) )
 //            . '(\((current):\1\)(.*))?'
             . '\(\/yams-repeat:\1\)'
             . '/s'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
           , array($this, 'StoreYamsRepeatCallback')
           , $content
           , -1
@@ -3913,7 +1661,7 @@ if ( ! class_exists( 'YAMS' ) )
             . '(.*?)'
             . '\(\/yams-in:\1\)'
             . '/s'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
           , array($this, 'StoreYamsInCallback')
           , $content
           , -1
@@ -3934,7 +1682,7 @@ if ( ! class_exists( 'YAMS' ) )
               . '(.*?)'
               . '\(\/yams-in:\1\)'
               . '/s'
-              . $this->itsEncodingModifier
+              . $this->itsUTF8Modifier
             , array($this, 'StoreYamsInCallback')
             , $this->itsYamsRepeatContent[ $counter ][ 'content' ]
             , -1
@@ -3950,7 +1698,7 @@ if ( ! class_exists( 'YAMS' ) )
                 . '(.*?)'
                 . '\(\/yams-in:\1\)'
                 . '/s'
-                . $this->itsEncodingModifier
+                . $this->itsUTF8Modifier
               , array($this, 'StoreYamsInCallback')
               , $this->itsYamsRepeatContent[ $counter ][ 'currentLangContent' ]
               , -1
@@ -4004,7 +1752,7 @@ if ( ! class_exists( 'YAMS' ) )
             '/'
               . '\(yams-repeat-out:([0-9]{1,10})\/\)'
               . '/U'
-              . $this->itsEncodingModifier
+              . $this->itsUTF8Modifier
             , array($this, 'RestoreYamsRepeatCallback')
             , $optimisedOutputArray[ $langId ]
             , -1
@@ -4026,7 +1774,7 @@ if ( ! class_exists( 'YAMS' ) )
             '/'
               . '\(yams-out:([0-9]{1,10})\/\)'
               . '/U'
-              . $this->itsEncodingModifier
+              . $this->itsUTF8Modifier
             , array($this, 'RestoreYamsInCallback')
             , $optimisedOutputArray[ $langId ]
             , -1
@@ -4105,7 +1853,7 @@ if ( ! class_exists( 'YAMS' ) )
             . '(.*?)'
             . '\(\/yams-in:\1\)'
             . '/s'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
           , array($this, 'YamsInCallback')
           , $content
           , -1
@@ -4125,7 +1873,7 @@ if ( ! class_exists( 'YAMS' ) )
             '/^(?>\(yams-select(|\+):([0-9]{1,10})\))'
             . '(.*)'
             . '\(\/yams-select\1:\2\)$/s'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
             , array($this, 'SelectLangCallback')
             , $content
             , 1
@@ -4148,7 +1896,7 @@ if ( ! class_exists( 'YAMS' ) )
               '/(?>\(yams-select(|\+):([0-9]{1,10})\))'
               . '(.*?)'
               . '\(\/yams-select\1:\2\)/s'
-              . $this->itsEncodingModifier
+              . $this->itsUTF8Modifier
               , array($this, 'SelectLangCallback')
               , $content
               , -1
@@ -4179,16 +1927,6 @@ if ( ! class_exists( 'YAMS' ) )
 //      }
 
       return TRUE;
-    }
-
-    private function PregQuoteReplacement( $str )
-    {
-      // See
-      // http://www.procata.com/blog/archives/2005/11/13/two-preg_replace-escaping-gotchas/
-      return preg_replace(
-        '/(\$|\\\\)(?=\d)/' . $this->itsEncodingModifier
-        , '\\\\\1'
-        , $str);
     }
 
     private function WeblinkRedirect(
@@ -4263,16 +2001,16 @@ if ( ! class_exists( 'YAMS' ) )
 
       // If no valid page has been found ($docId == NULL)
       // then do the normal thing and let MODx go to page not found...
-      if ( ! $this->IsValidId( $docId ) )
+      if ( ! YamsUtils::IsValidId( $docId ) )
       {
         return FALSE;
       }
 
       // If there has been a request to change language,
       // via a get or post, but not a cookie, do so...
-      if ( isset( $_GET[ $this->UrlEncode( $this->itsChangeLangQueryParam ) ] ) )
+      if ( isset( $_GET[ YamsUtils::UrlEncode( $this->itsChangeLangQueryParam ) ] ) )
       {
-        $newLangId = $this->UrlDecode( $_GET[ $this->UrlEncode( $this->itsChangeLangQueryParam ) ] );
+        $newLangId = YamsUtils::UrlDecode( $_GET[ YamsUtils::UrlEncode( $this->itsChangeLangQueryParam ) ] );
       }
       elseif ( isset( $_POST[ $this->itsChangeLangQueryParam ] ) )
       {
@@ -4284,9 +2022,9 @@ if ( ! class_exists( 'YAMS' ) )
       }
       if ( $this->itsUseLanguageQueryParam )
       {
-        if ( isset( $_GET[ $this->UrlEncode( $this->itsLangQueryParam, FALSE ) ] ) )
+        if ( isset( $_GET[ YamsUtils::UrlEncode( $this->itsLangQueryParam, FALSE ) ] ) )
         {
-          $oldLangId = $this->UrlDecode( $_GET[ $this->UrlEncode( $this->itsLangQueryParam, FALSE ) ] );
+          $oldLangId = YamsUtils::UrlDecode( $_GET[ YamsUtils::UrlEncode( $this->itsLangQueryParam, FALSE ) ] );
         }
         else
         {
@@ -4349,7 +2087,7 @@ if ( ! class_exists( 'YAMS' ) )
 //          );
 //      }
 
-      $isManagerPreviewPage = isset( $_GET['z'] ) && $this->UrlDecode( $_GET['z'] ) == 'manprev';
+      $isManagerPreviewPage = isset( $_GET['z'] ) && YamsUtils::UrlDecode( $_GET['z'] ) == 'manprev';
       if ( $isManagerPreviewPage )
       {
         // This is a manager preview page.
@@ -4596,26 +2334,6 @@ if ( ! class_exists( 'YAMS' ) )
       return FALSE;
     }
 
-    public function IsHTTPS()
-    {
-      global $https_port;
-      if (
-          (
-            isset( $_SERVER['HTTPS'] )
-            && $_SERVER['HTTPS'] != ''
-            && strtolower( $_SERVER['HTTPS'] ) != 'off'
-          )
-          || $_SERVER['SERVER_PORT'] == $https_port
-        )
-      {
-        return TRUE;
-      }
-      else
-      {
-        return FALSE;
-      }
-    }
-
     public function IsValidMonolingualRequest( )
     {
       // Need to check this in light of the introduction of
@@ -4667,9 +2385,9 @@ if ( ! class_exists( 'YAMS' ) )
 
       if ( $this->itsUseLanguageQueryParam )
       {
-        if ( isset( $_GET[ $this->UrlEncode( $this->itsChangeLangQueryParam, FALSE ) ] ) )
+        if ( isset( $_GET[ YamsUtils::UrlEncode( $this->itsChangeLangQueryParam, FALSE ) ] ) )
         {
-          $langId = $this->UrlDecode( $_GET[ $this->UrlEncode( $this->itsChangeLangQueryParam, FALSE ) ] );
+          $langId = YamsUtils::UrlDecode( $_GET[ YamsUtils::UrlEncode( $this->itsChangeLangQueryParam, FALSE ) ] );
           if ( in_array( $langId, $this->itsActiveLangIds ) )
           {
             $outLangId = $langId;
@@ -4681,9 +2399,9 @@ if ( ! class_exists( 'YAMS' ) )
           $this->itsIsValidMultilingualDocument = FALSE;
           return $this->itsIsValidMultilingualDocument;
         }
-        if ( isset( $_GET[ $this->UrlEncode( $this->itsLangQueryParam, FALSE ) ] ) )
+        if ( isset( $_GET[ YamsUtils::UrlEncode( $this->itsLangQueryParam, FALSE ) ] ) )
         {
-          $langId = $this->UrlDecode( $_GET[ $this->UrlEncode( $this->itsLangQueryParam, FALSE ) ] );
+          $langId = YamsUtils::UrlDecode( $_GET[ YamsUtils::UrlEncode( $this->itsLangQueryParam, FALSE ) ] );
           if ( in_array( $langId, $this->itsActiveLangIds ) )
           {
             $outLangId = $langId;
@@ -4709,7 +2427,7 @@ if ( ! class_exists( 'YAMS' ) )
         $requestURI = $_SERVER['REQUEST_URI'];
         $splitRequestURI = preg_split(
           '/\?/'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
           , $requestURI
           );
         $noQueryRequestURI = $splitRequestURI[0];
@@ -4722,13 +2440,13 @@ if ( ! class_exists( 'YAMS' ) )
           // split the path into subdirectories...
           $aliasArray = preg_split(
             '/' . preg_quote( '/', '/' )  . '/'
-              . $this->itsEncodingModifier
+              . $this->itsUTF8Modifier
             , $aliasDecoded
             );
           // Encode each subdirectory part
           foreach ( $aliasArray as $key => $value )
           {
-            $aliasArray[ $key ] = $this->UrlEncode( $value );
+            $aliasArray[ $key ] = YamsUtils::UrlEncode( $value );
           }
           // Reform the encoded url and preg quote it.
           $aliasEscaped = preg_quote( implode( '/', $aliasArray ), '/' );
@@ -4743,7 +2461,7 @@ if ( ! class_exists( 'YAMS' ) )
             . '\/(([^\/]+)\/)?'
             . $aliasEscaped
             . '$/'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
           , $noQueryRequestURI
           , $matches
           );
@@ -4801,7 +2519,7 @@ if ( ! class_exists( 'YAMS' ) )
         $requestURI = $_SERVER['REQUEST_URI'];
         $splitRequestURI = preg_split(
           '/\?/'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
           , $requestURI
           );
         $noQueryRequestURI = $splitRequestURI[0];
@@ -4814,13 +2532,13 @@ if ( ! class_exists( 'YAMS' ) )
           // split the path into subdirectories...
           $aliasArray = preg_split(
             '/' . preg_quote( '/', '/' )  . '/'
-              . $this->itsEncodingModifier
+              . $this->itsUTF8Modifier
             , $aliasDecoded
             );
           // Encode each subdirectory part
           foreach ( $aliasArray as $key => $value )
           {
-            $aliasArray[ $key ] = $this->UrlEncode( $value );
+            $aliasArray[ $key ] = YamsUtils::UrlEncode( $value );
           }
           // Reform the encoded url and preg quote it.
           $aliasEscaped = preg_quote( implode( '/', $aliasArray ), '/' );
@@ -4835,7 +2553,7 @@ if ( ! class_exists( 'YAMS' ) )
             . '\/(([^\/]+)\/)?'
             . $aliasEscaped
             . '$/'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
           , $noQueryRequestURI
           , $matches
           );
@@ -4897,8 +2615,8 @@ if ( ! class_exists( 'YAMS' ) )
       // mgb: grab the 'target' alias from the end of the path
       // pms: and escape it
       $aliasDecoded = array_pop( $path );
-      $alias = $this->UrlDecode( $aliasDecoded );
-      $aliasEncoded = $this->UrlEncode( $aliasDecoded );
+      $alias = YamsUtils::UrlDecode( $aliasDecoded );
+      $aliasEncoded = YamsUtils::UrlEncode( $aliasDecoded );
 
       // If no filename is specified then it must be the site start
       // document in the default language
@@ -4934,7 +2652,7 @@ if ( ! class_exists( 'YAMS' ) )
           . '(.*?)'
           . $suffixMatch
           . '$/'
-          . $this->itsEncodingModifier
+          . $this->itsUTF8Modifier
         , '\1'
         , $alias
         );
@@ -4972,8 +2690,8 @@ if ( ! class_exists( 'YAMS' ) )
       $path = array_reverse( $path );
       foreach ( $path as $virtualAliasDecoded )
       {
-        $virtualAlias = $this->UrlDecode( $virtualAliasDecoded );
-//        $virtualAliasEncoded = $this->UrlEncode( $virtualAliasDecoded );
+        $virtualAlias = YamsUtils::UrlDecode( $virtualAliasDecoded );
+//        $virtualAliasEncoded = YamsUtils::UrlEncode( $virtualAliasDecoded );
         // This should be the virtual alias of the parent of the previous
         // document...
         $parentId = $this->itsDocParentIds[ $docId ];
@@ -5017,8 +2735,8 @@ if ( ! class_exists( 'YAMS' ) )
       // mgb: grab the 'target' alias from the end of the path
       // pms: and escape it
       $aliasDecoded = array_pop( $path );
-      $alias = $this->UrlDecode( $aliasDecoded );
-      $aliasEncoded = $this->UrlEncode( $aliasDecoded );
+      $alias = YamsUtils::UrlDecode( $aliasDecoded );
+      $aliasEncoded = YamsUtils::UrlEncode( $aliasDecoded );
 
       // Handle the case where no filename is specified.
       // This is only valid if it is the site start...
@@ -5046,7 +2764,7 @@ if ( ! class_exists( 'YAMS' ) )
         }
         // Continue using the alias of the site start document...
         $alias = $docAliasInfo['alias'];
-        $aliasEncoded = $this->UrlEncode( $alias );
+        $aliasEncoded = YamsUtils::UrlEncode( $alias );
       }
 
       if ( $this->itsUseMimeDependentSuffixes )
@@ -5073,7 +2791,7 @@ if ( ! class_exists( 'YAMS' ) )
           . '(.*?)'
           . $suffixMatch
           . '$/'
-          . $this->itsEncodingModifier
+          . $this->itsUTF8Modifier
         , '\1'
         , $alias
         );
@@ -5117,8 +2835,8 @@ if ( ! class_exists( 'YAMS' ) )
             $currentId = $docId;
             foreach ( $path as $virtualAliasDecoded )
             {
-              $virtualAlias = $this->UrlDecode( $virtualAliasDecoded );
-      //        $virtualAliasEncoded = $this->UrlEncode( $virtualAliasDecoded );
+              $virtualAlias = YamsUtils::UrlDecode( $virtualAliasDecoded );
+      //        $virtualAliasEncoded = YamsUtils::UrlEncode( $virtualAliasDecoded );
               // This should be the virtual alias of the parent of the previous
               // document...
               $parentId = $this->itsDocParentIds[ $currentId ];
@@ -5327,13 +3045,13 @@ if ( ! class_exists( 'YAMS' ) )
       // split the path into subdirectories...
       $aliasArray = preg_split(
         '/' . preg_quote( '/', '/' )  . '/'
-          . $this->itsEncodingModifier
+          . $this->itsUTF8Modifier
         , $aliasDecoded
         );
       // Encode each subdirectory part
       foreach ( $aliasArray as $key => $value )
       {
-        $aliasArray[ $key ] = $this->UrlEncode( $value );
+        $aliasArray[ $key ] = YamsUtils::UrlEncode( $value );
       }
       // Reform the encoded url and preg quote it.
       $aliasEscaped = implode( '/', $aliasArray );
@@ -5358,7 +3076,7 @@ if ( ! class_exists( 'YAMS' ) )
                   , '/'
                 )
               . '/'
-              . $this->itsEncodingModifier
+              . $this->itsUTF8Modifier
               , $_SERVER['REQUEST_URI']
             ) != 1
           )
@@ -5632,7 +3350,7 @@ if ( ! class_exists( 'YAMS' ) )
       }
       if ( $encode )
       {
-        $aliasInfo['alias'] = $this->UrlEncode( $aliasInfo['alias'] );
+        $aliasInfo['alias'] = YamsUtils::UrlEncode( $aliasInfo['alias'] );
       }
       return $aliasInfo;
     }
@@ -5832,7 +3550,7 @@ if ( ! class_exists( 'YAMS' ) )
             , 1
             );
           $newDocId = $multiDocInfo[ $contentName ];
-          if ( $this->IsValidId( $newDocId ) )
+          if ( YamsUtils::IsValidId( $newDocId ) )
           {
             // This is a link to another internal document
             // Check if we have already seen it to prevent infinite recursion
@@ -5869,7 +3587,7 @@ if ( ! class_exists( 'YAMS' ) )
         else
         {
           $newDocId = $docInfo[ 'content' ];
-          if ( $this->IsValidId( $newDocId ) )
+          if ( YamsUtils::IsValidId( $newDocId ) )
           {
             // This is a link to another internal document
             // Check if we have already seen it to prevent infinite recursion
@@ -5982,7 +3700,7 @@ if ( ! class_exists( 'YAMS' ) )
           foreach ( $this->itsActiveLangIds as $langId )
           {
             $newDocId = $multiDocInfo[ $contentArray[ $langId ] ];
-            if ( $this->IsValidId( $newDocId ) )
+            if ( YamsUtils::IsValidId( $newDocId ) )
             {
               // This is a link to another internal document
               // Check if we have already seen it to prevent infinite recursion
@@ -6017,7 +3735,7 @@ if ( ! class_exists( 'YAMS' ) )
         else
         {
           $newDocId = $docInfo[ 'content' ];
-          if ( $this->IsValidId( $newDocId ) )
+          if ( YamsUtils::IsValidId( $newDocId ) )
           {
             // This is a link to another internal document
             // Check if we have already seen it to prevent infinite recursion
@@ -6211,7 +3929,7 @@ if ( ! class_exists( 'YAMS' ) )
 //            }
             if ( preg_match(
                 '/^'  . preg_quote( $tag, '/' ) . '/'
-                  . $this->itsEncodingModifier
+                  . $this->itsUTF8Modifier
                 , $langTag ) == 1 )
             {
               return $langId;
@@ -6228,13 +3946,13 @@ if ( ! class_exists( 'YAMS' ) )
       $hostName = $_SERVER['HTTP_HOST'];
       $stripPort =
         ( $_SERVER['SERVER_PORT'] != 80 )
-        && ( ! $this->IsHTTPS() );
+        && ( ! YamsUtils::IsHTTPS() );
       if ( $stripPort )
       {
         // Strip the port
         $hostName = preg_replace(
           '/' . preg_quote( ':' . $_SERVER['SERVER_PORT'], '/' ) . '/'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
           , ''
           , $hostName
           );
@@ -6252,7 +3970,7 @@ if ( ! class_exists( 'YAMS' ) )
       }
       // $stripPort =
         // ( $_SERVER['SERVER_PORT'] != 80 )
-        // && ( ! $this->IsHTTPS() );
+        // && ( ! YamsUtils::IsHTTPS() );
       $serverName = $this->GetActiveServerName(
         $langId
         // , $stripPort
@@ -6263,173 +3981,6 @@ if ( ! class_exists( 'YAMS' ) )
         $rootName = '/' . $rootName;
       }
       return $serverName . $rootName;
-    }
-
-    private function RemoveActiveLangId(
-      $langId
-      , $save = FALSE
-      )
-    {
-      if ( ! $this->IsActiveLangId( $langId ) )
-      {
-        return FALSE;
-      }
-      if ( $this->itsDefaultLangId == $langId )
-      {
-        return FALSE;
-      }
-      $this->itsActiveLangIds =
-        array_values(
-          array_diff(
-            $this->itsActiveLangIds
-            , array( $langId )
-          )
-        );
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    private function RemoveInactiveLangId( $langId, $save = FALSE )
-    {
-      if ( ! $this->IsInactiveLangId( $langId ) )
-      {
-        return FALSE;
-      }
-      $this->itsInactiveLangIds =
-        array_values(
-          array_diff(
-            $this->itsInactiveLangIds
-            , array( $langId )
-          )
-        );
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    private function RemoveLangTagsText( $langId, $save = FALSE )
-    {
-      if (
-        $this->IsInactiveLangId( $langId )
-        || $this->IsActiveLangId( $langId )
-        )
-      {
-        return FALSE;
-      }
-      if ( array_key_exists( $langId, $this->itsLangTags ) )
-      {
-        unset( $this->itsLangTags[ $langId ] );
-      }
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    private function RemoveRootName( $langId, $save = FALSE )
-    {
-      if (
-        $this->IsInactiveLangId( $langId )
-        || $this->IsActiveLangId( $langId )
-        )
-      {
-        return FALSE;
-      }
-      if ( array_key_exists( $langId, $this->itsRootName ) )
-      {
-        unset( $this->itsRootName[ $langId ] );
-      }
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    private function RemoveServerName( $langId, $save = FALSE )
-    {
-      if (
-        $this->IsInactiveLangId( $langId )
-        || $this->IsActiveLangId( $langId )
-        )
-      {
-        return FALSE;
-      }
-      if ( array_key_exists( $langId, $this->itsMultiServerName ) )
-      {
-        unset( $this->itsMultiServerName[ $langId ] );
-      }
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    private function RemoveIsLTR( $langId, $save = FALSE )
-    {
-      if (
-        $this->IsInactiveLangId( $langId )
-        || $this->IsActiveLangId( $langId )
-        )
-      {
-        return FALSE;
-      }
-      if ( array_key_exists( $langId, $this->itsIsLTR ) )
-      {
-        unset( $this->itsIsLTR[ $langId ] );
-      }
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    private function RemoveChooseLangText( $langId, $save = FALSE )
-    {
-      if (
-        $this->IsInactiveLangId( $langId )
-        || $this->IsActiveLangId( $langId )
-        )
-      {
-        return FALSE;
-      }
-      if ( array_key_exists( $langId, $this->itsChooseLangText ) )
-      {
-        unset( $this->itsChooseLangText[ $langId ] );
-      }
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    private function RemoveMODxLangName( $langId, $save = FALSE )
-    {
-      if (
-        $this->IsInactiveLangId( $langId )
-        || $this->IsActiveLangId( $langId )
-        )
-      {
-        return FALSE;
-      }
-      if ( array_key_exists( $langId, $this->itsMODxLangName ) )
-      {
-        unset( $this->itsMODxLangName[ $langId ] );
-      }
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
     }
 
     public function SelectOneLangFromCache( &$content )
@@ -6443,7 +3994,7 @@ if ( ! class_exists( 'YAMS' ) )
             '/^(?>\(yams-select(|\+):([0-9]{1,10})\))'
             . '(.*)'
             . '\(\/yams-select\1:\2\)$/s'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
             , array($this, 'SelectLangCallback')
             , $content
             , 1
@@ -6459,68 +4010,6 @@ if ( ! class_exists( 'YAMS' ) )
         }
       }
       
-    }
-
-    private function RemoveLangNames( $inlangId, $save = FALSE )
-    {
-      if (
-        $this->IsInactiveLangId( $inlangId )
-        || $this->IsActiveLangId( $inlangId )
-        )
-      {
-        return FALSE;
-      }
-      if ( array_key_exists( $inlangId, $this->itsLangNames ) )
-      {
-        unset( $this->itsLangNames[ $inlangId ] );
-      }
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    private function AddActiveLangId(
-      $langId
-      , $save = FALSE
-    )
-    {
-      if ( !is_string( $langId ) || ! ctype_graph( $langId ) )
-      {
-        return FALSE;
-      }
-      if ( $this->IsActiveLangId( $langId ) )
-      {
-        return FALSE;
-      }
-      $this->itsActiveLangIds[] = $langId;
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
-    }
-
-    private function AddInactiveLangId(
-      $langId
-      , $save = FALSE
-    )
-    {
-      if ( !is_string( $langId ) || ! ctype_graph( $langId ) )
-      {
-        return FALSE;
-      }
-      if ( $this->IsInactiveLangId( $langId ) )
-      {
-        return FALSE;
-      }
-      $this->itsInactiveLangIds[] = $langId;
-      if ( $save )
-      {
-        return $this->SaveCurrentSettings();
-      }
-      return TRUE;
     }
 
 //    private function GetLanguageList(
@@ -6690,7 +4179,7 @@ if ( ! class_exists( 'YAMS' ) )
           $open = '((yams_data:';
           $close = '))';
         }
-        else if ( $this->IsValidId( $docId ) )
+        else if ( YamsUtils::IsValidId( $docId ) )
         {
           $open = '((yams_data:' . $docId . ':';
           $close = '))';
@@ -6711,7 +4200,7 @@ if ( ! class_exists( 'YAMS' ) )
 
         $langNameArray = preg_split(
           '/\|\|/'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
           , $from
           , -1
           );
@@ -6720,7 +4209,7 @@ if ( ! class_exists( 'YAMS' ) )
         {
           $result = preg_match(
             '/^([a-zA-Z0-9]+)::(.*?)$/DU'
-              . $this->itsEncodingModifier
+              . $this->itsUTF8Modifier
             , $langName
             , $matches
             );
@@ -6802,6 +4291,83 @@ if ( ! class_exists( 'YAMS' ) )
 
     }
 
+    public function GetChooseLangText( $langId = NULL )
+    {
+      if ( is_null( $langId ) )
+      {
+        $langId = $this->itsCurrentLangId;
+      }
+      return parent::GetChooseLangText( $langId );
+    }
+
+    public function GetPrimaryLangTag( $langId = NULL )
+    {
+      if ( is_null( $langId ) )
+      {
+        $langId = $this->itsCurrentLangId;
+      }
+      return parent::GetPrimaryLangTag( $langId );
+    }
+
+    public function GetLangTagsText( $langId = NULL )
+    {
+      if ( is_null( $langId ) )
+      {
+        $langId = $this->itsCurrentLangId;
+      }
+      return parent::GetLangTagsText( $langId );
+    }
+
+    public function GetMODxLangName( $langId = NULL )
+    {
+      if ( is_null( $langId ) )
+      {
+        $langId = $this->itsCurrentLangId;
+      }
+      return parent::GetMODxLangName( $langId );
+    }
+
+    public function SetRootName(
+      $langId
+      , $name
+      , $save = TRUE )
+    {
+      $success = parent::SetRootName($langId, $name, $save);
+      if ( $success )
+      {
+        $this->UpdateLanguageDependentRootNamesMode();
+        $this->UpdateLanguageQueryParamMode();
+      }
+      return $success;
+    }
+
+    public function SetMonoServerName( $name, $save = TRUE )
+    {
+      $success = parent::SetMonoServerName($name, $save);
+      if ( $success )
+      {
+        // Update the language dependent server name mode
+        $this->UpdateLanguageDependentServerNamesMode();
+        $this->UpdateLanguageQueryParamMode();
+      }
+      return $success;
+    }
+
+    public function SetServerName(
+      $langId
+      , $name
+      , $save = TRUE )
+    {
+      $success = parent::SetServerName($langId, $name, $save);
+      if ( $success )
+      {
+        // Update the language dependent server name mode
+        $this->UpdateLanguageDependentServerNamesMode();
+        $this->UpdateLanguageQueryParamMode();
+      }
+      return $success;
+    }
+  
     private function MergeChunkContent( &$content )
     {
       // Returns true if the content has been changed.
@@ -6817,7 +4383,7 @@ if ( ! class_exists( 'YAMS' ) )
       
       $nMatches = preg_match_all(
         '/\{\{(.+)\}\}/U'
-          . $this->itsEncodingModifier
+          . $this->itsUTF8Modifier
         , $content
         , $matches
         );
@@ -6830,7 +4396,7 @@ if ( ! class_exists( 'YAMS' ) )
           {
             $find[] =
               '/' . preg_quote( $matches[0][$i], '/' ) . '/'
-              . $this->itsEncodingModifier;
+              . $this->itsUTF8Modifier;
             $replace[]= $this->chunkCache[ $chunkName ];
           }
           else
@@ -6856,8 +4422,8 @@ if ( ! class_exists( 'YAMS' ) )
             
             $find[] =
               '/\{\{' . preg_quote( $row['name'], '/' ) . '\}\}/'
-              . $this->itsEncodingModifier;
-            $replace[]= $this->PregQuoteReplacement( $row['snippet'] );
+              . $this->itsUTF8Modifier;
+            $replace[]= YamsUtils::PregQuoteReplacement( $row['snippet'] );
           }
         }
         if ( count( $find ) == 0 )
@@ -6925,7 +4491,7 @@ if ( ! class_exists( 'YAMS' ) )
       $replace= array();
       $nMatches = preg_match_all(
         '/\[\*(#?)(.+?)\*\]/'
-          . $this->itsEncodingModifier
+          . $this->itsUTF8Modifier
         , $content
         , $matches
         );
@@ -6953,8 +4519,8 @@ if ( ! class_exists( 'YAMS' ) )
             );
         }
         $find[] = '/' . preg_quote( $matches[0][$i], '/') . '/'
-          . $this->itsEncodingModifier;
-        $replace[] = $this->PregQuoteReplacement( $value );
+          . $this->itsUTF8Modifier;
+        $replace[] = YamsUtils::PregQuoteReplacement( $value );
       }
       if ( count( $find ) == 0 )
       {
@@ -6996,7 +4562,7 @@ if ( ! class_exists( 'YAMS' ) )
       $info = array();
       $nMatches = preg_match_all(
         '/\(\(yams_data:(([0-9]{0,13}):)?([^:]+)((:[.*])?)\)\)/U'
-          . $this->itsEncodingModifier
+          . $this->itsUTF8Modifier
         , $content
         , $matches
         );
@@ -7017,7 +4583,7 @@ if ( ! class_exists( 'YAMS' ) )
         $tv = $matches[ 3 ][ $i ];
         $phx = $matches[ 4 ][ $i ];
         $match = '/' . preg_quote( $matches[ 0 ][ $i ], '/') . '/'
-          . $this->itsEncodingModifier;
+          . $this->itsUTF8Modifier;
         if ( ! array_key_exists( $tv, $docCache ) )
         {
           $docCache[ $tv ] = array();
@@ -7104,7 +4670,7 @@ if ( ! class_exists( 'YAMS' ) )
               , $tvType
               );
             $find[] = $match;
-            $replace[] = $this->PregQuoteReplacement( $value );
+            $replace[] = YamsUtils::PregQuoteReplacement( $value );
             // TO DO: PHx stuff...
           }          
         }
@@ -7162,7 +4728,7 @@ if ( ! class_exists( 'YAMS' ) )
         = preg_split(
           '/\(lang:'
           . preg_quote( $matches[2], '/' )
-          . ':(.*)\)/U' . $this->itsEncodingModifier
+          . ':(.*)\)/U' . $this->itsUTF8Modifier
           , $matches[3]
           , -1
           , PREG_SPLIT_DELIM_CAPTURE
@@ -7264,7 +4830,7 @@ if ( ! class_exists( 'YAMS' ) )
             . '(.*?)'
             . '\(\/yams-in:\1\)'
             . '/s'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
           , array($this, 'StoreYamsInCallback')
           , $content
           , -1
@@ -7311,7 +4877,7 @@ if ( ! class_exists( 'YAMS' ) )
       // Check if there is a default block
       $templates = preg_split(
         '/\(current:' . preg_quote( $yamsCounter, '/') . '\)/'
-          . $this->itsEncodingModifier
+          . $this->itsUTF8Modifier
         , $matches[4]
         , 2
       );
@@ -7326,7 +4892,7 @@ if ( ! class_exists( 'YAMS' ) )
             // . '(\((current):\1\)(.*))?'
             . '\(\/yams-repeat:\1\)'
             . '/s'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
           , array($this, 'StoreYamsRepeatCallback')
           , $templates[0]
           , -1
@@ -7345,7 +4911,7 @@ if ( ! class_exists( 'YAMS' ) )
               // . '(\((current):\1\)(.*))?'
               . '\(\/yams-repeat:\1\)'
               . '/s'
-              . $this->itsEncodingModifier
+              . $this->itsUTF8Modifier
             , array($this, 'StoreYamsRepeatCallback')
             , $templates[1]
             , -1
@@ -7408,7 +4974,7 @@ if ( ! class_exists( 'YAMS' ) )
           '/'
             . '\(yams-out:([0-9]{1,10})\/\)'
             . '/U'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
           , array($this,'RestoreYamsInCallback')
           , $content
           , -1
@@ -7475,7 +5041,7 @@ if ( ! class_exists( 'YAMS' ) )
             '/'
               . '\(yams-repeat-out:([0-9]{1,10})\/\)'
               . '/U'
-              . $this->itsEncodingModifier
+              . $this->itsUTF8Modifier
             , array($this,'RestoreYamsRepeatCallback')
             , $this->itsYamsInContent[ $yamsInCounter ]['content']
             , -1
@@ -7845,6 +5411,36 @@ if ( ! class_exists( 'YAMS' ) )
 //          $output = $this->GetChooseLangText( $langId );
 //        }
         break;
+      case 'multi':
+        if ( $isMultilingualDocument )
+        {
+          $output = '1';
+        }
+        else
+        {
+          $output = '0';
+        }
+        break;
+      case 'mono':
+        if ( $isMultilingualDocument )
+        {
+          $output = '0';
+        }
+        else
+        {
+          $output = '1';
+        }
+        break;
+      case 'type':
+        if ( $isMultilingualDocument )
+        {
+          $output = 'multi';
+        }
+        else
+        {
+          $output = 'mono';
+        }
+        break;
       default:
         $output = '';
       }
@@ -8109,18 +5705,18 @@ if ( ! class_exists( 'YAMS' ) )
       // if ( $atCode == '@FILE:' )
       if ( preg_match(
           '/^@FILE:/'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
           , $source
         ) == 1 )
       {
         $filename = substr( $source, 6 );
-        $template = $this->GetFileContents( $filename );
+        $template = YamsUtils::GetFileContents( $filename );
         return $template;
       }
 //      if ( $atCode == '@CODE:' )
       if ( preg_match(
           '/^@CODE:/'
-            . $this->itsEncodingModifier
+            . $this->itsUTF8Modifier
           , $source
         ) == 1 )
       {
@@ -8128,79 +5724,6 @@ if ( ! class_exists( 'YAMS' ) )
         return $template;
       }
       return FALSE;
-    }
-
-    private function GetFileContents( $filename )
-    {
-      if ( ! function_exists( 'file_get_contents' ) )
-      {
-        $fhandle = fopen( $filename, 'r' );
-        $fcontents = fread( $fhandle, filesize( $filename ) );
-        fclose( $fhandle );
-      }
-      else
-      {
-        $fcontents = file_get_contents( $filename );
-      }
-      return $fcontents;
-    }
-
-    private function UrlEncode( $string, $encode = TRUE )
-    {
-      // To properly encode an url
-      // 1) Encode string in UTF-8
-      // 2) rawurlencode
-      //
-      // $_GET is automatically rawurldecoded... but it is left
-      // in UTF-8 as far as I know, since PHP doesn't know what else
-      // to do with it.
-
-      $modxCharset = $this->itsMODx->config['modx_charset'];
-
-      if ( $modxCharset != 'UTF-8' )
-      {
-        $newString = iconv( $modxCharset, 'UTF-8', $string );
-        if ( ! ( $newString === FALSE ) )
-        {
-          $string = $newString;          
-        }
-      }
-
-      if ( $encode )
-      {
-        return rawurlencode( $string );
-      }
-      
-      return $string;
-      
-    }
-
-    private function UrlDecode( $string, $decode = FALSE )
-    {
-      // $_GET is automatically rawurldecoded... but it is left
-      // in UTF-8 as far as I know, since PHP doesn't know what else
-      // to do with it.
-      //
-      // So, don't need to rawurldecode it,
-      // but do need to convert it to the correct character encoding.
-
-      $modxCharset = $this->itsMODx->config['modx_charset'];
-
-      if ( $decode )
-      {
-        $string = rawurldecode( $string );
-      }
-
-      if ( $modxCharset != 'UTF-8' )
-      {
-        $newString = iconv( 'UTF-8', $modxCharset, $string );
-        if ( ! ( $newString === FALSE ) )
-        {
-          $string = $newString;
-        }
-      }
-      return $string;
-
     }
 
 //    private function MultiLangYamsCallbackDocId( $matches )
@@ -8231,8 +5754,9 @@ if ( ! class_exists( 'YAMS' ) )
 //      }
 //    }
 
-    private function Initialise()
+    protected function Initialise()
     {
+
       global $modx;
 
       // This is close to the maximum size allowed in the content field
@@ -8249,29 +5773,29 @@ if ( ! class_exists( 'YAMS' ) )
         $this->itsInputQuerySeparator = '&';
       }
 
-
       $this->itsMODx = &$modx;
 
-      $this->itsDocVarNames = array_keys( $this->itsDocVarTypes );
-
-      @include( dirname( __FILE__ ) . '/../yams.config.inc.php');
-
-      // Check if UTF-8 is being used
-      // (Assume the encoding of the web page output
-      // is the same as the encoding of the manager)
-      switch ( $this->itsEncodingModifierMode )
-      {
-      case '':
-      case 'u':
-        $this->itsEncodingModifier = $this->itsEncodingModiferMode;
-        break;
-      default:
-        $this->itsEncodingModifier = '';
-        if ( $this->itsMODx->config['modx_charset'] == 'UTF-8')
-        {
-          $this->itsEncodingModifier = 'u';
-        }
-      }
+      parent::Initialise();
+//      @include( dirname( __FILE__ ) . '/../yams.config.inc.php');
+//
+//      // Check if UTF-8 is being used
+//      // (Assume the encoding of the web page output
+//      // is the same as the encoding of the manager)
+//      YamsUtils::$itsUTF8Modifier == $this->itsEncodingModifierMode;
+      $this->itsUTF8Modifier = YamsUtils::UTF8Modifier();
+//      switch ( $this->itsEncodingModifierMode )
+//      {
+//      case '':
+//      case 'u':
+//        $this->itsEncodingModifier = $this->itsEncodingModiferMode;
+//        break;
+//      default:
+//        $this->itsEncodingModifier = '';
+//        if ( $this->itsMODx->config['modx_charset'] == 'UTF-8')
+//        {
+//          $this->itsEncodingModifier = 'u';
+//        }
+//      }
 
       $this->UpdateLanguageDependentServerNamesMode();
       $this->UpdateLanguageDependentRootNamesMode();
@@ -8286,223 +5810,8 @@ if ( ! class_exists( 'YAMS' ) )
 
     }
 
-    // --
-    // -- Default Attributes
-    // -- These can be overriden using the yams.config.inc.php file
-    // --
-    // A list of active lang ids
-    private $itsActiveLangIds = array(
-      'en'
-      );
-    // A list of inactive lang ids
-    private $itsInactiveLangIds = array(
-      'fr'
-      , 'ja'
-      , 'de'
-      , 'ru'
-      );
-    // Specifies the language direction, ltr or rtl
-    private $itsIsLTR = array(
-      'en' => TRUE
-      , 'fr' => TRUE
-      , 'ja' => TRUE
-      , 'de' => TRUE
-      , 'ru' => TRUE
-      );
-    // The default language id
-    private $itsDefaultLangId = 'en';
-    // The name of the root folder
-    // eg: http://mysite.com/rootfolder
-    // use empty string for no folder
-    private $itsRootName = array(
-      'en' => 'en'
-      , 'fr' => 'fr'
-      , 'ja' => 'ja'
-      , 'de' => 'de'
-      , 'ru' => 'ru'
-      );
-    // Use to define the server name for monolingual webpages
-    // Use empty string for default server name ( as provided by [(site_url)] )
-    private $itsMonoServerName = '';
-    // Use to set the server name by language
-    // No protocol and no trailing slash.
-    // eg: www.mylanguage.mysite.com
-    // use empty string for the default server name
-    private $itsMultiServerName = array(
-      'en' => ''
-      , 'fr' => ''
-      , 'ja' => ''
-      , 'de' => ''
-      , 'ru' => ''
-      );
-    // The name of the language in the default lang
-    // and any other languges.
-    private $itsLangNames = array(
-      'en' => array(
-          'en' => 'English'
-          , 'fr' => '(French)'
-          , 'ja' => '(Japanese)'
-          , 'de' => '(German)'
-          , 'ru' => '(Russian)'
-          )
-      , 'fr' => array(
-          'en' => '(Anglais)'
-          , 'fr' => 'Français'
-          , 'ja' => '(Japonais)'
-          , 'de' => '(Allemand)'
-          , 'ru' => '(Russe)'
-          )
-      , 'ja' => array(
-          'en' => '（英語）'
-          , 'fr' => '（フランス語）'
-          , 'ja' => '日本語'
-          , 'de' => '（ドイツ語）'
-          , 'ru' => '（ロシア語）'
-        )
-      , 'de' => array(
-          'en' => '(Englisch)'
-          , 'fr' => '(Französisch)'
-          , 'ja' => '(Japanisch)'
-          , 'de' => 'Deutsch'
-          , 'ru' => '(Russisch)'
-        )
-      , 'ru' => array(
-          'en' => '(Английский)'
-          , 'fr' => '(Французский)'
-          , 'ja' => '(Японский)'
-          , 'de' => '(Немецкий)'
-          , 'ru' => 'Русский'
-        )
-      );
-    // The 'Choose language' text in the given language
-    private $itsChooseLangText = array(
-      'en' => 'Select language'
-      , 'fr' => 'Choisir une langue'
-      , 'ja' => '言語選択'
-      , 'de' => 'Waehle Sprache'
-      , 'ru' => 'Выберите язык'
-      );
-    // The languages that should be directed to this language root.
-    // These should be in priority order
-    // The tag is in the format provided by the HTTP Accept-Language header:
-    // xx, or xx-yy, where
-    // xx: is a two letter language abbreviation
-    //     http://www.loc.gov/standards/iso639-2/php/code_list.php
-    // yy: is a two letter country code
-    //     http://www.iso.org/country_codes/iso_3166_code_lists/english_country_names_and_code_elements.htm
-    // xx on its own matches an xx Accept-Language header
-    // with any country code
-    // At least one language tag must be specified for each active language.
-    // eg: array( 'en-gb', 'en-us' )
-    // or: array( 'fr-ca', 'fr-be' )
-    private $itsLangTags = array(
-      'en' => array( 'en' )
-      , 'fr' => array( 'fr' )
-      , 'ja' => array( 'ja' )
-      , 'de' => array( 'de' )
-      , 'ru' => array( 'ru' )
-      );
-    // The modx language name, or the empty string if none set.
-    private $itsMODxLangName = array(
-      'en' => 'english'
-      , 'fr' => 'francais-utf8'
-      , 'ja' => 'japanese-utf8'
-      , 'de' => 'german'
-      , 'ru' => 'russian-UTF8'
-      );
-    // The encoding modifier selection mode.
-    // 'manager' means use the manager setting
-    // 'u' means the webpage content is in UTF-8
-    // '' means that it is not UTF-8 encoded
-    private $itsEncodingModifierMode = 'manager';
-    // a comma separated list of active template ids
-    // if the default activity is none
-    private $itsActiveTemplates = array();
-    // Whether or not to sync template variables
-    private $itsManageTVs = TRUE;
-    // The yams lang query parameter name
-    private $itsLangQueryParam = 'yams_lang';
-    // The yams change lang query/post parameter name
-    private $itsChangeLangQueryParam = 'yams_new_lang';
-
-    // Turn on/off redirection from existing pages to multilingual pages
-    // You can set to FALSE if you are developing a site from scratch
-    // - although leaving as TRUE does not harm in this instance
-    // Set to TRUE if you are converting a website
-    // that has already been made public
-    // private $itsRedirectionMode = TRUE;
-
-    // The redirection mode. Can be:
-    // none: No redirection
-    // default: Redirect to the equivalent default language page
-    // browser: Redirect the a browser language if available,
-    //          else the default language page.
-    private $itsRedirectionMode = 'default';
-    // The type of http redirection to perform when redirecting to the default
-    // language
-    private $itsHTTPStatus = 307;
-    // The type of http redirection to perform when redirecting to a non-default
-    // language
-    private $itsHTTPStatusNotDefault = 303;
-    // The type of http redirection to perform when responding to a request to change language
-    // language
-    private $itsHTTPStatusChangeLang = 303;
-    // Whether or not to hide the original fields
-    // For use with manager manager
-    private $itsHideFields = FALSE;
-    // Whether or not to place tvs for individual languages on separate tabs
-    // For use with manager manager
-    private $itsTabifyLangs = TRUE;
-    // Whether or not to synchronise the document pagetitle with the default language pagetitle
-    private $itsSynchronisePagetitle = FALSE;
-    // Whether or not to use EasyLingual compatibility mode
-    private $itsEasyLingualCompatibility = FALSE;
-    // Whether or not to show the site_start document alias.
-    private $itsShowSiteStartAlias = TRUE;
-    // Whether or not to rewrite containers as folders.
-    private $itsRewriteContainersAsFolders = FALSE;
-    // If MODx is installed into a subdirectory then this param
-    // can be used to specify the path to that directory.
-    // (with a trailing slash and no leading slash)
-    private $itsMODxSubdirectory = '';
-    // The URL conversion mode
-    // none: Don't do any automatic conversion of MODx URLs.
-    // default: Convert MODx URLs surrounded by double quotes to (yams_doc:id) placeholders
-    // resolve: Convert MODx URLs surrounded by double quotes to (yams_docr:id) placeholders
-    // The default is doc, which replicates standard MODx behaviour, but
-    // docr might be more useful.
-    private $itsURLConversionMode = 'default';
-    // Whether or not to use multilingual aliases
-    private $itsUseMultilingualAliases = FALSE;
-    // Whether multilingual aliases will be unique
-    // If TRUE, the default when creating new aliases is langId-documentalias
-    // If FALSE, the default when creating new aliases documentalias
-    private $itsMultilingualAliasesAreUnique = FALSE;
 //    // Whether or not to hide multilingual aliases when they have been disactivated
 //    private $itsHideUnusedMultilingualAliaes = TRUE;
-    // Whether or not to determine the document suffix based on mime type
-    private $itsUseMimeDependentSuffixes = FALSE;
-    // The mime suffix mapping
-    private $itsMimeSuffixMap = array(
-      'application/xhtml+xml' => '.xhtml'
-      , 'application/javascript' => '.js'
-      , 'text/javascript' => '.js'
-      , 'application/rss+xml' => '.rss'
-      , 'application/xml' => '.xml'
-      , 'text/xml' => '.xml'
-      , 'text/css' => '.css'
-      , 'text/html' => '.html'
-      , 'text/plain' => '.txt'
-      );
-    // A mapping from langIds to roles.
-    // Says which roles have access to each language.
-    // If an empty string is provided all roles have access
-    // If no key is provided for a language all roles have access
-    private $itsLangRolesAccessMap = array();
-    private $itsUseStripAlias = TRUE;
-    // An array of doc ids for which URLs of the form index.php?id= ... will be
-    // accepted - even if friendly aliases are being used.
-    private $itsAcceptMODxURLDocIds = array();
 
     // An array temporarily containing yams-in content
     // during the preparse stage.
@@ -8523,7 +5832,7 @@ if ( ! class_exists( 'YAMS' ) )
     // The yams block counter
     private $itsYamsCounter = 0;
     // The encoding modifier
-    private $itsEncodingModifier = 'u';
+    private $itsUTF8Modifier = 'u';
     // For sharing with callbacks
     // The parse language id
     // private $itsCallbackLangId = '';
@@ -8551,22 +5860,6 @@ if ( ! class_exists( 'YAMS' ) )
     private $itsInputQuerySeparator;
     // monolingual doc ids
     private $itsMonolingualDocIds = array();
-    // This defines the default template variables types
-    // to associate with the document variables managed by
-    // YAMS.
-    private $itsDocVarTypes = array(
-      'pagetitle' => 'text'
-      , 'longtitle' => 'text'
-      , 'description' => 'text'
-      , 'alias' => 'text'
-      , 'introtext' => 'textarea'
-      , 'menutitle' => 'text'
-      , 'content' => 'richtext'
-      );
-    // An array of multilingual document variables managed by
-    // YAMS. This is defined from the array keys of itsDocVarTypes on
-    // initialisation.
-    private $itsDocVarNames = NULL;
     // Save this once it is calculated...
     private $itsIsValidMultilingualDocument = NULL;
     private $itsRequestLangId = FALSE;
@@ -8584,41 +5877,10 @@ if ( ! class_exists( 'YAMS' ) )
     // A hash of the content
     private $itsLastContentHash = NULL;
 
-    // --
-    // -- Singleton stuff
-    // --
-
-    // A private constructor; prevents direct creation of object
-    private function __construct( )
+    public static function GetInstance()
     {
-      $this->Initialise( );
+      return parent::GetSingletonInstance(__CLASS__);
     }
-
-    // The singleton method
-    public static function GetInstance( )
-    {
-      if ( ! isset( self::$theirInstance ) )
-      {
-        $c = __CLASS__;
-        self::$theirInstance = new $c( );
-      }
-
-      return self::$theirInstance;
-    }
-
-    //   // Prevent instance construction and cloning
-    //   protected final function __construct()
-    //   {
-    //     throw new Exception('YAMS is a singleton class. Get an instance via YAMS::GetInstance(), not new YAMS().');
-    //   }
-    private final function __clone()
-    {
-      throw new Exception('Clone is not allowed on singleton (YAMS).');
-    }
-
-    // Hold an instance of the class
-    private static $theirInstance;
-
   }
 }
 

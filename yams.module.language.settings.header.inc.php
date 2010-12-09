@@ -18,8 +18,7 @@
   {
   case 'edit_multi':
     ?><tr>
-                    <th class="gridHeader" rowspan="2">Help</th>
-                    <th class="gridHeader" rowspan="2">Action/Name</th><?php
+    <th class="gridHeader" rowspan="2">Name + DocLink</th><?php
     foreach ( $allLangIds as $langId )
     {
       ?><th class="gridHeader"><?php
@@ -48,8 +47,7 @@
   case 'add':
   default:
     ?><tr>
-    <th class="gridHeader" rowspan="3">Help</th>
-    <th class="gridHeader" rowspan="3">Action/Name</th><?php
+    <th class="gridHeader" rowspan="3">Name + DocLink</th><?php
     foreach ( $allLangIds as $langId )
     {
       ?><th class="gridHeader">
