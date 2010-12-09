@@ -1,0 +1,850 @@
+<div class="tab-page" id="tabDocumentation">
+  <h2 class="tab">[+txt_page_documentation_title+]</h2>
+  <script type="text/javsacript">tpResources.addTabPage( document.getElementById( 'tabDocumentation') );</script>
+  <div class="tab-pane" id="yamsDocumentationPane">
+    <script type="text/javascript">
+      tpResources = new WebFXTabPane( document.getElementById( 'yamsDocumentationPane' ) );
+    </script>
+
+    <div class="tab-page" id="documentationTabAbout">
+      <h2 class="tab">[+txt_page_documentation_about_title+]</h2>
+      <script type="text/javsacript">tpResources.addTabPage( document.getElementById( 'documentationTabAbout') );</script>
+      <p><strong>YAMS</strong>: [+txt_page_documentation_about_short_description+]</p>
+      <p><strong>[+txt_page_documentation_about_author_title+]</strong>: [+yams_author+]</p>
+      <p><strong>[+txt_page_documentation_about_donate_title+]</strong>: [+yams_author+]</p>
+      <p><strong>[+txt_page_documentation_about_version_title+]</strong>: [+txt_page_documentation_about_version_text+]</p>
+      <p><strong>[+txt_page_documentation_about_copyright_title+]</strong>: [+yams_copyright+]</p>
+      <p><strong>[+txt_page_documentation_about_licence_title+]</strong>: [+yams_licence+]</p>
+      <p><strong>[+txt_page_documentation_about_forums_title+]</strong>: </p>
+      <p><strong>[+txt_page_documentation_about_new_title+]</strong>:</p>
+      [+txt_page_documentation_about_new_text+]
+      <p><strong>[+txt_page_documentation_about_description_title+]</strong>:</p>
+      [+txt_page_documentation_about_description_text+]
+      <p><strong>Credits</strong>: [+txt_page_documentation_about_credits_text+]</p>
+    </div>
+
+    <div class="tab-page" id="documentationTabSetup">
+      <h2 class="tab">Setup</h2>
+      <script type="text/javsacript">tpResources.addTabPage( document.getElementById( 'documentationTabSetup') );</script>
+
+      <p>These instructions aim to tell you how to set up a new site or convert an existing site to be multilingual in a way that will cause you the least disruption. In theory it's possible to convert your site to a multilingual one without having to take it off line for more than a second while you reload your server config. If everything goes smoothly, then at no point should your website be broken during the setup process.</p>
+
+      <p>There are two sets of instructions. The first is for those people who are starting from scratch and want to develop a multilingual site, or those or have a monolingual site and would like to add additional languages. The second is for those people who are already using the EasyLingual solution and would like to convert to using YAMS so as to benefit from caching and all the other benefits that YAMS brings.</p>
+
+      <h3 class="sectionHeader">Starting from scratch or from a mono-lingual site</h3>
+      <p>It will be assumed that you have already installed the YAMS module, plugin and snippet. The DocFinder module can come in really useful for updating your URLs, but it is not obligatory. I highly recommend installing the ManagerManager plugin, since YAMS can use it to organise the multiple language fields into separate tabs and to hide redundant document variable fields on the document view.</p>
+
+      <p>YAMS has been designed to work with friendly URLs. It <em>should</em> work with friendly alias paths on, but <strong>this has not yet been thoroughly tested</strong>.</p>
+
+      <p>The default YAMS install does nothing. You have to set it up to switch on the multilingual functionality that you need.</p>
+
+      <table class="grid" summary="Step by Step YAMS Setup">
+        <caption>Step by Step YAMS Setup</caption>
+        <thead>
+          <tr>
+            <th class="gridHeader">Step</th>
+            <th class="gridHeader">Action</th>
+            <th class="gridHeader">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+
+<?php YamsAlternateRow( $rowClass ); $step = 1; ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><?php echo $step; ?></td>
+            <th class="<?php echo $rowClass;?>">Ensure you're backed up</th>
+            <td class="<?php echo $rowClass;?>">
+
+              <p>This is an alpha version after all.</p>
+
+            </td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); $step++; ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><?php echo $step; ?></td>
+            <th class="<?php echo $rowClass;?>">Decide on URL format</th>
+            <td class="<?php echo $rowClass;?>">
+
+              <p>Before you start configuring you need to decide how
+                you will identify the different languages groups in the URL.
+                There are three modes that can be used: <strong>Server Name</strong> mode,
+                <strong>Root Name</strong> mode and <strong>Query Param</strong> mode.
+                Whatever combination of modes you choose, the full URL
+                must be unique for each language and you will need to configure your server settings appropriately.</p>
+                <h3>Server Name and Root Name modes</h3>
+                <p><strong>Server Name</strong> mode and <strong>Root Name</strong> mode can be used simultaneously or independently.
+                The general format of the URL when using these modes is:<br />
+                <code>http://(server_name)/(root_name)/(path/)(filename)</code><br />
+                where there is only a path if friendly alias paths have been configured.</p>
+
+              <p>When server name mode is OFF the server name is determined
+                in the normal way MODx determines it and so is consistent with MODx [(site_url)].
+                Server name mode is switched ON by specifying a different server name for each
+                language group and a server name for monolingual/ordinary pages on the Language Settings tab.
+                To use server name mode, you will have to configure the
+                various server names as aliases or virtual hosts on your server.</p>
+
+              <p>To enable root name mode, you just need to specify at least
+                one root name on the Language Settings tab. If server name mode
+                is OFF then you will need to specify one per language group.</p>
+
+              <p>In either of these modes it is possible to change the language of a page
+              by sending a request back to current page with the id of the new
+              language group specified with a GET or POST variable. By default this variable is
+              called yams_new_lang, but it can be configured on the Other Params tab. There is
+              also a placeholder that can be used to access this name and snippet calls that
+              will generate a list or drop down box to enable changing the language.
+             </p>
+
+              <h3>Query Param mode</h3>
+              <p><strong>Query Param</strong> mode is provided primarily for compatibility
+                with EasyLingual and cannot be used in conjunction with the other modes.
+                In this mode there is no root name and the server name is identical for all
+                language groups. So, to distinguish one language from another a query parameter
+                is appended to all URLs:<br />
+                <code>http://server_name/(path/)filename?yams_lang=id</code></p>
+              <p>
+                By default this query param is called yams_lang.
+                However, it is configurable on the Other Options tab.
+                Change it to <code>lang</code> for compatibility with EasyLingual.</p>
+            </td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); $step++; ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><?php echo $step; ?></td>
+            <th class="<?php echo $rowClass;?>">Configure Language Settings</th>
+            <td class="<?php echo $rowClass;?>">
+
+              <p>The second step is to configure the language settings for
+                each language group that will be used on your multilingual pages. This is done on the language settings tab.</p>
+
+              <p>Each language group has an id. This is used, for example, in the multilingual versions of the template variables for that language. Eg: <code>description_<em>id</em></code></p>
+
+              <p>A language group can be set up to represent a group of languages (en), a specific localised language (en-gb) or a selection of localised languages (en-gb,en-us,...) by specifying a comma separated list of language tags.</p>
+
+              <p>In addition to this and the server name and root name for each language group, you can specify the language direction and the text associated with each language. You can also associate a MODx language name with the language group.</p>
+
+              <p>You will now need to set up one language group as the default language group. This language will be assumed for non-multilingual pages.</p>
+
+            </td>
+          </tr>
+
+
+<?php YamsAlternateRow( $rowClass ); $step++; ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><?php echo $step; ?></td>
+            <th class="<?php echo $rowClass;?>">Update Friendly URLs config</th>
+            <td class="<?php echo $rowClass;?>">
+
+              <p>If you are using server name or root name mode then
+                you will need update your .htaccess file to strip the
+                root directory name from the beginning of the request
+                URI (if necessary) and send MODx the correct <code>q</code>
+                query parameter. To help with this, YAMS provides you with
+                text that you can copy and paste. See the Server Config tab.
+                As a bonus, this text will tell YAMS the current language
+                via a query parameter, which saves it from having to
+                figure it out from the URL later.</p>
+
+              <p>You will have to update your server config every time you
+                activate or deactivate a language group, change its
+                server or root name, or rename the query parameter.</p>
+
+              <p>Note that your website should continue to function normally.</p>
+
+            </td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); $step++; ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><?php echo $step; ?></td>
+            <th class="<?php echo $rowClass;?>">Update URLs</th>
+            <td class="<?php echo $rowClass;?>">
+
+              <p>The next step is to update all URLs to internal documents and weblinks so that they will function as multilingual URLs on multilingual pages and normal URLs otherwise. Links to real files like images are not affected by the YAMS module and do not need to be converted. To convert an URL you use the YAMS placeholders.</p>
+              <p>The recommended way of specifying URLs in documents is<br />
+                <code>(yams_doc:<em>docId</em>)</code> or <code>(yams_docr:<em>docId</em>)</code><br />
+                and in templates is<br />
+                <code>(yams_doc:[+<em>docId</em>+])</code> or <code>(yams_docr:[+<em>docId</em>+])</code>.
+              </p>
+              <p>This will provide a full absolute URL to the given document. The <code>yams_docr</code> version will additionally resolve weblinks if that is required. These two placeholders can be configured not to output the filename of the document for the site start. See the 'Other Params' tab. This approach will work for all YAMS setups and is not dependent on a particular base meta tag setting.</p>
+              <p>However, if you are ONLY using root name mode and are not planning on using server name mode in the future then you may find it simpler to prefix the page alias by the root name instead. For example:</p>
+              <ul>
+                <li><code>[~<em>docId</em>~]</code> becomes <code>(yams_root/:<em>docId</em>)[~<em>docId</em>~]</code></li>
+                <li><code>[~[+<em>docId</em>+]~]</code> becomes <code>(yams_root/:[+<em>docId</em>+])[~[+<em>docId</em>+]~]</code></li>
+                <li><code>[(site_url)][~<em>docId</em>~]</code> becomes <code>[(site_url)](yams_root/:<em>docId</em>)[~<em>docId</em>~]</code></li>
+                <li><code>[(base_url)][~<em>docId</em>~]</code> becomes <code>[(base_url)](yams_root/:<em>docId</em>)[~<em>docId</em>~]</code></li>
+                <li>etc.</li>
+              </ul>
+              <p>You could of course choose to include the root name in the base meta tag (by setting the href attribute to <code>(yams_site)</code> for example.) However, please be aware that in that case you will have to provide a complete URL to all file based resources. For example: <code>[(site_url)]assets/images/...</code></p>
+              <p>Remember that by default all pages are monolingual, so none of these replacements should break or alter the way your website functions.</p>
+            </td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); $step++; ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><?php echo $step; ?></td>
+            <th class="<?php echo $rowClass;?>">Update Language Tags and Direction</th>
+            <td class="<?php echo $rowClass;?>">
+
+              <p>The next step is to update your language and language direction attributes, again using YAMS placeholders: <code>lang=&quot;(yams_tag)&quot;</code> and/or <code>xml:lang=&quot;(yams_tag)&quot;</code> and <code>dir=&quot;(yams_dir)&quot;</code></p>
+            </td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); $step++; ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><?php echo $step; ?></td>
+            <th class="<?php echo $rowClass;?>">Update Snippets</th>
+            <td class="<?php echo $rowClass;?>">
+
+              <p>The next step is to update any snippets which output URLs
+                or directly contain multilingual text that is not embedded in multilingual placeholders.
+                Guidance on how to do this for Wayfinder, Ditto, eForm and
+                other snippets is on the 'How To?' tab.</p>
+              <p>Note that you can use the <code>(yams_mname)</code> placeholder
+                to access the correct manager language for use in snippet calls. For example, with ditto and eForm,
+                <code>&amp;language=`(yams_mname)`</code> can be used.</p>
+
+            </td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); $step++; ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><?php echo $step; ?></td>
+            <th class="<?php echo $rowClass;?>">Redirection Strategy</th>
+            <td class="<?php echo $rowClass;?>">
+
+              <p>You are now at a stage where you can start to specify certain templates as multilingual templates. All documents associated with those templates will have multiple language versions - but they will all be managed via the same document within the manager. Note that when you specify a template as multilingual, the URLs of the associated documents will change. YAMS will automatically redirect from the old URLs to a language variant. Several redirection modes are available. Initially you should choose the default language mode. Only once you have written content for the other languages should you switch. These settings are configured on the Other Params tab. I'd recommend setting the HTTP status code for the redirect to temporary until you are confident you want to go live.</p>
+            </td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); $step++; ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><?php echo $step; ?></td>
+            <th class="<?php echo $rowClass;?>">ManagerManager Interface</th>
+            <td class="<?php echo $rowClass;?>">
+
+              <p>If you haven't installed ManagerManager yet and are planning to, then now is the time to do it. It is highly recommended. Once you have done it, insert the following line into your mm_Rules configuration file to enable YAMS to integrate with it:<br />
+                <code>require( $modx->config['base_path'] . 'assets/modules/yams/yams.mm_rules.inc.php' );</code></p>
+              <p>You will subsequently be able to specify how the fields in your multilingual documents will be organised via the settings on the Other Params tab.</p>
+              <p>When you convert a document to be a multilingual document the existing document variables, including the pagetitle, retain their existing values. However, all but the pagetitle become redundant. The YAMS ManagerManager rules will hide the redundant document variables. With YAMS, the document pagetitle takes on the role of a text identifier for the document and all its language variants within the MODx back-end. This identifier is visible in the MODx document tree, but not on any web output. For convenience, YAMS provides an option to automatically update this document pagetitle with the contents of the default language multilingual pagetitle template variable on document save. This can be enabled via the option on the 'Other Params' tab.</p>
+
+
+            </td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); $step++; ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><?php echo $step; ?></td>
+            <th class="<?php echo $rowClass;?>">Multilingual Templates</th>
+            <td class="<?php echo $rowClass;?>">
+
+              <p>You are finally in a position to be able to specify certain templates as multilingual. You do this from the Multilingual Templates tab. I recommend leaving the automatic template variable management setting to yes. Note that this is a beta version though, so make sure you are all backed up before hand.</p>
+              <p>All you have to do is select yes for those templates that you want to be multilingual. If you want to experiment first, create a new template, associate it with a new document, populate it with some default content and play with that. Assuming you selected yes for automatic template variable management, making it multilingual will create multiple versions of each template variable for each language, associate it with the template and copy over the default content for your document into the newly created default language template variables.</p>
+            </td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); $step++; ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><?php echo $step; ?></td>
+            <th class="<?php echo $rowClass;?>">Translate</th>
+            <td class="<?php echo $rowClass;?>">
+
+              <p>You can now view multiple language versions of your documents by browsing to the appropriate URL. However, initially all but the default language version has content written for it. Now is the time to go to each document and translate the content. Note that your site will continue to look normal and there wont be any links pointing to your new language versions until you jump to the next step.</p>
+            </td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); $step++; ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><?php echo $step; ?></td>
+            <th class="<?php echo $rowClass;?>">Publicise</th>
+            <td class="<?php echo $rowClass;?>">
+
+              <p>Once your content is translated, you are in a position to publicise it. You can use the snippet calls<br />
+                <code>[[yams? &amp;get=`list`]]</code><br />
+                or<br />
+                <code>[[yams? &amp;get=`selectform`]]</code><br />
+                to include a list based or form based language selection tool into your template.
+                These commands can now be modified using custom templates.
+                See the snippet documentation for more details.</p>
+            </td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); $step++; ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><?php echo $step; ?></td>
+            <th class="<?php echo $rowClass;?>">All Done</th>
+            <td class="<?php echo $rowClass;?>">
+
+              <p>Your site is now up and running as a multilingual site.
+                You can change the redirection mode if you like and can
+                change the http status once you are happy that you are
+                going to keep your site as a multilingual site. Make sure
+                your search engine site map contains a list of all documents,
+                and not just those of a single language.
+                See the How To tab for more details about how to achieve this.</p>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+
+      <h3 class="sectionHeader">Migrating from an EasyLingual site</h3>
+
+      <p><strong>Warning!</strong> I have never actually tried to convert an EasyLingual site before. I have just read about how it is supposed to work from the EasyLingual forum thread. Looking for feedback from volounteers willing to try it out.</p>
+      <ul>
+        <li>First back up. (See step 1 above.)</li>
+        <li>On the Other Params tab select the EasyLingual Compatibility Mode setting to Yes
+        and change the Confirm Language Param setting to <code>lang</code>.</li>
+        <li>You will have to use Query Param mode. (See step 2 above for details.)</li>
+        <li>Configure your languages using the Language Settings tab. (See step 3 above.)
+          Leave all server name fields blank. (The default site url will be displayed in brackets.) Leave the root names fields blank.</li>
+      </ul>
+      <p>Your site <em>should</em> now be working as it was under EasyLingual.
+      If it isn't then take a look at the EasyLingual tab for info about
+      the EasyLingual compatibility placeholders. If that still doesn't solve
+      your problem them please post a message to the YAMS forum thread. Some
+      additional adjustments may be needed or there may be a bug.</p>
+    </div>
+
+    <div class="tab-page" id="documentationTabYAMSPlaceholders">
+      <h2 class="tab">YAMS Placeholders</h2>
+      <script type="text/javsacript">tpResources.addTabPage( document.getElementById( 'documentationTabYAMSPlaceholders') );</script>
+      <h3 class="sectionHeader">YAMS Placeholders</h3>
+      <p>Two forms of each placeholder are available. In the first form, <code>(yams_<em>???</em>)</code>,
+        the placeholders provide information about the current document.
+        In the second form, <code>(yams_<em>???</em>:<em>docId</em>)</code>, they provide information about the document
+        with the given document identifier, <code><em>docId</em></code>.
+        It should be possible to use snippet calls and chunks to obtain
+        the document identifier for the document identifier.
+        <code>(yams_doc:[+id+])</code> can be used within templates.</p>
+      <p>It should be possible to use YAMS placeholders almost anywhere, including in chunks, in the names and output of template variables, and in the names, output and parameters of snippet calls.</p>
+      <p>When the output of a YAMS placeholder is language dependent it needs to know what the current language is. The current language is dependent upon the context. The <code>(yams-in)</code> or <code>(yams-repeat)</code> blocks allow the inclusion of alternate language content on a page. (See the Constructs tab). If a placeholder falls within either of these blocks, then the current language is that specified by those blocks. Otherwise the current language is taken to be the language in which the current page is being displayed. There may be occasions when you would like to override this behaviour, and force the placeholder to treat the current document language as the current language. This can be achieved by appending a <code>+</code> symbol to the end of the name of the placeholder. For example, the following will generate a (yams-repeat) block that will display a list of the names of the available languages, all written in the current document language:<br />
+      <code>&lt;ul&gt;[[YAMS? &amp;get=`repeat` &amp;repeattpl=`@CODE:&lt;li&gt;(yams_name_in_(yams_id+))&lt;/li&gt;`]]&lt;/ul&gt;</code>
+      </p>
+      <table class="grid" summary="YAMS Placeholders">
+        <caption>YAMS placeholders</caption>
+        <thead>
+          <tr>
+            <th class="gridHeader">Placeholder</th>
+            <th class="gridHeader">Monolingual Document</th>
+            <th class="gridHeader">Multilingual Document</th>
+          </tr>
+        </thead>
+        <tbody>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>(yams_id)</code><br /><code>(yams_id:<em>docId</em>)</code></th>
+            <td class="<?php echo $rowClass;?>">The default language id</td>
+            <td class="<?php echo $rowClass;?>">The current language id</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>(yams_tag)</code><br /><code>(yams_tag:<em>docId</em>)</code></th>
+            <td class="<?php echo $rowClass;?>">The primary language tag for the default language</td>
+            <td class="<?php echo $rowClass;?>">The primary language tag for the current language</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>(yams_root)</code><br /><code>(yams_root:<em>docId</em>)</code></th>
+            <td class="<?php echo $rowClass;?>">Nothing</td>
+            <td class="<?php echo $rowClass;?>">If specified and non-empty, the server root name for the current language, else nothing</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>(yams_/root)</code><br /><code>(yams_/root:<em>docId</em>)</code></th>
+            <td class="<?php echo $rowClass;?>">Nothing</td>
+            <td class="<?php echo $rowClass;?>">If specified and non-empty, the server root name for the current language preceded by a /, else nothing</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>(yams_root/)</code><br /><code>(yams_root/:<em>docId</em>)</code></th>
+            <td class="<?php echo $rowClass;?>">Nothing</td>
+            <td class="<?php echo $rowClass;?>">If specified and non-empty, the server root name for the current language followed by a /, else nothing</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>(yams_site)</code><br /><code>(yams_site:<em>docId</em>)</code></th>
+            <td class="<?php echo $rowClass;?>">If server name mode is ON, an URL created using the specified monolingual server name. If server name mode is OFF, the same output as [(site_url)].</td>
+            <td class="<?php echo $rowClass;?>">The full multilingual site url including server name and server root as required for the current page.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>(yams_server)</code><br /><code>(yams_server:<em>docId</em>)</code></th>
+            <td class="<?php echo $rowClass;?>">Same as for <code>yams_site</code>.</td>
+            <td class="<?php echo $rowClass;?>">Same as for <code>yams_site</code>, but with no root name.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>(yams_doc)</code><br /><code>(yams_doc:<em>docId</em>)</code></th>
+            <td class="<?php echo $rowClass;?>">A complete URL for the document or weblink. There is an option on the 'Other Params' tab that will suppress the filename for the site start document.</td>
+            <td class="<?php echo $rowClass;?>">A complete URL for the current language version of the document or weblink. There is an option on the 'Other Params' tab that will suppress the filename for the site start document.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>(yams_docr)</code><br /><code>(yams_docr:<em>docId</em>)</code></th>
+            <td class="<?php echo $rowClass;?>">Same as for <code>yams_doc</code>, but weblinks are resolved.</td>
+            <td class="<?php echo $rowClass;?>">Same as for <code>yams_doc</code>, but weblinks are resolved.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>(yams_dir)</code><br /><code>(yams_dir:<em>docId</em>)</code></th>
+            <td class="<?php echo $rowClass;?>">The language direction ('ltr' or 'rtl') for the default language</td>
+            <td class="<?php echo $rowClass;?>">The language direction ('ltr' or 'rtl') for the current language</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>(yams_align)</code><br /><code>(yams_align:<em>docId</em>)</code></th>
+            <td class="<?php echo $rowClass;?>">The text alignment ('left' or 'right') for the default language</td>
+            <td class="<?php echo $rowClass;?>">The text alignment ('left' or 'right') for the current language</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>(yams_mname)</code><br /><code>(yams_mname:<em>docId</em>)</code></th>
+            <td class="<?php echo $rowClass;?>">The MODx language name for the default language</td>
+            <td class="<?php echo $rowClass;?>">The MODx language name for the current language</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>(yams_confirm)</code><br /><code>(yams_confirm:<em>docId</em>)</code></th>
+            <td class="<?php echo $rowClass;?>">The name of the Confirm Language param. (See the Other Params tab.)</td>
+            <td class="<?php echo $rowClass;?>">The name of the Confirm Language param. (See the Other Params tab.)</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>(yams_change)</code><br /><code>(yams_change:<em>docId</em>)</code></th>
+            <td class="<?php echo $rowClass;?>">The name of the Change Language param. (See the Other Params tab.)</td>
+            <td class="<?php echo $rowClass;?>">The name of the Change Language param. (See the Other Params tab.)</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>(yams_name)</code><br /><code>(yams_name:<em>docId</em>)</code></th>
+            <td class="<?php echo $rowClass;?>">The name of the default language in the default language</td>
+            <td class="<?php echo $rowClass;?>">The name of the current language in the current language</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>(yams_name_in_<em>langId</em>)</code><br /><code>(yams_name_in_<em>langId</em>:<em>docId</em>)</code></th>
+            <td class="<?php echo $rowClass;?>">The name of the default language, written in the language specified by the <code><em>langId</em></code> language group id.</td>
+            <td class="<?php echo $rowClass;?>">The name of the current language, written in the language specified by the <code><em>langId</em></code> language group id.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>(yams_choose)</code><br /><code>(yams_choose:<em>docId</em>)</code></th>
+            <td class="<?php echo $rowClass;?>">The Select Language Text, written in the default language. (See the Language Settings tab.)</td>
+            <td class="<?php echo $rowClass;?>">The Select Language Text, written in the current language. (See the Language Settings tab.)</td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tab-page" id="documentationTabEasyLingualPlaceholders">
+      <h2 class="tab">EasyLingual</h2>
+      <script type="text/javsacript">tpResources.addTabPage( document.getElementById( 'documentationTabEasyLingualPlaceholders') );</script>
+      <h3 class="sectionHeader">EasyLingual Compatibility Placeholders</h3>
+      <?php
+      if ( $yams->GetEasyLingualCompatibility() )
+      {
+        ?><p>EasyLingual Compatibility Mode is currently <strong>ON</strong>. The EasyLingual compatibility placeholders are available.</p><?php
+      }
+      else
+      {
+        ?><p>EasyLingual Compatibility Mode is currently <strong>OFF</strong>. To use these placeholders, please activate EasyLingual Compatibility Mode from the 'Other Params' tab.</p><?php
+      }
+      ?>
+      <p>The following placeholders are to help ease the transition from a site already using EasyLingual to one using YAMS. A site written using the EasyLingual plugin may not work directly and immediately with YAMS since there is not a precise correspondence between YAMS and EasyLingual placeholders and the behind-the-scenes parsing that YAMS does follows different rules to those of EasyLingual. Having said that, YAMS should be more flexible and forgiving overall. A list of the most important differences is listed below.</p>
+      <ul>
+        <li>By far the biggest difference between YAMS and EasyLingual is the fact that YAMS has the concept of monolingual and multilingual templates (and hence documents). Multilingual documents contain content in multiple languages, and for such documents YAMS will automatically replace certain document variables, such as [*pagetitle*], by their correct language multi-language version, equivalent to <code>[*pagetitle_[%LANG%]*]</code>. Monolingual documents are intended to be just that, and YAMS placeholders are configured to treat such pages as if they are in the default language.<br />
+        Since EasyLingual doesn't have the concept of a mono- and multi-lingual documents, the EasyLingual placeholders are set up to react to the language specified by the 'Confirm Language' query parameter on monolingual pages rather than using the default language. (See the 'Other Params' tab.) The effect of this is that an EasyLingual site should continue to function as normal using only monolingual templates. However, there is always the option to switch off EasyLingual Compatibility Mode or to switch to using multilingual templates at any time.
+        </li>
+        <li>The way that YAMS and EasyLingual parse placeholders is different. Because of the way YAMS is designed placeholders can appear almost anywhere, including in chunks, and it is possible to use them with both cacheable and uncachable documents and snippets. In fact, with YAMS, using cacheable documents and snippets everywhere possible is positively encouraged, and YAMS is designed to work most efficiently in this mode.</li>
+        <li>There are restrictions on the use of <code>{{[%LANG%]_name}}</code> style syntax. This will work if it appears directly in the document template. However, if this is placed in a document or template variable then it will not work. The reason for this is that MODx tries to evaluate chunks immediately after having evaluated document and template variables. Since there is no event that YAMS can plug into between the two, it is impossible for it to parse the <code>[%LANG%]</code> placeholder beforehand. (This restriction almost certainly applies to EasyLingual too.) It is worth mentioning that in YAMS there are other ways of achieving the same thing. For example, if the naming convention of the chunk is reversed (<code>name_[%LANG%]</code>), then you can do: <code>[[YAMS? &amp;get=`chunk` &amp;from=`name`]]</code>. This should work anywhere.</li>
+        <li>With YAMS, the language group identifier, which is used to name template variable variants, can be different to the language tag (en-gb etc.) Multiple language tags can be applied to a language and they can be in the form of a language code only or a language code followed by a dash and a locale code. The <code>[%lang%]</code> and <code>[%LANG%]</code> compatibility placeholders have been set up to output the primary language tag. To be compatible with EasyLingual, you should restrict yourself to specifying a two digit language code for the primary language tag, and the language group id should be given the same value.</li>
+        <li>YAMS can run in several different modes, allowing you to identify the current language in different ways via the URL. The server name can be different, or the root folder name can be different for example. To be completely compatible with EasyLingual you have to run YAMS in Query Param mode. In this mode the current language is specified by a query parameter. The name of that query parameter can be configured on the 'Other Params' tab. By default it is <code>yams_lang</code>, but for compatibility with EasyLingual you should change it to <code>lang</code>.</li>
+      </ul>
+      <table class="grid" summary="EasyLingual Compatibility Placeholders">
+        <caption>EasyLingual Compatibility placeholders</caption>
+        <thead>
+          <tr>
+            <th class="gridHeader">Placeholder</th>
+            <th class="gridHeader">Monolingual Document</th>
+            <th class="gridHeader">Multilingual Document</th>
+          </tr>
+        </thead>
+        <tbody>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>[%lang%]</code></th>
+            <td class="<?php echo $rowClass;?>">The primary language tag for the current language, unless it is the default language, in which case nothing is output.</td>
+            <td class="<?php echo $rowClass;?>">Same as for monolingual documents.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>[%LANG%]</code></th>
+            <td class="<?php echo $rowClass;?>">The primary language tag for the current language</td>
+            <td class="<?php echo $rowClass;?>">Same as for monolingual documents.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>[%language%]</code></th>
+            <td class="<?php echo $rowClass;?>">The MODx language name for the current language, unless it is the default language, in which case nothing is output.</td>
+            <td class="<?php echo $rowClass;?>">Same as for monolingual documents.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>[%LANGUAGE%]</code></th>
+            <td class="<?php echo $rowClass;?>">The MODx language name for the current language.</td>
+            <td class="<?php echo $rowClass;?>">Same as for monolingual documents.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>[%dir%]</code></th>
+            <td class="<?php echo $rowClass;?>">The language direction ('ltr' or 'rtl') for the current language</td>
+            <td class="<?php echo $rowClass;?>">Same as for monolingual documents.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>[%align%]</code></th>
+            <td class="<?php echo $rowClass;?>">The text alignment ('left' or 'right') for the current language</td>
+            <td class="<?php echo $rowClass;?>">Same as for monolingual documents.</td>
+          </tr>
+
+        </tbody>
+      </table>
+
+    </div>
+
+    <div class="tab-page" id="documentationTabSnippet">
+      <h2 class="tab">Snippet</h2>
+      <script type="text/javsacript">tpResources.addTabPage( document.getElementById( 'documentationTabSnippet') );</script>
+      <p>The YAMS snippet call is used for obtaining and outputting multilingual content stored in document variables, template variables, chunks, snippets or whatever in the correct language. It is also used for repeating content in multiple languages based on templates. By selecting the list, select or selectform options the same approach is used together with a default (but overridable) set of templates to create a hyperlinked list of language versions or a drop down select box of languages to enable switching the current language.</p>
+      <p>The YAMS snippet is in fact a macro for creating special constructs described on the next tab. These constructs include all possible language versions of the content. These blocks are reorganised and optimised as much as possible before a document is cached. This helps to ensure that as little parsing as possible is required to select the correct language content once it has been retrieved from the cache. Note that language selection occurs after a document is retrieved from the cache, so it is not possible to end up caching the wrong language content. <strong>It is important that the YAMS snippet is run as a cacheable at all times, since this will allow pre-cache optimisation to be undertaken.</strong></p>
+      <p>See the How To? tab for examples of its use.</p>
+      <table class="grid" summary="YAMS Snippet">
+        <caption>YAMS Snippet</caption>
+        <thead>
+          <tr>
+            <th class="gridHeader">Parameter</th>
+            <th class="gridHeader">Values</th>
+            <th class="gridHeader">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>" rowspan="7"><code>&amp;get</code></th>
+            <td class="<?php echo $rowClass;?>">
+              <ul>
+                <li><code>chunk</code></li>
+                <li><code>csnippet</code></li>
+                <li><code>usnippet</code></li>
+                <li><code>tv</code></li>
+                <li><code>placeholder</code></li>
+              </ul>
+            </td>
+            <td class="<?php echo $rowClass;?>">These parameters choose from multiple language versions of a <code>{{chunk}}</code>, <code>[[cacheable snippet]]</code>, <code>[!uncacheable snippet!]</code>, <code>[*template variable*]</code> or <code>[+placeholder+]</code> and display the correct one depending on the current language. Use the <code>&amp;from</code> parameter to specify the names of the resources to choose from.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><code>text</code></td>
+            <td class="<?php echo $rowClass;?>">In this case, the <code>&amp;from</code> parameter will accept plain text in multiple languages rather than the name of a resource.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><code>content</code></td>
+            <td class="<?php echo $rowClass;?>">This parameter is used to extract multilingual content from the document or template variables of specific documents. In this case, the <code>&amp;from</code> parameter specifies the the names of the document or template variables from which the content will be extracted and <code>&amp;docid</code> specifies the document identifier. This is primarily for use in the templates of snippets which don't understand multilingual variables. See the YAMS How To for more information.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><code>repeat</code></td>
+            <td class="<?php echo $rowClass;?>">Repeats multiple language versions of content on a page. This option works using the templates specified by the <code>&amp;beforetpl</code>, <code>&amp;repeattpl</code>, <code>&amp;currenttpl</code> and <code>&amp;aftertpl</code> parameters. If a <code>&amp;currenttpl</code> template is specified, then it is used in place of <code>&amp;repeattpl</code> for the current document language. Otherwise, the <code>&amp;repeattpl</code> template is repeated for all languages.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><code>list</code></td>
+            <td class="<?php echo $rowClass;?>">This functions in the same way as <code>&amp;get=`repeat`</code> except that by default it uses the templates in <code>assets/modules/yams/tpl/yams/list/</code> to create a list of hyperlinks to the different language versions of the page. These default templates can be overridden using the <code>&amp;beforetpl</code>, <code>&amp;repeattpl</code>, <code>&amp;currenttpl</code> and <code>&amp;aftertpl</code> parameters.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><code>selectform</code></td>
+            <td class="<?php echo $rowClass;?>">This functions in the same way as <code>&amp;get=`repeat`</code> except that by default it uses the templates in <code>assets/modules/yams/tpl/yams/selectform/</code> to create a select box and form allowing users to change language. These default templates can be overridden using the <code>&amp;beforetpl</code>, <code>&amp;repeattpl</code>, <code>&amp;currenttpl</code> and <code>&amp;aftertpl</code> parameters.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><code>select</code></td>
+            <td class="<?php echo $rowClass;?>">This functions in the same way as <code>&amp;get=`selectform`</code> except that it only outputs the select box, not the form.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>" rowspan="2"><code>&amp;from</code></th>
+            <td class="<?php echo $rowClass;?>"><code><em>resource_name</em></code></td>
+            <td class="<?php echo $rowClass;?>"><p>This parameter enables you to specify the names of the snippets etc. in which the information lies. It has two forms:</p>
+              <p>In the first, simpler form, you specify a name of a resource, say, <code>resource_name</code>. On multilingual pages this will be replaced by a construct that includes one language variant for each active language group. The language variants are assumed to have the name <code>resource_name_<em>id</em></code>, where <code><em>id</em></code> is the language group id. These language variants are subject to normal MODx caching. When a request is made for the document in a given language, all incorrect language variants are stripped out, allowing the user to see only the correct language content.</p>
+            </td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>"><code><em>id1</em>:<em>resource_name1</em>|<em>id2</em>:<em>resource_name1</em>|...</code></td>
+            <td class="<?php echo $rowClass;?>"><p>In the second, more complex form, you specify which languages and what name to use for the resource in each language. Here <em>id1</em>, <em>id2</em>, ..., are the language group ids, and <em>resource_name1</em>, ... are the full corresponding resource names.</p>
+              <p>When using <code>&amp;get=`text`</code>, the resource name can be replaced by text to be output instead, but any pipes should be escaped with a backslash.</p>
+            </td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>&amp;docid</code></th>
+            <td class="<?php echo $rowClass;?>">A document identifier</td>
+            <td class="<?php echo $rowClass;?>">The document identifier of the document from which to obtain the data. This is for use with the <code>&amp;get=`content`</code> parameter.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>&amp;beforetpl</code></th>
+            <td class="<?php echo $rowClass;?>">
+              <em>a chunk name</em><br />
+              <code>@CODE:<em>template code</em></code><br />
+              <code>@FILE:<em>path to template file</em></code>
+            </td>
+            <td class="<?php echo $rowClass;?>">Specifies a template to be placed before a repeat block.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>&amp;repeattpl</code></th>
+            <td class="<?php echo $rowClass;?>">
+              <em>a chunk name</em><br />
+              <code>@CODE:<em>template code</em></code><br />
+              <code>@FILE:<em>path to template file<></em></code>
+            </td>
+            <td class="<?php echo $rowClass;?>">Specifies a template to be repeated once for each active language. Can be overridden by the <code>&amp;currenttpl</code> param.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>&amp;currenttpl</code></th>
+            <td class="<?php echo $rowClass;?>">
+              <em>a chunk name</em><br />
+              <code>@CODE:<em>template code</em></code><br />
+              <code>@FILE:<em>path to template file</em></code>
+            </td>
+            <td class="<?php echo $rowClass;?>">Specifies a template to be used if it is in the same language as the current document. Overrides by the <code>&amp;repeattpl</code>.</td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <th class="<?php echo $rowClass;?>"><code>&amp;aftertpl</code></th>
+            <td class="<?php echo $rowClass;?>">
+              <em>a chunk name</em><br />
+              <code>@CODE:<em>template code</em></code><br />
+              <code>@FILE:<em>path to template file</em></code>
+            </td>
+            <td class="<?php echo $rowClass;?>">Specifies a template to be placed after a repeat block.</td>
+          </tr>
+
+        </tbody>
+      </table>
+
+    </div>
+
+    <div class="tab-page" id="documentationTabConstructs">
+      <h2 class="tab">Constructs</h2>
+      <script type="text/javsacript">tpResources.addTabPage( document.getElementById( 'documentationTabConstructs') );</script>
+      <p>These constructs are used internally by YAMS, which also manages the <code><em>yamsId</em></code> parameter to avoid clashes. They are provided here for reference only. <strong>Under normal circumstances these constructs do not need to be used.</strong> Instead a YAMS snippet call should be used, which will automatically generate the correct constructs.</p>
+      <table class="grid" summary="YAMS Constructs">
+        <caption>YAMS Constructs</caption>
+        <thead>
+          <tr>
+            <th class="gridHeader">Construct</th>
+            <th class="gridHeader">Name</th>
+            <th class="gridHeader">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>">
+              <code>(yams-in:<em>yamsId</em>:<em>langId</em>)...content...(/yams-in:<em>yamsId</em>)</code>
+            </td>
+            <th class="<?php echo $rowClass;?>">YAMS In Language Block</th>
+            <td class="<?php echo $rowClass;?>">
+              <p>Forces the content of the <code>yams-in</code> block to be displayed as if the current language is that specified by the language group identifier <code><em>langId</em></code>.</p>
+              <p>Here <code><em>yamsId</em></code> is a positive integer identifier that should be unique to this block. This allows blocks to be nested. <code><em>langId</em></code> is a language group id.</p>
+            </td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>">
+              <code>(yams-select:<em>yamsId</em>)(lang:<em>yamsId</em>:<em>langId1</em>)...<em>content1</em>...(lang:<em>yamsId</em>:<em>langId2</em>)...<em>content2</em>...(/yams-select:<em>yamsId</em>)</code>
+            </td>
+            <th class="<?php echo $rowClass;?>">YAMS Select Language Block</th>
+            <td class="<?php echo $rowClass;?>">
+              <p>This includes multiple language versions of content in the page. Only the current language version is displayed (except if it is within a yams-repeat block -- see below.) The <code>pagetitle</code>, <code>longtitle</code>, <code>description</code>, <code>introtext</code>, <code>menutitle</code> and <code>content</code> document variables are automatically expanded into this form for the currently defined active languages. For any other content (chunks, tvs, etc.) that need to be expanded into multi-language form a YAMS snippet call can be used to generate the relevant construct.</p>
+              <p>When a Yams Select block is being parsed to select the correct language content the current language is taken to be context dependent. Within Yams In blocks (and branches of Yams Repeat blocks which ultimately resolve to Yams In blocks) the current language switches to the specified language.</p>
+              <p>Here <code><em>yamsId</em></code> is a positive integer identifier that should be unique to this block. This allows blocks to be nested. <code><em>langId</em></code> is a language group id.</p>
+            </td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>">
+              <code>(yams-select+:<em>yamsId</em>)(lang:<em>yamsId</em>:<em>langId1</em>)...<em>content1</em>...(lang:<em>yamsId</em>:<em>langId2</em>)...<em>content2</em>...(/yams-select+:<em>yamsId</em>)</code>
+            </td>
+            <th class="<?php echo $rowClass;?>">YAMS Select Plus Language Block</th>
+            <td class="<?php echo $rowClass;?>">
+              <p>This is the same as the Yams Select block, except that the current language is not context sensitive. So, the current language will always be the language in which the page is being viewed.</p>
+            </td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>">
+              <code>(yams-repeat:<em>yamsId</em>)...<em>content</em>...(current:<em>yamsId</em>)...<em>current language content</em>...(/yams-repeat:<em>yamsId</em>)</code>
+            </td>
+            <th class="<?php echo $rowClass;?>">YAMS Repeat Language Block 1</th>
+            <td class="<?php echo $rowClass;?>">
+              <p>The <code>yams-repeat</code> block will repeat any content once for each active language and is similar to specifying one <code>yams-in</code> block for each active language. The <code>current</code> sub-block is optional, and allows you to specify an alternative template to be used with the current language content.</p>
+              <p>Here <code><em>yamsId</em></code> is a positive integer identifier that should be unique to this block.</p>
+            </td>
+          </tr>
+
+<?php YamsAlternateRow( $rowClass ); ?>
+          <tr>
+            <td class="<?php echo $rowClass;?>">
+              <code>(yams-repeat:<em>yamsId</em>:<em>langId1</em>,<em>langId2</em>,...)...<em>content</em>...(/yams-repeat:<em>yamsId</em>)</code>
+            </td>
+            <th class="<?php echo $rowClass;?>">YAMS Repeat Language Block 2</th>
+            <td class="<?php echo $rowClass;?>">
+              <p>This variation on the YAMS Multi-Language Block will only repeat for the specified language groups. This functionality is not currently accessible via a YAMS Snippet call.</p>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tab-page" id="documentationTabHowTo">
+      <h2 class="tab">How To? (FAQ)</h2>
+      <script type="text/javsacript">tpResources.addTabPage( document.getElementById( 'documentationTabHowTo') );</script>
+      <h3>Make Ditto work with YAMS?</h3>
+      <p>A YAMS extender has been written for ditto which will allow you to use your existing ditto templates, but which will pull in the correct language content depending on how the output is being viewed. To install the ditto extender, simply add the<br />
+        <code>&amp;extenders=`@FILE assets/modules/yams/yams.extender.inc.php`</code><br />
+        parameter to your ditto calls.
+      </p>
+      <p>In addition, it is possible to use<br />
+        <code>&amp;language=`(yams_mname)`</code><br />
+        to make ditto operate and provide error messages in the correct language (as specified by the MODx Language Name field for each language on the Language Settings tab.)
+      </p>
+
+      <h3>Make Wayfinder work with YAMS?</h3>
+
+      <p>Multilingual versions of the default Wayfinder templates are available, which will display the output in the correct language for the current page. To use the multilingual templates, add the following parameters to your snippet call, where the <code><em>mode</em></code> folder is replaced by <code>doc</code> or <code>docr</code>:</p>
+      <p><code>&amp;rowTpl=`@FILE:assets/modules/yams/tpl/wayfinder/<em>mode</em>/row.tpl` &amp;parentRowHereTpl=`@FILE:assets/modules/yams/tpl/wayfinder/<em>mode</em>/parentrowhere.tpl` &amp;parentRowTpl=`@FILE:assets/modules/yams/tpl/wayfinder/<em>mode</em>/parentrow.tpl` &amp;hereTpl=`@FILE:assets/modules/yams/tpl/wayfinder/<em>mode</em>/here.tpl` &amp;innerRowTpl=`@FILE:assets/modules/yams/tpl/wayfinder/<em>mode</em>/innerrow.tpl` &amp;innerHereTpl=`@FILE:assets/modules/yams/tpl/wayfinder/<em>mode</em>/innerhere.tpl` &amp;activeParentRowTpl=`@FILE:assets/modules/yams/tpl/wayfinder/<em>mode</em>/activeparentrow.tpl` &amp;categoryFoldersTpl=`@FILE:assets/modules/yams/tpl/wayfinder/<em>mode</em>/categoryfolders.tpl` &amp;startItemTpl=`@FILE:assets/modules/yams/tpl/wayfinder/<em>mode</em>/startitem.tpl`</code></p>
+      <p>The <code>doc</code> creates full absolute URLs to the documents or weblinks. This should be used if your Wayfinder <code>&amp;useWeblinkUrl</code> setting is FALSE.</p>
+      <p>The <code>docr</code> is the same as <code>doc</code>, but additionally resolves weblinks. This should be used if your Wayfinder <code>&amp;useWeblinkUrl</code> setting is TRUE.</p>
+
+      <h3>Make eForm work with YAMS?</h3>
+
+      <p>The simplest solution for eForm (and any template that contains free text) is to use the text mode of the YAMS snippet to incorporate your multi-language text variants directly. For example:<br />
+        <code>[[YAMS? &amp;get=`text` &amp;from=`en:Your name|fr:Votre nom|...`]]</code>
+      </p>
+      <p>Once again, it is possible to use the <code>&amp;language=`(yams_mname)`</code> parameter with eForm to ensure that it displays error messages in the correct language.
+      </p>
+
+
+      <h3>Make other snippets work with YAMS?</h3>
+
+      <p>If the snippet uses templates, then you will have to convert the template to display the correct language content. This should be as simple as replacing the placeholders for the standard document variables: <code>[+pagetitle+]</code>, <code>[+longtitle+]</code>, <code>[+description+]</code>, <code>[+introtext+]</code>, <code>[+menutitle+]</code> and <code>[+content+]</code> by a YAMS snippet call:<br />
+        <code>[[YAMS? &amp;get=`content` &amp;from=`<em>document_variable_name</em>` &amp;docid=`[+id+]`]]</code><br />
+        and including language variants for free text using the text mode YAMS snippet call as described above.
+      </p>
+      <p>See the Snippet tab for more details.</p>
+
+      <h3>Use a different document template for each language?</h3>
+      <ul>
+        <li>Place the document template for each language within a separate chunk. Give the chunks the names <code>mytemplate_<em>id1</em></code>, <code>mytemplate_<em>id2</em></code>, etc. where <code><em>id1</em></code>, <code><em>id2</em></code>, ... are the language group ids for your active languages.</li>
+        <li>In place of your standard document template, use the following snippet call: <br />
+          <code>[[YAMS? &amp;get=`chunk` &amp;from=`mytemplate`]]</code></li>
+      </ul>
+
+      <h3>Have a language selection site start/landing page?</h3>
+      <ul>
+        <li>Create a new template to use for your landing page.</li>
+        <li>From within the YAMS Module, select that template as not multilingual or multilingual as you see fit. (Select multilingual if you want to let the YAMS decide to guess the language to display on the landing page based on the user's browser settings. See the Other Params tab.)</li>
+        <li>Modify your MODx site start document to use the landing page template</li>
+        <li>Create a chunk containing the following template called LandingPageRepeat, say:<br />
+          <code>&lt;li&gt;&lt;a href=&quot;(yams_docr:<em>docId</em>)&quot; title=&quot;[[YAMS? &amp;get=`content` &amp;from=`pagetitle` &amp;docid=`<em>docId</em>`]]&quot; &gt;(yams_name)&lt;/a&gt;&lt;/li&gt;</code><br />
+          Replace <code><em>docId</em></code> by the identifier of the document that you want the user to be redirected to from you landing page.
+        </li>
+        <li>Somewhere in the template, use the following code to include a hyperlinked list of all available languages:<br />
+            <code>&lt;ul&gt;[[YAMS? &amp;get=`repeat` &amp;repeattpl=`LandingPageRepeat`]]&lt;/ul&gt;</code>
+        </li>
+      </ul>
+
+      <h3>Include all language variants in your site map?</h3>
+      <p>Rather than having one site map per language, you may want to
+        include all language variants of all pages in a single site map.
+        If your site has multilingual pages only, then achieving
+        this is quite simple:</p>
+      <ul>
+        <li>You should have a ditto call that loops over all documents and
+        creates your sitemap <code>url</code> elements. Place your ditto call into a chunk
+        called SitemapRepeat.</li>
+        <li>Make sure that your site map document is monolingual.</li>
+        <li>Within your sitemap document, place the following snippet call: <br />
+          <code>[[YAMS? &amp;get=`repeat` &amp;repeattpl=`SitemapRepeat`]]</code><br />
+          This will repeat your ditto call one time for each language variant.
+        </li>
+      </ul>
+      <p>If you will have mono- and multilingual documents in your
+        sitemap then you will need to be more sophisticated. You will need two
+      ditto calls. One which loops over all documents that are associated
+      with multilingual templates and one which loops over all documents
+      associated with monolingual templates. You can achieve this
+      using Ditto's <code>&amp;filter</code> parameter. The multilingual
+      Ditto call will need to be placed in a chunk and repeated using
+      the YAMS snippet call described above.</p>
+
+      <h3>More to add...</h3>
+    </div>
+
+
+  </div>
+</div>

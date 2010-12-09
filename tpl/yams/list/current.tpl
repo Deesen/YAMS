@@ -1,0 +1,1 @@
+<li class="yams_lang_(yams_id) yams_current">(yams_name)</li>

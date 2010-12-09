@@ -1,0 +1,1 @@
+<option class="yams_lang_(yams_id)" lang="(yams_tag)" xml:lang="(yams_tag)" dir="(yams_dir)" value="(yams_id)">(yams_name) (yams_name_in_(yams_id+))</option>

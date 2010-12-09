@@ -1,0 +1,80 @@
+<div class="tab-page" id="documentationTabAbout">
+  <h2 class="tab">About</h2>
+  <script type="text/javsacript">tpResources.addTabPage( document.getElementById( 'documentationTabAbout') );</script>
+  <p><strong>YAMS</strong>: A highly configurable multilingual solution that doesn't require the user to maintain multiple document trees and which allows the user to work with existing document templates.</p>
+  <p><strong>Author</strong>: <a href="http://modxcms.com/forums/index.php?action=profile;u=12570" target="_blank">PMS</a></p>
+  <p><strong>Version</strong>: <?php echo $yams->GetVersion(); ?> for testing. Check for the latest version in the <a href="http://modxcms.com/extras/package/?package=543" target="_blank">MODx Add-Ons repository</a>.</p>
+  <p><strong>Copyright (and example site)</strong>: <a href="http://nashi.podzone.org/" target="_blank">Nashi Power</a> 2009</p>
+  <p><strong>Licence</strong>: GPL v3</p>
+  <p><strong>Forums</strong>: A list of planned developments for YAMS is maintained in the <a href="http://modxcms.com/forums/index.php/board,381.0.html" target="_blank">MODx Forums support thread</a>.</p>
+  <p><strong>New in this version</strong>:</p>
+  <ul>
+    <li>Updated all the documentation. Note that the advice is now to
+    <strong>always run the YAMS snippet as cacheable</strong> to enable YAMS to
+    optimise the snippet output before the document is cached.</li>
+    <li>Included some more How To's.</li>
+    <li>Modified the server name regexp to allow specification of IP based addresses.</li>
+    <li>Updated the YAMS snippet to allow templatable content to
+    be repeated over all active languages. The list, select and
+    select form options were updated to make them use this templatable
+    approach. These options now use default file-based templates
+    that can be overridden by the user.</li>
+    <li>YAMS placeholders normally decide what the current language
+    is based on context. The placeholder now can be forced to evaluate itself using
+    the document language by appending a + symbol to the placeholder name.
+    For example <code>(yams_id+)</code>. This functionality has also been added to
+    the EasyLingual placeholders for completeness.</li>
+    <li>Added several new placeholders which enable access to other YAMS parameters:
+    <code>(yams_confirm)</code>, <code>(yams_change)</code>,
+    <code>(yams_name_in_..)</code>, <code>(yams_choose)</code></li>
+    <li>Added a <code>yams-in</code> block which forces content to be displayed as if a specified language is currently active.</li>
+    <li>Added an optional (current) sub-block to the yams-repeat syntax.</li>
+    <li><strong>Renamed</strong> <code>yams-multi</code> to <code>yams-repeat</code>, since multi is a bit ambiguous.</li>
+    <li>Added an additional mode (query mode) whereby the current
+    language is identified via a query parameter rather than
+    different server and root names. This enables closer
+    compatibility with EasyLingual.</li>
+    <li>Made it possible to change the page language via GET as well as POST</li>
+    <li>Made the name of the GET/POST parameter used to change language configurable
+      via the module interface.</li>
+    <li>Added an additional pre-parse step on OnLoadDocument before any MODx parsing
+      has taken place and to the OnWebPageComplete event before the document is cached.
+      Pre-parsing evaluates all placeholders before snippets are
+      evaluated so that YAMS placeholders can be used in snippet calls.</li>
+    <li>Brought the page redirection forward to OnParseDocument for efficiency.</li>
+    <li>Brought determination of the current language forward to OnWebPageInit</li>
+    <li>Added an additional optimisation step after the OnLoadDocument,
+      OnParseDocument and OnWebPageComplete events. This optimises
+      away yams-select blocks, leaving a single block in the version
+      of the document that gets cached.
+      This minimises the number of yams-select
+      blocks which need to be parsed during the OnWebPagePrerender event and allows
+      for complete compatibility with EasyLingual. It also allows YAMS placeholders
+      to be used within snippet calls, and these may even be within chunks.</li>
+    <li>Allowed the user to associate a MODx language name with a YAMS language group.
+      For use with snippets like Ditto and eForm.</li>
+    <li>Added a new placeholder, <code>(yams_mname)</code>, which provides access to the MODx
+      language name associated with the current language. This can be used with
+      snippets like ditto and eForm like so:<br />
+      <code>[[Ditto? &amp;language=`(yams_mname)` ... ]]</code></li>
+    <li>Also updated the EasyLingual compatibility placeholders [%language%] and
+      <code>[%LANGUAGE%]</code> to access the specified MODx language name.</li>
+    <li>Fixed incorrect language attribute in language select form.</li>
+    <li>Added language direction attributes to the language list and language select form.</li>
+    <li>Added javascript to the language select drop down to automatically submit language changes. No button presses required.</li>
+    <li>Fixed an error in the ManagerManager whereby it wasn't tabifying deactivated languages</li>
+    <li>Added guidance on multilingual eForm templates.</li>
+  </ul>
+  <p><strong>Description</strong>:</p>
+  <p>YAMS allows users to define language groups and specify certain templates as multilingual. All documents associated with those templates are then accessible in multiple languages via different URLs. The different language versions can be distinguished by root folder name or by server name. Unlike other multilingual solutions, it is NOT necessary to manage multiple document trees with YAMS. Instead, all content for all languages is stored in template variables in the multilingual documents. YAMS has a ManagerManager extension that will organise the template variables for different languages onto different tabs. YAMS is also capable of creating and managing the multilingual template variables automatically. Whether or not a template is multilingual can be configured simply via the module interface.</p>
+  <p>Multi-language content for the main document variables (pagetitle, longtitle, description, introtext, menutitle, content) is handled automatically and transparently and is subject to normal MODx caching. No special syntax is required for these document variables. For example, use <code>[*content*]</code> and the correct language content will appear.</p>
+  <p>In addition, YAMS provides a range of placeholders which provide access to the language tag (for use in <code>lang=&quot;&quot;</code> or <code>xml:lang=&quot;&quot;</code>), the language direction (for use in <code>dir=&quot;&quot;</code>), language name and which allow the insertion of multilingual URLs for the current or any other document.  These can be used throughout the site, including in snippet templates.</p>
+  <p>More advanced functionality is available via the YAMS snippet call. For example, via the snippet call it is possible to repeat content over multiple languages using templates. It is also possible to generate language lists or drop-down boxes in order to change language.</p>
+  <p>Since snippets are generally responsible for parsing the placeholders in templates supplied to them, like <code>[+pagetitle+]</code> for example, they wont automatically know to insert the correct multilingual content. For Ditto I have overcome this by writing an extender which fixes this issue. For the templates of other snippets it is possible to overcome this problem by replacing these placeholders by special YAMS snippet calls, eg:
+    <br />
+    <code>[[YAMS? &amp;get=`content` &amp;from=`pagetitle` &amp;docid=`[+id+]`]]</code><br />
+    I have provided YAMS compatible default templates for Wayfinder which already include the appropriate YAMS snippet calls.</p>
+  <p>As of version 1.0.3, YAMS *should be* fully compatible with <a href="http://modxcms.com/forums/index.php/topic,32807.0.html" target="_blank">EasyLingual</a>. See the Setup tab for instructions on how to migrate a site from EasyLingual to YAMS.</p>
+  <p>YAMS has been developed on MODx Evolution v0.9.6.3 and with the latest version of PHP (5.2.6-3). I haven't made any effort as yet to make it backwards compatible with older versions of either.</p>
+  <p><strong>Credits</strong>: The language icons used in the language select drop down are from <a href="http://www.languageicon.org/" target="_blank">Language Icon</a>, released under the <a href="http://creativecommons.org/licenses/by-sa/3.0/">Attribution-Share Alike 3.0 Unported</a> license. Thanks to @MadeMyDay for having the courage to be one of the first guinea pigs!</p>
+</div>

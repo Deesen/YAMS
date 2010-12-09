@@ -1,0 +1,1 @@
+<li class="yams_lang_(yams_id)"><a href="(yams_docr)" lang="(yams_tag)" xml:lang="(yams_tag)" dir="(yams_dir)" title="(yams_name_in_(yams_id+))">(yams_name)</a></li>

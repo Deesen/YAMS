@@ -1,0 +1,1 @@
+<option class="yams_lang_(yams_id) yams_current" lang="(yams_tag)" xml:lang="(yams_tag)" dir="(yams_dir)" value="(yams_id)" selected="selected">(yams_name)</option>

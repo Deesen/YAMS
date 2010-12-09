@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="[+txt_direction+]" xml:lang="[+txt_lang+]">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=[+modx_charset+]" />
+    <title>[+txt_module_head_title+]</title>
+    <link rel="stylesheet" type="text/css" href="media/style/[+modx_manager_theme+]/style.css" ></link>
+    <link rel="stylesheet" type="text/css" href="[+modx_site_url+]assets/modules/yams/css/yams.screen.css" ></link>
+    <script type="text/javascript" src="media/script/scriptaculous/prototype.js"></script>
+    <script type="text/javascript" src="media/script/scriptaculous/scriptaculous.js"></script>
+    <script type="text/javascript" src="media/script/modx.js" ></script>
+    <script type="text/javascript" src="media/script/cb2.js" ></script>
+    <script type="text/javascript" src="media/script/tabpane.js" ></script>
+    <script type="text/javascript" src="media/script/datefunctions.js" ></script>
+    <script type="text/javascript" src="[+modx_site_url+]assets/modules/yams/js/yams.js" ></script>
+  </head>
+  <body>
+    [+lang_chooser+]
+    <h1 style="text-align: center;">[+txt_module_title+]</h1>
+    <form action="[+form_action+]" method="post" >
+      <fieldset>
+        <div class="sectionHeader">[+txt_header_configuration+]</div>
+        <div class="sectionBody">
+          [+error_messages+]
+          <div class="tab-pane" id="yamsPane">
+            <script type="text/javascript">
+              tpResources = new WebFXTabPane( document.getElementById( 'yamsPane' ) );
+            </script>
+            [+tab_documentation+]
+            [+tab_language_settings+]
+            [+tab_server_config+]
+            [+tab_other_params+]
+            [+tab_multilingual_templates+]
+          </div>
+        </div>
+      </fieldset>
+    </form>
+  </body>
+</html>

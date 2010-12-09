@@ -1,0 +1,2 @@
+<p class="yams_choose_lang_statement"><img src="(yams_server)assets/modules/yams/languageicons/langiconclassic_r9_c22.png" width="16" height="16" alt="(yams_choose)" title="(yams_choose)" />(yams_choose)</p>
+<ul class="yams_list">

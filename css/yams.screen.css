@@ -1,0 +1,43 @@
+/**
+ * Stylesheet for the YAMS module interface
+ * Defines YAMS specific stylings
+ * For use over the top of the MODx default stylesheet
+ *
+ * @author PMS (http://modxcms.com/forums/index.php?action=profile;u=12570)
+ * @copyright Nashi Power (http://nashi.podzone.org/) 2009
+ * @license GPL v3
+ * @package YAMS (http://modxcms.com/extras/package/?package=543)
+ * @see Forum (http://modxcms.com/forums/index.php/board,381.0.html)
+ *
+ */
+
+.lang_chooser {
+  width: 12em;
+  float: right;
+}
+
+.lang_chooser fieldset {
+  width: 95%;
+  margin: 0 0 0.2em 0.2em;
+  border-width: 1px 1px 1px 1px;
+  border-style: solid solid solid solid;
+  padding: 0.1em 0.1em 0.1em 0.1em;
+}
+
+.lang_chooser select, .lang_chooser input {
+  padding: 0 0 0 0;
+  margin: 0 0 0 0;
+  line-height: 1;
+}
+
+.lang_chooser select {
+  width: 9em;
+  border-style: solid solid solid solid;
+  border-width: 1px 1px 1px 1px;
+}
+
+.lang_chooser input {
+  border-style: none none none none;
+  border-width: 0 0 0 0;
+  /*display: none;*/
+}
