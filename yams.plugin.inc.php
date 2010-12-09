@@ -81,8 +81,9 @@ case 'OnWebPageInit':
       {
         // Determine the docId and langId from the alias...
         // The currentLangId is set if a valid document is found.
+        $aliasDecoded = YamsUtils::UrlDecode( $_GET['q'] );
         $docId = $yams->GetDocumentIdentifierUnique(
-          $_GET['q']
+          $aliasDecoded
           , $langId
           );
       }

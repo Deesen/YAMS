@@ -87,7 +87,7 @@ if ( ! class_exists( 'YAMS' ) )
 
     public function GetVersion()
     {
-      return '1.2.0 RC2';
+      return '1.2.0 RC3';
     }
 
     public function GetDuplicateAliasDocIdMono( $alias, $docId, $langId )
@@ -262,7 +262,7 @@ if ( ! class_exists( 'YAMS' ) )
         $trailingSlash = '';
       }
 
-      $decodedQueryParams = array();
+      $get = array();
       $virtualPath = '';
 
       if ( $includeVirtualPath )
@@ -283,22 +283,22 @@ if ( ! class_exists( 'YAMS' ) )
 
       if ( $includeGetParams )
       {
-        $decodedQueryParams = $_GET;
+        $get = YamsUtils::GetGET();
 
         if ( ! YamsUtils::IsValidId( $docId ) )
         {
           return '';
         }
 
-        if ( array_key_exists( $this->itsLangQueryParam, $decodedQueryParams ) )
+        if ( array_key_exists( $this->itsLangQueryParam, $get ) )
         {
-          unset( $decodedQueryParams[ $this->itsLangQueryParam ] );
+          unset( $get[ $this->itsLangQueryParam ] );
         }
         if ( $stripChangeLangQueryParam )
         {
-          if ( array_key_exists( $this->itsChangeLangQueryParam, $decodedQueryParams ) )
+          if ( array_key_exists( $this->itsChangeLangQueryParam, $get ) )
           {
-            unset( $decodedQueryParams[ $this->itsChangeLangQueryParam ] );
+            unset( $get[ $this->itsChangeLangQueryParam ] );
           }
         }
       }
@@ -306,43 +306,43 @@ if ( ! class_exists( 'YAMS' ) )
       if ( $includeQueryParam && $this->itsUseLanguageQueryParam )
       {
         // $decodedQueryParams[ $this->itsLangQueryParam ] = $langId;
-        $decodedQueryParams =
+        $get =
           array( $this->itsLangQueryParam => $langId )
-          + $decodedQueryParams;
+          + $get;
       }
         
-      if ( array_key_exists( 'q', $decodedQueryParams ) )
+      if ( array_key_exists( 'q', $get ) )
       {
-        unset( $decodedQueryParams[ 'q' ] );
+        unset( $get[ 'q' ] );
       }
-      if ( array_key_exists( 'id', $decodedQueryParams ) )
+      if ( array_key_exists( 'id', $get ) )
       {
-        unset( $decodedQueryParams[ 'id' ] );
+        unset( $get[ 'id' ] );
       }
       
       if ( $includeVirtualPath )
       {
         if ( ! $this->itsMODx->config['friendly_urls'] )
         {
-          $decodedQueryParams =
+          $get =
             array( 'id' => $docId )
-            + $decodedQueryParams;
+            + $get;
           // $decodedQueryParams[ 'id' ] = $docId;
         }
       }
       
       $requestURI = '';
-      if ( count( $decodedQueryParams ) > 0 )
+      if ( count( $get ) > 0 )
       {
         $encodedQueryParams = array();
-        foreach ( $decodedQueryParams as $name => $value )
+        foreach ( $get as $name => $value )
         {
           $encodedQueryParams[] =
             YamsUtils::UrlEncode( $name )
               . '='
               . YamsUtils::UrlEncode( $value );
         }
-        unset( $decodedQueryParams );
+        unset( $get );
         $querySeparator = $this->itsInputQuerySeparator;
         $requestURI =
           '?'
@@ -795,9 +795,10 @@ if ( ! class_exists( 'YAMS' ) )
       if ( ! $this->itsUseLanguageQueryParam )
       {
         // First check to see if the lang has been set as a query parameter
-        if ( isset( $_GET[ $this->itsLangQueryParam] ) )
+        $qp = YamsUtils::UrlEncode($this->itsLangQueryParam, FALSE);
+        if ( array_key_exists( $qp, $_GET ) )
         {
-          $langId = $_GET[ $this->itsLangQueryParam ];
+          $langId = YamsUtils::UrlDecode($_GET[ $qp ]);
           if ( $this->IsActiveLangId( $langId ) )
           {
             return $langId;
@@ -1049,7 +1050,7 @@ if ( ! class_exists( 'YAMS' ) )
       {
         $select = array();
         if (
-          ( $get == 'content' )
+          ( $get == 'data' )
           && YamsUtils::IsValidId($docId)
           && ! $this->IsMultilingualDocument( $docId ) )
         {
@@ -2004,9 +2005,10 @@ if ( ! class_exists( 'YAMS' ) )
 
       // If there has been a request to change language,
       // via a get or post, but not a cookie, do so...
-      if ( array_key_exists( $this->itsChangeLangQueryParam, $_GET ) )
+      $qp = YamsUtils::UrlEncode($this->itsChangeLangQueryParam, FALSE);
+      if ( array_key_exists( $qp, $_GET ) )
       {
-        $newLangId = $_GET[ $this->itsChangeLangQueryParam ];
+        $newLangId = YamsUtils::UrlDecode($_GET[ $qp ]);
       }
       elseif ( array_key_exists( $this->itsChangeLangQueryParam, $_POST ) )
       {
@@ -2018,9 +2020,10 @@ if ( ! class_exists( 'YAMS' ) )
       }
       if ( $this->itsUseLanguageQueryParam )
       {
-        if ( array_key_exists( $this->itsLangQueryParam, $_GET ) )
+        $qp =  YamsUtils::UrlEncode( $this->itsLangQueryParam, FALSE);
+        if ( array_key_exists( $qp, $_GET ) )
         {
-          $oldLangId = $_GET[ $this->itsLangQueryParam ];
+          $oldLangId = YamsUtils::UrlDecode( $_GET[ $qp ] );
         }
         else
         {
@@ -2383,9 +2386,10 @@ if ( ! class_exists( 'YAMS' ) )
 
       if ( $this->itsUseLanguageQueryParam )
       {
-        if ( array_key_exists( $this->itsChangeLangQueryParam, $_GET ) )
+        $qp = YamsUtils::UrlEncode($this->itsChangeLangQueryParam, FALSE);
+        if ( array_key_exists( $qp, $_GET ) )
         {
-          $langId = $_GET[ $this->itsChangeLangQueryParam ];
+          $langId = YamsUtils::UrlDecode( $_GET[ $qp ] );
           if ( in_array( $langId, $this->itsActiveLangIds ) )
           {
             $outLangId = $langId;
@@ -2397,9 +2401,10 @@ if ( ! class_exists( 'YAMS' ) )
           $this->itsIsValidMultilingualDocument = FALSE;
           return $this->itsIsValidMultilingualDocument;
         }
-        if ( array_key_exists( $this->itsLangQueryParam, $_GET ) )
+        $qp = YamsUtils::UrlEncode( $this->itsLangQueryParam, FALSE );
+        if ( array_key_exists( $qp, $_GET ) )
         {
-          $langId = $_GET[ $this->itsLangQueryParam ];
+          $langId = YamsUtils::UrlDecode( $_GET[ $qp ] );
           if ( in_array( $langId, $this->itsActiveLangIds ) )
           {
             $outLangId = $langId;
@@ -2433,10 +2438,10 @@ if ( ! class_exists( 'YAMS' ) )
         $noQueryRequestURI = $splitRequestURI[0];
 
         $aliasEscaped = '(index\.php|)';
-        if ( isset( $_GET['q'] ) )
+        if ( array_key_exists('q', $_GET) )
         {
           // Get the alias path...
-          $aliasDecoded = $_GET['q'];
+          $aliasDecoded = YamsUtils::UrlDecode( $_GET['q'] );
           // split the path into subdirectories...
           $aliasArray = preg_split(
             '/' . preg_quote( '/', '/' )  . '/'
@@ -2506,7 +2511,8 @@ if ( ! class_exists( 'YAMS' ) )
           $this->itsIsValidMultilingualDocument = TRUE;
           return $this->itsIsValidMultilingualDocument;
         }
-        $this->GetDocumentIdentifierUnique( $_GET['q'], $outLangId );
+        $aliasDecoded = YamsUtils::UrlDecode( $_GET['q'] );
+        $this->GetDocumentIdentifierUnique( $aliasDecoded, $outLangId );
         $this->itsRequestLangId = $outLangId;
         $this->itsIsValidMultilingualDocument = TRUE;
         return $this->itsIsValidMultilingualDocument;
@@ -2525,10 +2531,10 @@ if ( ! class_exists( 'YAMS' ) )
         $noQueryRequestURI = $splitRequestURI[0];
         
         $aliasEscaped = '(index\.php|)';
-        if ( isset( $_GET['q'] ) )
+        if ( array_key_exists( 'q', $_GET ) )
         {
           // Get the alias path...
-          $aliasDecoded = $_GET['q'];
+          $aliasDecoded = YamsUtils::UrlDecode( $_GET['q'] );
           // split the path into subdirectories...
           $aliasArray = preg_split(
             '/' . preg_quote( '/', '/' )  . '/'
@@ -3033,7 +3039,7 @@ if ( ! class_exists( 'YAMS' ) )
       // Returns true if a redirection has taken place,
       // else false
       // Get the alias path...
-      $aliasDecoded = $_GET['q'];
+      $aliasDecoded = YamsUtils::UrlDecode($_GET['q']);
       // split the path into subdirectories...
       $aliasArray = preg_split(
         '/' . preg_quote( '/', '/' )  . '/'
@@ -3064,7 +3070,7 @@ if ( ! class_exists( 'YAMS' ) )
               '/^'
               . preg_quote(
                   $this->GetMODxSubdirectory( FALSE, TRUE, FALSE )
-                    . '/' . $_GET['q']
+                    . '/' . $aliasDecoded
                   , '/'
                 )
               . '/'
@@ -4531,9 +4537,70 @@ if ( ! class_exists( 'YAMS' ) )
       // Parses (yams_data:{docId:}tv{:phx}) placeholders.
       // Returns true if the content has been changed.
 
+      $documentVariableNullValues = array(
+        'id' => 'sc.id'
+        , 'type' => '\'\''
+        , 'contentType' => '\'\''
+        , 'pagetitle' => '\'\''
+        , 'longtitle' => '\'\''
+        , 'description' => '\'\''
+        , 'alias' => '\'\''
+        , 'link_attributes' => '\'\''
+        , 'published' => 0
+        , 'pub_date' => 0
+        , 'unpub_date' => 0
+        , 'parent' => 0
+        , 'isfolder' => 0
+        , 'introtext' => '\'\''
+        , 'content' => '\'\''
+        , 'richtext' => 0
+        , 'template' => 0
+        , 'menuindex' => 0
+        , 'searchable' => 0
+        , 'cacheable' => 0
+        , 'createdby' => 0
+        , 'createdon' => 0
+        , 'editedby' => 0
+        , 'editedon' => 0
+        , 'deleted' => 0
+        , 'deletedon' => 0
+        , 'deletedby' => 0
+        , 'publishedon' => 0
+        , 'publishedby' => 0
+        , 'menutitle' => '\'\''
+        , 'donthit' => 0
+        , 'haskeywords' => 0
+        , 'hasmetatags' => 0
+        , 'privateweb' => 0
+        , 'privatemgr' => 0
+        , 'content_dispo' => 0
+        , 'hidemenu' => 0
+      );
+
       // First search out all the placeholders...
-      // Place then in an array which has the following structure...
-      // $cache = array(
+      // Place them in cache arrays which have the following structure...
+      //
+      // For document variables...
+      //
+      // $dvInfo = array(
+      //  docId1 => array(
+      //    'dv1' => array(
+      //      'match1' => 'phx1'
+      //       , 'match2' => 'phx2'
+      //       , ...
+      //      )
+      //    'dv2' => array(
+      //      'match1' => 'phx1'
+      //       , 'match2' => 'phx2'
+      //       , ...
+      //      )
+      //    , ...
+      //    )
+      // );
+      //
+      // or for template variables
+      //
+      // $tvInfo = array(
       //  docId1 => array(
       //    'tv1' => array(
       //      'match1' => 'phx1'
@@ -4550,15 +4617,15 @@ if ( ! class_exists( 'YAMS' ) )
       // );
 
       $contentChanged = FALSE;
-
-      $info = array();
+      $tvInfo = array();
+      $dvInfo = array();
       $nMatches = preg_match_all(
         '/\(\(yams_data:(([0-9]{0,13}):)?([^:]+)((:[.*])?)\)\)/U'
           . $this->itsUTF8Modifier
         , $content
         , $matches
         );
-      // Loop over the placeholders and
+      // Loop over the placeholders and fill in the dv and tv caches
       $basepath = $this->itsMODx->config['base_path'] . 'manager/includes';
       for ( $i = 0; $i < $nMatches; $i++ )
       {
@@ -4567,25 +4634,34 @@ if ( ! class_exists( 'YAMS' ) )
         {
           $docId = $this->itsMODx->documentIdentifier;
         }
+        $name = $matches[ 3 ][ $i ];
+        if ( array_key_exists( $name, $documentVariableNullValues ) )
+        {
+          $info = &$dvInfo;
+        }
+        else
+        {
+          $info = &$tvInfo;
+        }
         if ( ! array_key_exists( $docId, $info ) )
         {
           $info[ $docId ] = array();
         }
         $docCache = &$info[ $docId ];
-        $tv = $matches[ 3 ][ $i ];
         $phx = $matches[ 4 ][ $i ];
         $match = '/' . preg_quote( $matches[ 0 ][ $i ], '/') . '/'
           . $this->itsUTF8Modifier;
-        if ( ! array_key_exists( $tv, $docCache ) )
+        if ( ! array_key_exists( $name, $docCache ) )
         {
-          $docCache[ $tv ] = array();
+          $docCache[ $name ] = array();
         }
-        $docCache[ $tv ][ $match ] = $phx;
+        $docCache[ $name ][ $match ] = $phx;
       }
-      // Now loop over the cache array and write an SQL statement
+      
+      // Now loop over the tv array cache and write an SQL statement
       // that will grab the information from the database
       // a maximum of YAMS_DOC_LIMIT docs at a time
-      $docIds = array_keys( $info );
+      $docIds = array_keys( $tvInfo );
       $nDocs = count( $docIds );
       $sc   = $this->itsMODx->getFullTableName('site_content');
       $st   = $this->itsMODx->getFullTableName('site_tmplvars');
@@ -4598,7 +4674,7 @@ if ( ! class_exists( 'YAMS' ) )
         for ( $j = $i; $j < $jMax; $j++ )
         {
           $docId = $docIds[ $j ];
-          $docCache = &$info[ $docId ];
+          $docCache = &$tvInfo[ $docId ];
           $inArray = array_keys( $docCache );
           foreach ( $inArray as &$tvName )
           {
@@ -4647,22 +4723,26 @@ if ( ! class_exists( 'YAMS' ) )
           $tvDisplay = &$row[ 'display' ];
           $tvDisplayParams = &$row[ 'display_params'];
           $tvType = &$row[ 'type'];
-          $matches = &$info[ $docId ][ $tvName ];
-          foreach ( $matches as $match => $phx )
-          {
-            include_once $basepath . '/tmplvars.format.inc.php';
-            include_once $basepath . '/tmplvars.commands.inc.php';
-            $w = '100%';
-            $h = '300';
-            $value = getTVDisplayFormat(
+          $matches = &$tvInfo[ $docId ][ $tvName ];
+          
+          include_once $basepath . '/tmplvars.format.inc.php';
+          include_once $basepath . '/tmplvars.commands.inc.php';
+          $w = '100%';
+          $h = '300';
+          $escapedvalue = YamsUtils::PregQuoteReplacement(
+            getTVDisplayFormat(
               $tvName
               , $tvValue
               , $tvDisplay
               , $tvDisplayParams
               , $tvType
-              );
+              )
+          );
+          
+          foreach ( $matches as $match => $phx )
+          {
             $find[] = $match;
-            $replace[] = YamsUtils::PregQuoteReplacement( $value );
+            $replace[] = $escapedvalue;
             // TO DO: PHx stuff...
           }          
         }
@@ -4676,6 +4756,133 @@ if ( ! class_exists( 'YAMS' ) )
           $contentChanged = TRUE;
         }
       }
+      // release the tv cache...
+      unset($tvInfo);
+
+      // Now loop over the dv array cache and write an SQL statement
+      // that will grab the information from the database
+      // a maximum of YAMS_DOC_LIMIT docs at a time
+      $docIds = array_keys( $dvInfo );
+      $nDocs = count( $docIds );
+      $sc   = $this->itsMODx->getFullTableName('site_content');
+      $dg   = $this->itsMODx->getFullTableName('document_groups');
+      
+      // get document groups for current user
+      $docgrp = $this->itsMODx->getUserDocGroups();
+      if ( is_array( $docgrp ) )
+      {
+          $docgrp = implode( ',', $docgrp );
+      }
+      
+      // get document
+      if ( $this->itsMODx->isFrontend() )
+      {
+        $access = 'sc.privateweb=0';
+      }
+      else
+      {
+        $access = '\'' . $this->itsMODx->db->escape( $_SESSION['mgrRole'] ) . '\'=1 OR sc.privatemgr=0';
+        if ( $docgrp )
+        {
+          $access .= ' OR dg.document_group IN (' . $docgrp . ')';
+        }
+      }
+
+      for ( $i = 0; $i < $nDocs; $i = $i + YAMS_DOC_LIMIT )
+      {
+        $sqlArray = array();
+        $jMax = min( $nDocs, $i + YAMS_DOC_LIMIT );
+        for ( $j = $i; $j < $jMax; $j++ )
+        {
+          $docId = $docIds[ $j ];
+          $docCache = &$dvInfo[ $docId ];
+
+          $colsArray = array();
+          $inArray = array_keys( $docCache );
+          if ( count($inArray) == 0 )
+          {
+            continue;
+          }
+          foreach ( $documentVariableNullValues as $dvName => $dvNullValue )
+          {
+            if ( array_key_exists( $dvName, $docCache)  )
+            {
+              // We need to grab the data for this column from the database
+              $colsArray[] = 'sc.' . $dvName . ' as ' . $dvName;
+            }
+            else
+            {
+              // Just grab a null value instead
+              $colsArray[] = $dvNullValue . ' as ' . $dvName;
+            }
+          }
+          $cols = implode( ', ', $colsArray);
+          unset($colsArray);
+
+          $sqlArray[] =
+            '(SELECT'
+              . ' ' . $cols
+              . ' FROM ' . $sc . ' sc'
+              . ' LEFT JOIN ' . $dg . ' dg ON dg.document = sc.id'
+              . ' WHERE sc.id = ' . $docId
+              . ' AND (' . $access . ')'
+              . ' LIMIT 1)';
+        }
+        if ( count( $sqlArray ) == 0 )
+        {
+          continue;
+        }
+        $sql = implode( ' UNION ', $sqlArray ) . ';';
+        // Grab the data from the database...
+        $result = $this->itsMODx->db->query( $sql );
+        $count = $this->itsMODx->recordCount( $result );
+        // Set up find and replace arrays...
+        $find = array();
+        $replace = array();
+        for ( $j = 0; $j < $count; $j++ )
+        {
+          $row = $this->itsMODx->fetchRow($result);
+          $docId = &$row[ 'id' ];
+          foreach ( $dvInfo[ $docId ] as $dvName => $matches )
+          {
+            $escapedvalue = YamsUtils::PregQuoteReplacement( $row[ $dvName ] );
+            foreach ( $matches as $match => $phx )
+            {
+              $find[] = $match;
+              $replace[] = $escapedvalue;
+              // TO DO: PHx stuff...
+            }
+          }
+          // Delete the rows we have dealt with from the cache...
+          unset( $dvInfo[ $docId ] );
+        }
+        // Loop over the rows which haven't been dealt with.
+        // These may not be accessible to the user, in which case, output
+        // nothing
+        foreach ( $dvInfo as $docId => $docIdInfo )
+        {
+          foreach ( $docIdInfo as $dvName => $matches )
+          {
+            foreach ( $matches as $match => $phx )
+            {
+              $find[] = $match;
+              $replace[] = '';
+              // TO DO: PHx stuff...
+            }
+          }          
+        }
+        if ( count( $find ) == 0 )
+        {
+          continue;
+        }
+        $content = preg_replace( $find, $replace, $content, -1, $nReplacements );
+        if ( $nReplacements > 0 )
+        {
+          $contentChanged = TRUE;
+        }
+      }
+      unset($dvInfo);
+
       return $contentChanged;
     }
     

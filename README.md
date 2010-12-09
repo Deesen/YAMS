@@ -1,7 +1,7 @@
 YAMS: Yet Another Multilingual Solution
 ---------------------------------------
 
-Version: 1.2.0 RC2
+Version: 1.2.0 RC3
 Author: PMS
         The original multilingual alias code was written by mgbowman.
 Date: 2010/06/19
@@ -200,6 +200,16 @@ YAMS in first place - that is before PHx - on all associated events.
 
 7. History
 ----------
+
+Version 1.2.0 RC2
+- Feature: The ((yams_data:...)) placeholder now works with document variables
+  in addition to template variables. As with template variables, if multiple
+  placeholders occur on a single document requesting info from different documents
+  this will be done with a minimal number of mysql queries for efficiency.
+- Bug Fix: [[YAMS? &get=`data` ...]] snippet calls will now correctly output
+  data from the document variable fields for monolingual documents rather than
+  the default language template variable.
+- The [[YAMS? &get=`content` ...]] options is now officially deprecated.
 
 Version 1.2.0 RC2
 - Bug Fix: Fixed a bug whereby YAMS would revert to the default language instead

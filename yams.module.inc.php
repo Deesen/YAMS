@@ -1074,6 +1074,17 @@ if ( count( $errorText ) > 0 )
               </dd>
               </dl>
               <p><strong>New in this version</strong>:</p>
+              <ul>
+<li><strong>Feature</strong>: The ((yams_data:...)) placeholder now works with document variables
+  in addition to template variables. As with template variables, if multiple
+  placeholders occur on a single document requesting info from different documents
+  this will be done with a minimal number of mysql queries for efficiency.</li>
+<li>Bug Fix: [[YAMS? &amp;get=`data` ...]] snippet calls will now correctly output
+  data from the document variable fields for monolingual documents rather than
+  the default language template variable.</li>
+<li>The [[YAMS? &amp;get=`content` ...]] options is now officially deprecated.</li>
+</ul>
+              <p><strong>New in version 1.2.0 RC2</strong>:</p>
 <ul>
 <li><strong>Bug Fix</strong>: Fixed a bug whereby YAMS would revert to the default language instead
   of staying on the current language when using the 'MODx URLs' configuration

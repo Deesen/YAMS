@@ -532,6 +532,28 @@ if ( ! class_exists( 'YamsUtils' ) )
 
     }
 
+    public static function GetGET()
+    {
+      // Gets a correctly encoded version of the GET array
+      $arr = array();
+      foreach ( $_GET as $key => $value )
+      {
+        $arr[self::UrlDecode($key)] = self::UrlDecode($value);
+      }
+      return $arr;
+    }
+
+    public static function GetPOST()
+    {
+      // Gets a correctly encoded version of the POST array
+      $arr = array();
+      foreach ( $_POST as $key => $value )
+      {
+        $arr[self::UrlDecode($key)] = self::UrlDecode($value);
+      }
+      return $arr;
+    }
+
     public static function IsValidId( $id )
     {
       return ctype_digit( (string) $id );
