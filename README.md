@@ -1,3 +1,8 @@
+This add-on needs a new maintainer.
+-----------------------------------
+
+Submit your interest on the issue page to take over this plugin.
+
 YAMS: Yet Another Multilingual Solution
 ---------------------------------------
 
