@@ -195,26 +195,28 @@ case 'OnLoadWebDocument':
 
   break;
 case 'OnParseDocument':
-  // error_log('OnParseDocument');
-  $docId = $modx->documentObject['id'];
-  $template = $modx->documentObject['template'];
-  
-  $isMultilingualDocument =
-    $yams->IsMultilingualDocument(
-      $docId
-//      , $template
-    );
+  if (IN_MANAGER_MODE != 'true') {
+    // error_log('OnParseDocument');
+    $docId = $modx->documentObject['id'];
+    $template = $modx->documentObject['template'];
     
-  $yams->InitialiseParser( $isMultilingualDocument );
-  
-  do {
-    $finished = $yams->PreParse(
-      $modx->documentOutput
-      , $docId
-      , $template
-      , $isMultilingualDocument
+    $isMultilingualDocument =
+      $yams->IsMultilingualDocument(
+        $docId
+//        , $template
       );
-  } while ( ! $finished );
+    
+    $yams->InitialiseParser( $isMultilingualDocument );
+    
+    do {
+      $finished = $yams->PreParse(
+        $modx->documentOutput
+        , $docId
+        , $template
+        , $isMultilingualDocument
+        );
+    } while ( ! $finished );
+  }  
   
   break;
 case 'OnWebPagePrerender':
