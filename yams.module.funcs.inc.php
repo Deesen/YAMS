@@ -169,11 +169,8 @@ if ( !function_exists( 'YamsAddAssociationsForTV' ) )
       , 'templateid' => $modx->db->escape( $templateId )
       );
     $tblName = $modx->getFullTableName( 'site_tmplvar_templates' );
-    $result = $modx->db->insert(
-      $data
-      , $tblName
-      );
-    return $result;
+    $modx->db->insert($data, $tblName);
+    return true;
   }
 }
 
