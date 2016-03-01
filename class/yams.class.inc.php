@@ -87,7 +87,7 @@ if ( ! class_exists( 'YAMS' ) )
 
     public function GetVersion()
     {
-      return '1.2.0 RC3';
+      return '1.2.0 RC4';
     }
 
     public function GetDuplicateAliasDocIdMono( $alias, $docId, $langId )
