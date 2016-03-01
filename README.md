@@ -6,7 +6,7 @@ Submit your interest on the issue page to take over this plugin.
 YAMS: Yet Another Multilingual Solution
 ---------------------------------------
 
-Version: 1.2.0 RC3
+Version: 1.2.0 RC4
 Author: PMS
         The original multilingual alias code was written by mgbowman.
 Date: 2010/06/19
@@ -206,7 +206,10 @@ YAMS in first place - that is before PHx - on all associated events.
 7. History
 ----------
 
-Version 1.2.0 RC2
+Version 1.2.0 RC4
+- replaced deprecated mysql_ functions for PHP5.5+ compatibility
+
+Version 1.2.0 RC3
 - Feature: The ((yams_data:...)) placeholder now works with document variables
   in addition to template variables. As with template variables, if multiple
   placeholders occur on a single document requesting info from different documents
