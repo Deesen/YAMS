@@ -11,6 +11,8 @@
  *
  */
 
+global $mm_version;
+
 require_once( dirname( __FILE__ ) . '/class/yams.class.inc.php' );
 require_once( dirname( __FILE__ ) . '/yams.module.funcs.inc.php' );
 

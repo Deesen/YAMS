@@ -69,10 +69,14 @@ if ( ! function_exists( 'YAMSTVDataToMMName') )
     }
     else
     {
-      if ( is_null( $mmVersion ) )
+      if ( is_null( $mmVersion ))
       {
         // new style references
         return $prefix . $id;
+      }
+      if ( version_compare( $mmVersion, '0.6.1', '>' ) ) {
+          // don´t know what changed again but it works lol
+          return $name;
       }
       // If a managermanager version has been specified, then
       // the output depends on the version...
