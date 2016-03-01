@@ -666,16 +666,9 @@ if ( $updateTVs )
         foreach ( $unAssociatedActiveTemplates as $templateId )
         {
           // Associate template variable tvId with template templateId
-          $newId = YamsAddAssociationForTV( $tvId, $templateId );
-          if ( ! $newId )
-          {
-            $errorText[] = 'Failed to associate template variable ' . $multiLangTV . '" with template number ' . $templateId . ' .';
-          }
-          else
-          {
-            $newlyAssociatedTV = TRUE;
-            $errorText[] = 'Associated template variable "' . $multiLangTV . '" with template number ' . $templateId . ' .';
-          }
+          YamsAddAssociationForTV( $tvId, $templateId );
+          $newlyAssociatedTV = TRUE;
+          $errorText[] = 'Associated template variable "' . $multiLangTV . '" with template number ' . $templateId . ' .';
         }
       }
       else
