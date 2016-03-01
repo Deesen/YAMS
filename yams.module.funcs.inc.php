@@ -118,11 +118,11 @@ if ( !function_exists( 'YamsGetMODxTVs' ) )
     global $modx;
     $tblName = $modx->getFullTableName( 'site_tmplvars' );
     $result = $modx->db->select( 'name,id', $tblName );
-    $nTVs = mysql_num_rows( $result );
+    $nTVs = $modx->db->getRecordCount( $result );
     $modxTVs = array();
     for ( $i = 0; $i < $nTVs; $i++ )
     {
-      $row = mysql_fetch_assoc( $result );
+      $row = $modx->db->getRow( $result );
       $modxTVs[$row['name']] = $row['id'];
     }
     return $nTVs;
@@ -140,11 +140,11 @@ if ( !function_exists( 'YamsGetMODxTemplatesForTV' ) )
       , $tblName
       , 'tmplvarid=' . $modx->db->escape( $tvId )
       );
-    $nTemplates = mysql_num_rows( $result );
+    $nTemplates = $modx->db->getRecordCount( $result );
     $templates = array();
     for ( $i = 0; $i < $nTemplates; $i++ )
     {
-      $row = mysql_fetch_assoc( $result );
+      $row = $modx->db->getRow( $result );
       $templates[$row['templateid']] = $row['rank'];
     }
     return $nTemplates;
