@@ -151,8 +151,11 @@ case 'OnWebPageInit':
     // a page, then forward to that page...
     if ( $evt->name == 'OnPageNotFound' )
     {
-      $this->sendForward( $docId, 'HTTP/1.1 200 OK');
-      break;
+        // Found page is published?
+        if ($this->getPageInfo($docId)) {
+            $this->sendForward($docId, 'HTTP/1.1 200 OK');
+        };
+        break;
     }
   }
 
