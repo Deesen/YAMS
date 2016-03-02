@@ -207,7 +207,11 @@ YAMS in first place - that is before PHx - on all associated events.
 ----------
 
 Version 1.2.0 RC4
-- replaced deprecated mysql_ functions for PHP5.5+ compatibility
+- Code update: Replaced deprecated mysql_ functions for PHP5.5+ compatibility
+- Bug Fix: warning "Failed to associate template variable"
+- Bug Fix: mm__moveFieldToTab (Modx 1.1 / ManagerManager 0.6.2)
+- Bug Fix: For unpublished page + Too many forward attempts
+- Bug Fix: Wrong config encoding
 
 Version 1.2.0 RC3
 - Feature: The ((yams_data:...)) placeholder now works with document variables
