@@ -87,7 +87,7 @@ if ( ! class_exists( 'YAMS' ) )
 
     public function GetVersion()
     {
-      return '1.2.0 RC3';
+      return '1.2.0 RC4';
     }
 
     public function GetDuplicateAliasDocIdMono( $alias, $docId, $langId )
@@ -787,7 +787,7 @@ if ( ! class_exists( 'YAMS' ) )
 
       // Determines the current lang id
       // Also initialises the select and parse lang id
-      if ( $this->itsMODx->insideManager() )
+      if (defined('IN_MANAGER_MODE') && IN_MANAGER_MODE == 'true')
       {
         return FALSE;
       }
@@ -1175,7 +1175,7 @@ if ( ! class_exists( 'YAMS' ) )
         . $orderby;
 
       $info = $this->itsMODx->db->query( $sql );
-      return mysql_num_rows( $info );
+      return $this->itsMODx->db->getRecordCount( $info );
 
     }
 
@@ -3147,7 +3147,7 @@ if ( ! class_exists( 'YAMS' ) )
           $nDocs = $this->itsMODx->recordCount($result);
           for ( $i = 0; $i<$nDocs; $i++ )
           {
-            $aliasInfo = $this->itsMODx->fetchRow($result);
+            $aliasInfo = $this->itsMODx->db->getRow($result);
             $docId = &$aliasInfo[ 'id' ];
             $parentId = &$aliasInfo[ 'parent' ];
             $contentType = &$aliasInfo[ 'contentType' ];
@@ -3219,7 +3219,7 @@ if ( ! class_exists( 'YAMS' ) )
         for ( $i = 0; $i<$nResults; $i++ )
         {
           // This is an array containing 'alias' and 'parent' and 'isfolder'
-          $aliasInfo = $this->itsMODx->fetchRow($result);
+          $aliasInfo = $this->itsMODx->db->getRow($result);
           $docId = &$aliasInfo[ 'id' ];
           $parentId = &$aliasInfo[ 'parent' ];
           $contentType = &$aliasInfo[ 'contentType' ];
@@ -3271,7 +3271,7 @@ if ( ! class_exists( 'YAMS' ) )
         for ( $i = 0; $i<$nDocs; $i++ )
         {
           // This is an array containing 'alias' and 'parent' and 'isfolder'
-          $aliasInfo = $this->itsMODx->fetchRow($result);
+          $aliasInfo = $this->itsMODx->db->getRow($result);
           $docId = &$aliasInfo[ 'id' ];
           $parentId = &$aliasInfo[ 'parent' ];
           $contentType = &$aliasInfo[ 'contentType' ];
@@ -4415,7 +4415,7 @@ if ( ! class_exists( 'YAMS' ) )
           $nChunks = $this->itsMODx->recordCount( $result );
           for ( $j = 0; $j < $nChunks; $j++ )
           {
-            $row = $this->itsMODx->fetchRow( $result );
+            $row = $this->itsMODx->db->getRow( $result );
             $this->itsMODx->chunkCache[ $row['name'] ] = $row['snippet'];
             
             $find[] =
@@ -4716,7 +4716,7 @@ if ( ! class_exists( 'YAMS' ) )
         $replace = array();
         for ( $j = 0; $j < $count; $j++ )
         {
-          $row = $this->itsMODx->fetchRow($result);
+          $row = $this->itsMODx->db->getRow($result);
           $docId = &$row[ 'docid' ];
           $tvName = &$row[ 'name' ];
           $tvValue = &$row[ 'value' ];
@@ -4841,7 +4841,7 @@ if ( ! class_exists( 'YAMS' ) )
         $replace = array();
         for ( $j = 0; $j < $count; $j++ )
         {
-          $row = $this->itsMODx->fetchRow($result);
+          $row = $this->itsMODx->db->getRow($result);
           $docId = &$row[ 'id' ];
           foreach ( $dvInfo[ $docId ] as $dvName => $matches )
           {

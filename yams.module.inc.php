@@ -293,7 +293,7 @@ if ( isset( $_POST['yams_action'] ) )
         $limit = $yams->GetTemplateInfo( $info );
         for ( $i = 0; $i < $limit; $i++ )
         {
-          $row = mysql_fetch_assoc( $info );
+          $row = $modx->db->getRow( $info );
           if (
           isset( $_POST['template,' . $row['id']] )
               && $_POST['template,' . $row['id']] == '1'
@@ -666,16 +666,9 @@ if ( $updateTVs )
         foreach ( $unAssociatedActiveTemplates as $templateId )
         {
           // Associate template variable tvId with template templateId
-          $newId = YamsAddAssociationForTV( $tvId, $templateId );
-          if ( ! $newId )
-          {
-            $errorText[] = 'Failed to associate template variable ' . $multiLangTV . '" with template number ' . $templateId . ' .';
-          }
-          else
-          {
-            $newlyAssociatedTV = TRUE;
-            $errorText[] = 'Associated template variable "' . $multiLangTV . '" with template number ' . $templateId . ' .';
-          }
+          YamsAddAssociationForTV( $tvId, $templateId );
+          $newlyAssociatedTV = TRUE;
+          $errorText[] = 'Associated template variable "' . $multiLangTV . '" with template number ' . $templateId . ' .';
         }
       }
       else
@@ -747,10 +740,10 @@ if ( $updateTVs )
               );
               // For each document copy the content from the
               // document variable to the template variable
-              $nDocs = mysql_num_rows( $result );
+              $nDocs = $modx->db->getRecordCount( $result );
               for ( $i = 0; $i < $nDocs; $i++ )
               {
-                $row = mysql_fetch_assoc( $result );
+                $row = $modx->db->getRow( $result );
                 $id = $row['id'];
                 $tvVal = $row[ $tv ];
 
@@ -787,7 +780,7 @@ if ( $updateTVs )
                     . ' AND contentid='
                     . $modx->db->escape( $id )
                 );
-                $selectNRows = mysql_num_rows( $selectResult );
+                $selectNRows = $modx->db->getRecordCount( $selectResult );
                 if ( $selectNRows > 1)
                 {
                   // error, there should only be 1 result...
@@ -795,7 +788,7 @@ if ( $updateTVs )
                 }
                 if ( $selectNRows == 1 )
                 {
-                  $row = mysql_fetch_assoc( $selectResult );
+                  $row = $modx->db->getRow( $selectResult );
                   if ( $row['value'] != '' )
                   {
                     // Content is already exists
@@ -874,10 +867,10 @@ if ( $updateTVs )
               );
               // For each document copy the content from the
               // document variable to the template variable
-              $nDocs = mysql_num_rows( $result );
+              $nDocs = $modx->db->getRecordCount( $result );
               for ( $i = 0; $i < $nDocs; $i++ )
               {
-                $row = mysql_fetch_assoc( $result );
+                $row = $modx->db->getRow( $result );
                 $id = $row['id'];
                 $tvVal = $row[ $tv ];
 
@@ -898,7 +891,7 @@ if ( $updateTVs )
                     . ' AND contentid='
                     . $modx->db->escape( $id )
                 );
-                $selectNRows = mysql_num_rows( $selectResult );
+                $selectNRows = $modx->db->getRecordCount( $selectResult );
                 if ( $selectNRows > 1)
                 {
                   // error, there should only be 1 result...
@@ -906,7 +899,7 @@ if ( $updateTVs )
                 }
                 if ( $selectNRows == 1 )
                 {
-                  $row = mysql_fetch_assoc( $selectResult );
+                  $row = $modx->db->getRow( $selectResult );
                   if ( $row['value'] != '' )
                   {
                     // Content is already exists
@@ -2498,7 +2491,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                   $insideUl = 0;
                   for( $i=0; $i<$limit; $i++ )
                   {
-                    $row = mysql_fetch_assoc( $info );
+                    $row = $modx->db->getRow( $info );
                     $yes = '';
                     $no = 'selected="selected"';
                     if ( in_array( $row[ 'id' ], $yams->GetActiveTemplates() ) )
