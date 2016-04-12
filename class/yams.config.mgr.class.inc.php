@@ -30,7 +30,7 @@ abstract class YamsConfigMgrAbstract extends Singleton
     // Check if UTF-8 is being used
     // (Assume the encoding of the web page output
     // is the same as the encoding of the manager)
-    YamsUtils::$itsUTF8Modifier == $this->itsEncodingModifierMode;
+    YamsUtils::$itsUTF8Modifier = $this->itsEncodingModifierMode;
   }
 
   public static function GetInstance()
