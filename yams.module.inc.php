@@ -1,13 +1,22 @@
 <?php
 /**
- * Manages the YAMS module interface
+ * YAMS
  *
- * @author PMS (http://modxcms.com/forums/index.php?action=profile;u=12570)
- * @copyright Nashi Power (http://nashi.podzone.org/) 2009
- * @license GPL v3
- * @package YAMS (http://modxcms.com/extras/package/?package=543)
- * @see Forum (http://modxcms.com/forums/index.php/board,381.0.html)
+ * Yet Another Multilingual Solution
  *
+ * @category 	snippet
+ * @version 	1.2.0 RC5
+ * @license 	GPL v3 http://www.gnu.org/licenses/gpl-3.0.html
+ * @internal	@properties
+ * @internal	@modx_category YAMS
+ * @internal    @installset base
+ * @documentation README.md [+site_url+]assets/modules/YAMS/README.md
+ * @documentation https://github.com/Deesen/YAMS
+ * @reportissues https://github.com/Deesen/YAMS
+ * @link        http://modxcms.com/forums/index.php/board,381.0.html
+ * @author      PMS http://modxcms.com/forums/index.php?action=profile;u=12570
+ * @author      Nashi Power
+ * @copyright   Nashi Power
  */
 
 global $modx;

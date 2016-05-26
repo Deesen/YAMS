@@ -6,7 +6,7 @@ Submit your interest on the issue page to take over this plugin.
 YAMS: Yet Another Multilingual Solution
 ---------------------------------------
 
-Version: 1.2.0 RC4
+Version: 1.2.0 RC5 (last update 26.05.2016)
 Author: PMS
         The original multilingual alias code was written by mgbowman.
 Date: 2010/06/19
@@ -129,6 +129,7 @@ System Events:
   - OnLoadWebPageCache
   - OnPageNotFound
   - OnBeforeDocFormSave
+  - OnMakeDocUrl
   Note that YAMS should be moved to first place in the execution order for all
   events to which it is associated.
 
@@ -205,6 +206,10 @@ YAMS in first place - that is before PHx - on all associated events.
 
 7. History
 ----------
+
+Version 1.2.0 RC5
+- MODX 1.1: Plugin uses new event OnMakeDocUrl for constructing URLs (makes eForm &gotoId compatible)
+- added docBlock
 
 Version 1.2.0 RC4
 - Code update: Replaced deprecated mysql_ functions for PHP5.5+ compatibility
