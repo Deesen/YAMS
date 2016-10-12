@@ -11,7 +11,7 @@
  * @internal	@modx_category YAMS
  * @internal    @installset base
  * @documentation README.md [+site_url+]assets/modules/YAMS/README.md
- * @documentation https://github.com/Deesen/YAMS
+ * @documentation https://docs.modx.com/extras/evo/yams
  * @reportissues https://github.com/Deesen/YAMS
  * @link        http://modxcms.com/forums/index.php/board,381.0.html
  * @author      PMS http://modxcms.com/forums/index.php?action=profile;u=12570
@@ -1022,8 +1022,8 @@ if ( count( $errorText ) > 0 )
               <dt><strong>YAMS</strong></dt> <dd>A highly configurable multilingual solution that doesn't require the user to maintain multiple document trees and which allows the user to work with existing document templates.</dd>
               <dt><strong>Version</strong></dt> <dd><?php echo $yams->GetVersion(); ?>. Check for the latest version in the <a href="http://modxcms.com/forums/index.php/topic,36513.msg220349.html" target="_blank">YAMS latest forum post</a>.</dd>
               <dt><strong>Author</strong></dt> <dd><a href="http://modxcms.com/forums/index.php?action=profile;u=12570" target="_blank">PMS</a><br />Original multilingual alias code supplied by <a href="http://modxcms.com/forums/index.php?action=profile;u=21916" target="_blank">mgbowman</a></dd>
-              <dt><strong>Documentation</strong></dt> <dd><a target="_blank" href="http://svn.modxcms.com/docs/display/ADDON/YAMS">YAMS documentation</a>, including setup instructions, placeholders, snippet parameters and How To? guides are now maintained on the MODx Confluence wiki. There is also lots of information embedded in the <a href="http://modxcms.com/forums/index.php/board,381.0.html" target="_blank">YAMS forums</a>.</dd>
-              <dt><strong>Contribute</strong></dt> <dd>You can help by translating the <a target="_blank" href="http://svn.modxcms.com/docs/display/ADDON/YAMS">YAMS documentation</a> into new languages. To do this you'll need to sign up for a <a target="_blank" href="http://svn.modxcms.com/jira/secure/Dashboard.jspa">MODx JIRA account</a>, complete a <a target="_blank" href="http://modxcms.com/develop/contribute/cla.html">MODx Contributer License Agreement</a> and submit it to MODx requesting permission to edit the MODx Confluence wiki.</dd>
+              <dt><strong>Documentation</strong></dt> <dd><a target="_blank" href="https://docs.modx.com/extras/evo/yams">YAMS documentation</a>, including setup instructions, placeholders, snippet parameters and How To? guides are now maintained on the MODx Confluence wiki. There is also lots of information embedded in the <a href="http://modxcms.com/forums/index.php/board,381.0.html" target="_blank">YAMS forums</a>.</dd>
+              <dt><strong>Contribute</strong></dt> <dd>You can help by translating the <a target="_blank" href="https://docs.modx.com/extras/evo/yams">YAMS documentation</a> into new languages. To do this you'll need to sign up for a <a target="_blank" href="http://svn.modxcms.com/jira/secure/Dashboard.jspa">MODx JIRA account</a>, complete a <a target="_blank" href="http://modxcms.com/develop/contribute/cla.html">MODx Contributer License Agreement</a> and submit it to MODx requesting permission to edit the MODx Confluence wiki.</dd>
               <dt><strong>Donate</strong></dt> <dd>To support the time spent developing, maintaining and supporting YAMS, please <a href="http://nashi.podzone.org/donate.xhtml" target="_blank">donate</a>. To purchase support on a more formal basis, please <a href="http://nashi.podzone.org/contact.xhtml" target="_blank">contact Nashi Power</a>.</dd>
               <dt><strong>Copyright (and example site)</strong></dt> <dd><a href="http://nashi.podzone.org/" target="_blank">Nashi Power</a> 2009</dd>
               <dt><strong>Licence</strong></dt> <dd>GPL v3</dd>
@@ -1540,7 +1540,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                 <tbody>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <tr>
-                    <th class="<?php echo $rowClass;?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Language+Settings#YAMSLanguageSettings-MonoServerName" target="_blank">Server Name</a></th>
+                    <th class="<?php echo $rowClass;?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-language-settings#YAMSLanguageSettings-MonoServerName" target="_blank">Server Name</a></th>
                     <td class="<?php echo $rowClass;?>"><?php
                   $name = $yams->GetServerName( NULL );
                   switch ( $mode )
@@ -1560,7 +1560,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <tr>
-                    <th class="<?php echo $rowClass;?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Language+Settings#YAMSLanguageSettings-MonoSiteURL" target="_blank">Site URL</a></th>
+                    <th class="<?php echo $rowClass;?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-language-settings#YAMSLanguageSettings-MonoSiteURL" target="_blank">Site URL</a></th>
                     <td class="<?php echo $rowClass;?>"><?php
                       $siteURL = $yams->GetSiteURL( NULL );
                       echo YamsUtils::Escape( $siteURL );
@@ -1575,7 +1575,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                 <tbody>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <tr>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Language+Settings#YAMSLanguageSettings-LangID" target="_blank">Lang ID</a></th><?php
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-language-settings#YAMSLanguageSettings-LangID" target="_blank">Lang ID</a></th><?php
                       foreach ( $allLangIds as $langId )
                       {
                         ?><td class="<?php echo $rowClass; ?>"><?php echo YamsUtils::Escape( $langId );?></td><?php
@@ -1588,7 +1588,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <tr>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Language+Settings#YAMSLanguageSettings-Tags" target="_blank">Tags</a></th><?php
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-language-settings#YAMSLanguageSettings-Tags" target="_blank">Tags</a></th><?php
                     foreach ( $allLangIds as $langId )
                     {
                       ?><td class="<?php echo $rowClass; ?>"><?php
@@ -1623,7 +1623,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <tr>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Language+Settings#YAMSLanguageSettings-ServerName" target="_blank">Server Name</a></th><?php
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-language-settings#YAMSLanguageSettings-ServerName" target="_blank">Server Name</a></th><?php
                     foreach ( $allLangIds as $langId )
                     {
                       $name = $yams->GetServerName( $langId );
@@ -1662,7 +1662,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <tr>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Language+Settings#YAMSLanguageSettings-RootName" target="_blank">Root Name</a></th><?php
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-language-settings#YAMSLanguageSettings-RootName" target="_blank">Root Name</a></th><?php
                       foreach ( $allLangIds as $langId )
                       {
                         $name = $yams->GetRootName( $langId, FALSE );
@@ -1693,7 +1693,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <tr>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Language+Settings#YAMSLanguageSettings-SiteURL" target="_blank">Site URL</a></th><?php
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-language-settings#YAMSLanguageSettings-SiteURL" target="_blank">Site URL</a></th><?php
                   foreach ( $allLangIds as $langId )
                   {
                     $siteURL = $yams->GetSiteURL( $langId );
@@ -1707,7 +1707,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <tr>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Language+Settings#YAMSLanguageSettings-LanguageDirection" target="_blank">Language Direction</a></th><?php
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-language-settings#YAMSLanguageSettings-LanguageDirection" target="_blank">Language Direction</a></th><?php
                     foreach ( $allLangIds as $langId )
                     {
                       $langDir = $yams->GetLangDir( $langId );
@@ -1757,7 +1757,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <tr>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Language+Settings#YAMSLanguageSettings-Roles" target="_blank">Roles</a></th><?php
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-language-settings#YAMSLanguageSettings-Roles" target="_blank">Roles</a></th><?php
                       foreach ( $allLangIds as $langId )
                       {
                         $rolesAccessList = $yams->GetRolesAccessList( $langId );
@@ -1788,7 +1788,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <tr>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Language+Settings#YAMSLanguageSettings-MODxLanguageName" target="_blank">MODx Language Name</a></th><?php
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-language-settings#YAMSLanguageSettings-MODxLanguageName" target="_blank">MODx Language Name</a></th><?php
                     // Get the listing of all MODx langs...
                     $modxLangFiles = scandir(
                         $modx->config['base_path']
@@ -1871,7 +1871,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <tr>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Language+Settings#YAMSLanguageSettings-SelectLanguageText" target="_blank">Select Language Text</a></th><?php
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-language-settings#YAMSLanguageSettings-SelectLanguageText" target="_blank">Select Language Text</a></th><?php
                     foreach ( $allLangIds as $langId )
                     {
                       $chooseLangText = $yams->GetChooseLangText( $langId );
@@ -1906,7 +1906,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                       ?>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <tr>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Language+Settings#YAMSLanguageSettings-NameforlangId" target="_blank">Name for <?php echo $whichLangId; ?></a></th><?php
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-language-settings#YAMSLanguageSettings-NameforlangId" target="_blank">Name for <?php echo $whichLangId; ?></a></th><?php
                       foreach ( $allLangIds as $inLangId )
                       {
                         $name = $yams->GetLangName( $inLangId, $whichLangId );
@@ -1940,7 +1940,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                       ?>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <tr>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Language+Settings#YAMSLanguageSettings-Namefornew" target="_blank">Name for new</a></th><?php
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-language-settings#YAMSLanguageSettings-Namefornew" target="_blank">Name for new</a></th><?php
                     foreach ( $allLangIds as $inLangId )
                     {
                       ?><td class="<?php echo $rowClass; ?>"></td><?php
@@ -2007,7 +2007,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                 </thead>
                 <tbody>
                   <tr>
-                    <th class="gridHeader" colspan="2"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-MultilingualAliases" target="_blank">Multilingual Aliases</a></th>
+                    <th class="gridHeader" colspan="2"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-MultilingualAliases" target="_blank">Multilingual Aliases</a></th>
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <?php
@@ -2029,7 +2029,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                         <option <?php echo $noText; ?> value="0">Not Unique</option>
                       </select>
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-UniquenessofMultilingualAliases" target="_blank">Uniqueness of Multilingual Aliases</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-UniquenessofMultilingualAliases" target="_blank">Uniqueness of Multilingual Aliases</a></th>
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <?php
@@ -2051,7 +2051,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                         <option <?php echo $noText; ?> value="0">No</option>
                       </select>
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-UseMultilingualAliases" target="_blank">Use Multilingual Aliases?</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-UseMultilingualAliases" target="_blank">Use Multilingual Aliases?</a></th>
                   </tr>
                   <tr>
                     <td align="left" colspan="3"><button name="yams_action" type="submit" value="submit_other_params" >Submit</button></td>
@@ -2060,7 +2060,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                 <tbody>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <tr>
-                    <th class="gridHeader" colspan="2"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-URLRedirectionSettings" target="_blank">URL Redirection Settings</a></th>
+                    <th class="gridHeader" colspan="2"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-URLRedirectionSettings" target="_blank">URL Redirection Settings</a></th>
                   </tr>
                   <tr>
                     <td class="<?php echo $rowClass; ?>">
@@ -2097,7 +2097,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                         <option <?php echo $modeBrowser; ?>  value="browser" >Browser</option>
                       </select>
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-RedirectionMode" target="_blank">Redirection Mode</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-RedirectionMode" target="_blank">Redirection Mode</a></th>
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
 <?php
@@ -2120,7 +2120,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                         <option <?php echo $status[307]; ?> value="307">temporary (307)</option>
                       </select>
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-StatusCodeforRedirectiontoPagesintheDefaultLanguage" target="_blank">Status Code for Redirection to Pages in the Default Language</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-StatusCodeforRedirectiontoPagesintheDefaultLanguage" target="_blank">Status Code for Redirection to Pages in the Default Language</a></th>
                   </tr><?php
                       $hideText = '';
                       $showText = '';
@@ -2154,7 +2154,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                         <option <?php echo $statusNotDefault[307]; ?> value="307">temporary (307)</option>
                       </select>
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-StatusCodeforRedirectiontoPagesinNonDefaultLanguages" target="_blank">Status Code for Redirection to Pages in Non-Default Languages</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-StatusCodeforRedirectiontoPagesinNonDefaultLanguages" target="_blank">Status Code for Redirection to Pages in Non-Default Languages</a></th>
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
 <?php
@@ -2177,7 +2177,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                         <option <?php echo $statusChangeLang[307]; ?> value="307">temporary (307)</option>
                       </select>
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-StatusCodeforChangeofLanguage" target="_blank">Status Code for Change of Language</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-StatusCodeforChangeofLanguage" target="_blank">Status Code for Change of Language</a></th>
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
 <?php
@@ -2187,7 +2187,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                     <td class="<?php echo $rowClass; ?>">
                       <input type="text" name="yams_accept_modx_url_doc_ids" value="<?php echo $acceptMODxURLDocIdsString; ?>" />
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-MODxURLs" target="_blank">MODx URLs</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-MODxURLs" target="_blank">MODx URLs</a></th>
                   </tr>
                   <tr>
                     <td align="left" colspan="3"><button name="yams_action" type="submit" value="submit_other_params" >Submit</button></td>
@@ -2195,7 +2195,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                 </tbody>
                 <tbody>
                   <tr>
-                    <th class="gridHeader" colspan="2"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-DocumentLayoutSettings" target="_blank">Document Layout Settings</a></th>
+                    <th class="gridHeader" colspan="2"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-DocumentLayoutSettings" target="_blank">Document Layout Settings</a></th>
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <?php
@@ -2217,7 +2217,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                         <option <?php echo $showText; ?> value="0">Show Fields</option>
                       </select>
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-HideRedundantFields" target="_blank">Hide Redundant Fields</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-HideRedundantFields" target="_blank">Hide Redundant Fields</a></th>
                   </tr>
                   <?php
                   $listText = '';
@@ -2239,7 +2239,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                         <option <?php echo $listText; ?> value="0">List TVs</option>
                       </select>
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-DocumentLayout" target="_blank">Document Layout</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-DocumentLayout" target="_blank">Document Layout</a></th>
                   </tr>
                   <?php
                   $yesText = '';
@@ -2261,7 +2261,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                         <option <?php echo $noText; ?> value="0">No</option>
                       </select>
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-AutoupdateManagerDocumentTitle" target="_blank">Autoupdate Manager Document Title</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-AutoupdateManagerDocumentTitle" target="_blank">Autoupdate Manager Document Title</a></th>
                   </tr>
                   <tr>
                     <td align="left" colspan="3"><button name="yams_action" type="submit" value="submit_other_params" >Submit</button></td>
@@ -2269,7 +2269,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                 </tbody>
                 <tbody>
                   <tr>
-                    <th class="gridHeader" colspan="2"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-URLFormatting" target="_blank">URL Formatting</a></th>
+                    <th class="gridHeader" colspan="2"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-URLFormatting" target="_blank">URL Formatting</a></th>
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <?php
@@ -2291,7 +2291,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                         <option <?php echo $noText; ?> value="0">No</option>
                       </select>
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-UseMODxstripAlias" target="_blank">Use MODx stripAlias</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-UseMODxstripAlias" target="_blank">Use MODx stripAlias</a></th>
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <?php
@@ -2313,7 +2313,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                         <option <?php echo $noText; ?> value="0">No</option>
                       </select>
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-UseMimetypedependentsuffixes%3F" target="_blank">Use Mime-type dependent suffixes?</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-UseMimetypedependentsuffixes%3F" target="_blank">Use Mime-type dependent suffixes?</a></th>
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <?php
@@ -2335,7 +2335,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                         <option <?php echo $noText; ?> value="0">Don't include filename</option>
                       </select>
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-Sitestartfilename" target="_blank">Site start filename</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-Sitestartfilename" target="_blank">Site start filename</a></th>
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <?php
@@ -2357,7 +2357,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                         <option <?php echo $noText; ?> value="0">Leave as files</option>
                       </select>
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-Containersasfolders" target="_blank">Containers as folders</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-Containersasfolders" target="_blank">Containers as folders</a></th>
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <tr>
@@ -2367,7 +2367,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                       ?>
                       <input name="yams_lang_query_param" type="text" value="<?php echo YamsUtils::Escape( $langQueryParam ); ?>"></input>
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-ConfirmLanguageParam" target="_blank">Confirm Language Param</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-ConfirmLanguageParam" target="_blank">Confirm Language Param</a></th>
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <tr>
@@ -2377,7 +2377,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                       ?>
                       <input name="yams_change_lang_query_param" type="text" value="<?php echo YamsUtils::Escape( $changeLangQueryParam ); ?>"></input>
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-ChangeLanguageParam" target="_blank">Change Language Param</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-ChangeLanguageParam" target="_blank">Change Language Param</a></th>
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <tr>
@@ -2387,7 +2387,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                       ?>
                       <input name="yams_modx_subdirectory" type="text" value="<?php echo YamsUtils::Escape( $MODxSubdirectory ); ?>"></input>
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-MODxSubdirectory" target="_blank">MODx Subdirectory</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-MODxSubdirectory" target="_blank">MODx Subdirectory</a></th>
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <tr>
@@ -2415,7 +2415,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                         <option <?php echo $modeResolve; ?>  value="resolve" >Resolve</option>
                       </select>
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-URLConversionMode" target="_blank">URL Conversion Mode</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-URLConversionMode" target="_blank">URL Conversion Mode</a></th>
                   </tr>
                   <tr>
                     <td align="left" colspan="3"><button name="yams_action" type="submit" value="submit_other_params" >Submit</button></td>
@@ -2423,7 +2423,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                 </tbody>
                 <tbody>
                   <tr>
-                    <th class="gridHeader" colspan="2"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-EasylingualCompatibility" target="_blank">Easylingual Compatibility</a></th>
+                    <th class="gridHeader" colspan="2"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-EasylingualCompatibility" target="_blank">Easylingual Compatibility</a></th>
                   </tr>
 <?php YamsAlternateRow( $rowClass ); ?>
                   <?php
@@ -2445,7 +2445,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                         <option <?php echo $noText; ?> value="0">No</option>
                       </select>
                     </td>
-                    <th class="<?php echo $rowClass; ?>"><a href="http://svn.modxcms.com/docs/display/ADDON/YAMS+Configuration#YAMSConfiguration-EasylingualCompatibilityMode" target="_blank">Easylingual Compatibility Mode</a></th>
+                    <th class="<?php echo $rowClass; ?>"><a href="https://docs.modx.com/extras/evo/yams/yams-english-documentation/yams-configuration#YAMSConfiguration-EasylingualCompatibilityMode" target="_blank">Easylingual Compatibility Mode</a></th>
                   </tr>
                   <tr>
                     <td align="left" colspan="3"><button name="yams_action" type="submit" value="submit_other_params" >Submit</button></td>

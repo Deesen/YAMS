@@ -39,25 +39,30 @@ to develop multilingual websites. The following features are currently implement
   ways YAMS could be set-up to refer to language variants of a single document:
 
   Multilingual aliases:
-    * http://server_name/my-doc-en.html
-    * http://server_name/mon-doc-fr.html
+  
+  - http://server_name/my-doc-en.html
+  - http://server_name/mon-doc-fr.html
 
   Server name mode only:
-    * http://en.server_name.com/mydoc.html
-    * http://fr.server_name.com/mydoc.html
+  
+  - http://en.server_name.com/mydoc.html
+  - http://fr.server_name.com/mydoc.html
 
   Root name mode only:
-    * http://server_name.com/en/mydoc.html
-    * http://server_name.com/fr/mydoc.html
+  
+  - http://server_name.com/en/mydoc.html
+  - http://server_name.com/fr/mydoc.html
 
   Root name mode only, with one language at root:
-    * http://server_name.com/mydoc.html
-    * http://server_name.com/fr/mydoc.html
+  
+  - http://server_name.com/mydoc.html
+  - http://server_name.com/fr/mydoc.html
 
   Server name mode, root name mode, friendly alias paths, multilingual aliases
   and multibyte URLs:
-    * http://en.server_name.com/england/folder/mydoc.html
-    * http://fr.server_name.com/la-france/répertoire/mon-doc.html
+  
+  - http://en.server_name.com/england/folder/mydoc.html
+  - http://fr.server_name.com/la-france/répertoire/mon-doc.html
 
 - Additional URL configurability, including ability to hide alias of site start
   document, SEO friendly redirection, multibyte URLs and content-type dependent
@@ -158,7 +163,7 @@ to obtain a tabbed document interface then follow the instructions below (point
 5.) to set it up.
 
 7. Browse to
-   http://svn.modxcms.com/docs/display/ADDON/YAMS+Setup
+   https://docs.modx.com/extras/evo/yams
    for help setting up your multilingual site.
 
 5. ManagerManager Setup
@@ -207,9 +212,13 @@ YAMS in first place - that is before PHx - on all associated events.
 7. History
 ----------
 
+Todo:
+- correct markdown of README.md
+
 Version 1.2.0 RC5
 - MODX 1.1: Plugin uses new event OnMakeDocUrl for constructing URLs (makes eForm &gotoId compatible)
 - added docBlock
+- updated links to documentation
 
 Version 1.2.0 RC4
 - Code update: Replaced deprecated mysql_ functions for PHP5.5+ compatibility

@@ -11,7 +11,7 @@
  * @internal	@modx_category YAMS
  * @internal    @installset base
  * @documentation README.md [+site_url+]assets/modules/YAMS/README.md
- * @documentation https://github.com/Deesen/YAMS
+ * @documentation https://docs.modx.com/extras/evo/yams
  * @reportissues https://github.com/Deesen/YAMS
  * @link        http://modxcms.com/forums/index.php/board,381.0.html
  * @author      PMS http://modxcms.com/forums/index.php?action=profile;u=12570
