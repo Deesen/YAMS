@@ -2869,7 +2869,7 @@ if ( ! class_exists( 'YAMS' ) )
       return NULL;
 //      $sql = $this->BuildGenericIdentifierQuery( $virtualAlias, $langId );
 //      $result = $this->itsMODx->db->query($sql);
-//      $count = $this->itsMODx->recordCount($result);
+//      $count = $this->itsMODx->db->getRecordCount($result);
 //
 //      $modxCharset = $this->itsMODx->config['modx_charset'];
 //
@@ -3144,7 +3144,7 @@ if ( ! class_exists( 'YAMS' ) )
             . ' WHERE sc.id IN (' . $monoDocList . ')'
             . ' AND sc.deleted = 0)';
           $result = $this->itsMODx->db->query( $monoSQL );
-          $nDocs = $this->itsMODx->recordCount($result);
+          $nDocs = $this->itsMODx->db->getRecordCount($result);
           for ( $i = 0; $i<$nDocs; $i++ )
           {
             $aliasInfo = $this->itsMODx->db->getRow($result);
@@ -3215,7 +3215,7 @@ if ( ! class_exists( 'YAMS' ) )
             . ')';
         }
         $result = $this->itsMODx->db->query( $multiSQL );
-        $nResults = $this->itsMODx->recordCount( $result );
+        $nResults = $this->itsMODx->db->getRecordCount( $result );
         for ( $i = 0; $i<$nResults; $i++ )
         {
           // This is an array containing 'alias' and 'parent' and 'isfolder'
@@ -3267,7 +3267,7 @@ if ( ! class_exists( 'YAMS' ) )
           . ' FROM ' . $sc . ' sc'
           . ' WHERE sc.deleted = 0';
         $result = $this->itsMODx->db->query( $sql );
-        $nDocs = $this->itsMODx->recordCount($result);
+        $nDocs = $this->itsMODx->db->getRecordCount($result);
         for ( $i = 0; $i<$nDocs; $i++ )
         {
           // This is an array containing 'alias' and 'parent' and 'isfolder'
@@ -4412,7 +4412,7 @@ if ( ! class_exists( 'YAMS' ) )
            . ' FROM ' . $tableName
            . ' WHERE name IN (' . $chunkNamesList . ');';
           $result = $this->itsMODx->db->query( $sql );
-          $nChunks = $this->itsMODx->recordCount( $result );
+          $nChunks = $this->itsMODx->db->getRecordCount( $result );
           for ( $j = 0; $j < $nChunks; $j++ )
           {
             $row = $this->itsMODx->db->getRow( $result );
@@ -4710,7 +4710,7 @@ if ( ! class_exists( 'YAMS' ) )
         $sql = implode( ' UNION ', $sqlArray ) . ';';
         // Grab the data from the database...
         $result = $this->itsMODx->db->query( $sql );
-        $count = $this->itsMODx->recordCount( $result );
+        $count = $this->itsMODx->db->getRecordCount( $result );
         // Set up find and replace arrays...
         $find = array();
         $replace = array();
@@ -4835,7 +4835,7 @@ if ( ! class_exists( 'YAMS' ) )
         $sql = implode( ' UNION ', $sqlArray ) . ';';
         // Grab the data from the database...
         $result = $this->itsMODx->db->query( $sql );
-        $count = $this->itsMODx->recordCount( $result );
+        $count = $this->itsMODx->db->getRecordCount( $result );
         // Set up find and replace arrays...
         $find = array();
         $replace = array();
