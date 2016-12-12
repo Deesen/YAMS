@@ -337,10 +337,18 @@ if ( ! class_exists( 'YAMS' ) )
         $encodedQueryParams = array();
         foreach ( $get as $name => $value )
         {
-          $encodedQueryParams[] =
-            YamsUtils::UrlEncode( $name )
-              . '='
-              . YamsUtils::UrlEncode( $value );
+            // Allow using array in $_GET-parameters i.e. to allow using array-params with AjaxSearch
+            if( is_array( $value )) {
+                foreach( $value as $tmp=>$tmpValue ) {
+                    $decodedQueryParams[ YamsUtils::UrlEncode( $name ).'[]' ] = YamsUtils::UrlEncode($tmpValue);
+                };
+            } else {
+                $encodedQueryParams[] =
+                    YamsUtils::UrlEncode( $name )
+                      . '='
+                      . YamsUtils::UrlEncode( $value );
+            };
+          
         }
         unset( $get );
         $querySeparator = $this->itsInputQuerySeparator;
