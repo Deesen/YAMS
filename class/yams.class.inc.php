@@ -340,7 +340,7 @@ if ( ! class_exists( 'YAMS' ) )
             // Allow using array in $_GET-parameters i.e. to allow using array-params with AjaxSearch
             if( is_array( $value )) {
                 foreach( $value as $tmp=>$tmpValue ) {
-                    $decodedQueryParams[ YamsUtils::UrlEncode( $name ).'[]' ] = YamsUtils::UrlEncode($tmpValue);
+                    $encodedQueryParams[] = YamsUtils::UrlEncode( $name.'[]' ).'='.YamsUtils::UrlEncode($tmpValue);
                 };
             } else {
                 $encodedQueryParams[] =
