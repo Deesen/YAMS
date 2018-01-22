@@ -87,7 +87,7 @@ if ( ! class_exists( 'YAMS' ) )
 
     public function GetVersion()
     {
-      return '1.2.0 RC5';
+      return '1.2.0 RC6';
     }
 
     public function GetDuplicateAliasDocIdMono( $alias, $docId, $langId )
@@ -2484,7 +2484,7 @@ if ( ! class_exists( 'YAMS' ) )
           $this->itsIsValidMultilingualDocument = FALSE;
           return $this->itsIsValidMultilingualDocument;
         }
-        $urlRootName = $matches[2];
+        $urlRootName = isset($matches[2]) ? $matches[2] : NULL; // https://github.com/Deesen/YAMS/issues/21
 
         $matchedLangs = array();
 
