@@ -1,17 +1,13 @@
-This add-on needs a new maintainer.
------------------------------------
-
-Submit your interest on the issue page to take over this plugin.
-
 YAMS: Yet Another Multilingual Solution
 ---------------------------------------
 
-Version: 1.2.0 RC5 (last update 26.05.2016)
-Author: PMS
-        The original multilingual alias code was written by mgbowman.
+Version: 1.2.0 RC6 (last update 22.01.2018)
+
+Author: PMS  
+The original multilingual alias code was written by mgbowman.
 Date: 2010/06/19
 
-** Please check that the plugin is activated on the correct events ***
+**Please check that the plugin is activated on the correct events**
 
 Notes: This is a bug fix release and at the time of release is the most stable
 version. All users are recommended to upgrade to this version.
@@ -24,7 +20,7 @@ version. All users are recommended to upgrade to this version.
 6. PHx Setup
 7. History
 
-1. Notes
+1\. Notes
 --------
 
 YAMS is a highly configurable extension to MODx that is designed to make it easy
@@ -76,17 +72,19 @@ to develop multilingual websites. The following features are currently implement
 - Extensions for Ditto, Wayfinder, Jot and eForm.
 - Possible to create custom multilingual template variables.
 
-2. Pre-requisites
+
+2\. Pre-requisites
 -----------------
 
-YAMS has been developed on MODx v0.9.6.3 and with PHP >= 5.2.6-3.
+YAMS has been developed on MODx v0.9.6.3+ and EVO 1.3+, with PHP >= 5.2.6-3.
 It will not work on servers running PHP 4.
 
 ManagerManager is not required for YAMS to function, but is recommended. YAMS
 can use ManagerManager to hide redundant document variables and organise the
 language fields in the document view.
 
-3. Upgrade/Update Instructions
+
+3\. Upgrade/Update Instructions
 ------------------------------
 
 To upgrade/update from a previous version do the following:
@@ -108,7 +106,7 @@ To upgrade/update from a previous version do the following:
    If there are any problems, then you can simply roll back be renaming your
    directories to reinstate your previous yams directory.
 
-4. Installation Instructions
+4\. Installation Instructions
 ----------------------------
 
 1. Copy the yams directory to assets/modules/yams
@@ -166,7 +164,7 @@ to obtain a tabbed document interface then follow the instructions below (point
    https://docs.modx.com/extras/evo/yams
    for help setting up your multilingual site.
 
-5. ManagerManager Setup
+5\. ManagerManager Setup
 -----------------------
 
 To set up ManagerManager so that it provides a tabbed document interface, please
@@ -192,7 +190,7 @@ do the following:
    If you are already using custom ManagerManager rules, then it is advisable to
    place the YAMS require line at the end of the rules.
 
-6. PHx Setup
+6\. PHx Setup
 ------------
 
 If using the PHx snippet then please note the following. For some reason, a file
@@ -209,11 +207,14 @@ if ( ! class_exists( 'PHxParser' ) )
 Also, please remember that the Plugin Execution Order must be edited to place
 YAMS in first place - that is before PHx - on all associated events.
 
-7. History
+7\. History
 ----------
 
-Todo:
-- correct markdown of README.md
+**Version 1.2.0 RC6**
+- automatically create category YAMS and add YAMS-TVs to it
+- fixed links to documentation
+- fixed UrlEncode() $_GET-arryas
+- replaced deprecated SQL-functions
 
 Version 1.2.0 RC5
 - MODX 1.1: Plugin uses new event OnMakeDocUrl for constructing URLs (makes eForm &gotoId compatible)
