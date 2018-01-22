@@ -795,6 +795,7 @@ abstract class YamsConfigMgrAbstract extends Singleton
     $contents .=
       '?>';
 
+    if(!is_writable(dirname( __FILE__ ) . '/../yams.config.inc.php')) return FALSE;
 
     $file = fopen(
       dirname( __FILE__ ) . '/../yams.config.inc.php'
