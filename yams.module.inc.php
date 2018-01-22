@@ -587,8 +587,12 @@ if ( $updateTVs )
 //      , 'menutitle' => 'Menu Title'
 //      , 'content' => 'Content'
 //  );
+	
+	// Prepare category-ID for TVs
+	$categoryId = checkCategory('YAMS');
+	$categoryId = $categoryId ? $categoryId : newCategory('YAMS');
 
-  // Loop over the template variables
+	// Loop over the template variables
   foreach ( $tvs as $tv )
   {
     // Loop over the active languages
@@ -621,6 +625,7 @@ if ( $updateTVs )
               , 'elements' => ''
               , 'display' => ''
               , 'rank' => 0
+              , 'category' => $categoryId
               , 'locked' => 0
           );
           $tblName = $modx->getFullTableName('site_tmplvars');

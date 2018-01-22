@@ -10,6 +10,7 @@
  *
  */
 
+require_once( MODX_MANAGER_PATH . '/includes/categories.inc.php' );
 require_once( dirname( __FILE__ ) . '/class/yams.utils.class.inc.php' );
 require_once( dirname( __FILE__ ) . '/class/yams.class.inc.php' );
 
