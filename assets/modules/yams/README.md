@@ -1,7 +1,7 @@
 YAMS: Yet Another Multilingual Solution
 ---------------------------------------
 
-Version: 1.2.0 RC6 (last update 22.01.2018)
+Version: 1.2.0 RC7 (last update 19.04.2018)
 
 Author: PMS  
 The original multilingual alias code was written by mgbowman.
@@ -109,6 +109,13 @@ To upgrade/update from a previous version do the following:
 4\. Installation Instructions
 ----------------------------
 
+#### Installation via Extras
+
+You can install YAMS via Extras. If you do so please assure, that YAMS is at the first
+place in the execution order of all plugin-events which it is associated to.
+
+#### Manual Installation
+
 1. Copy the yams directory to assets/modules/yams
 
 2. Make sure that the assets/modules/yams directory is writeable by the
@@ -123,7 +130,7 @@ Plugin name:
 Description:
   Yet Another Multilingual Solution Plugin
 Plugin code:
-  require( $modx->config['base_path'] . 'assets/modules/yams/yams.plugin.inc.php');
+  require( MODX_BASE_PATH . 'assets/modules/yams/yams.plugin.inc.php');
 System Events:
   - OnLoadWebDocument
   - OnParseDocument
@@ -145,7 +152,7 @@ Description:
 Snippet code:
   // The following line needs to be placed between the opening and closing php
   // markers
-  require( $modx->config['base_path'] . 'assets/modules/yams/yams.snippet.inc.php' );
+  require( MODX_BASE_PATH . 'assets/modules/yams/yams.snippet.inc.php' );
 
 5. Within MODx under Modules>Manage Modules create a new module:
 
@@ -154,7 +161,7 @@ Module name:
 Description:
   Yet Another Multilingual Solution
 Module code:
-  require_once( $modx->config['base_path'] . 'assets/modules/yams/yams.module.inc.php' );
+  require_once( MODX_BASE_PATH . 'assets/modules/yams/yams.module.inc.php' );
 
 6. Reload the page to update the manager view. If you want to use ManagerManager
 to obtain a tabbed document interface then follow the instructions below (point
@@ -185,7 +192,7 @@ do the following:
 3. Under Elements > Manage Elements > Chunks, create a chunk called mm_rules and
    add the following line:
 
-   require( $modx->config['base_path'] . 'assets/modules/yams/yams.mm_rules.inc.php' );
+   require( MODX_BASE_PATH . 'assets/modules/yams/yams.mm_rules.inc.php' );
 
    If you are already using custom ManagerManager rules, then it is advisable to
    place the YAMS require line at the end of the rules.
@@ -209,8 +216,11 @@ YAMS in first place - that is before PHx - on all associated events.
 
 7\. History
 ----------
+**Version 1.2.0 RC7**
+- fixed issue #23 - vericode not showing up in eForm on Evo 1.4.x 
+- added install-tpl files for easier installation via Extras-Repository 
 
-**Version 1.2.0 RC6**
+Version 1.2.0 RC6
 - automatically create category YAMS and add YAMS-TVs to it
 - fixed links to documentation
 - fixed UrlEncode() $_GET-arryas

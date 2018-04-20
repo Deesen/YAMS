@@ -5,7 +5,7 @@
  * Yet Another Multilingual Solution
  *
  * @category 	snippet
- * @version 	1.2.0 RC6
+ * @version 	1.2.0 RC7
  * @license 	GPL v3 http://www.gnu.org/licenses/gpl-3.0.html
  * @internal	@properties
  * @internal	@modx_category YAMS
