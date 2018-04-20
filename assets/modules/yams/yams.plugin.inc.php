@@ -5,7 +5,7 @@
  * Yet Another Multilingual Solution
  *
  * @category 	snippet
- * @version 	1.2.0 RC6
+ * @version 	1.2.0 RC7
  * @license 	GPL v3 http://www.gnu.org/licenses/gpl-3.0.html
  * @internal	@properties
  * @internal	@modx_category YAMS
@@ -32,6 +32,7 @@ switch ( $evt->name )
 {
 case 'OnPageNotFound':
 case 'OnWebPageInit':
+  if(MODX_API_MODE) return; // https://github.com/Deesen/YAMS/issues/23
   $docIdFoundByYAMS = TRUE;
 
   // If the site is offline and we have arrived here
