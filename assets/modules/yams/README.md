@@ -1,7 +1,7 @@
 YAMS: Yet Another Multilingual Solution
 ---------------------------------------
 
-Version: 1.2.0 RC7 (last update 19.04.2018)
+Version: 1.3.0 (last update 03/06/2020)
 
 Author: PMS  
 The original multilingual alias code was written by mgbowman.
@@ -9,8 +9,11 @@ Date: 2010/06/19
 
 **Please check that the plugin is activated on the correct events**
 
-Notes: This is a bug fix release and at the time of release is the most stable
-version. All users are recommended to upgrade to this version.
+Notes:
+- This is a compatibility with Evolution CMS v2+ release and at the time of release is the most stable
+version.
+- All Evolution CMS v1.4+ users are recommended to upgrade to this version.
+- All Evolution CMS v1.3.x or lower should remain in YAMS Version 1.2.0 RC7
 
 1. Notes
 2. Pre-requisites
@@ -35,28 +38,28 @@ to develop multilingual websites. The following features are currently implement
   ways YAMS could be set-up to refer to language variants of a single document:
 
   Multilingual aliases:
-  
+
   - http://server_name/my-doc-en.html
   - http://server_name/mon-doc-fr.html
 
   Server name mode only:
-  
+
   - http://en.server_name.com/mydoc.html
   - http://fr.server_name.com/mydoc.html
 
   Root name mode only:
-  
+
   - http://server_name.com/en/mydoc.html
   - http://server_name.com/fr/mydoc.html
 
   Root name mode only, with one language at root:
-  
+
   - http://server_name.com/mydoc.html
   - http://server_name.com/fr/mydoc.html
 
   Server name mode, root name mode, friendly alias paths, multilingual aliases
   and multibyte URLs:
-  
+
   - http://en.server_name.com/england/folder/mydoc.html
   - http://fr.server_name.com/la-france/répertoire/mon-doc.html
 
@@ -69,14 +72,13 @@ to develop multilingual websites. The following features are currently implement
   manage custom multilingual chunks, snippets and template variables, to generate
   list-based or drop-down based language switchers (templatable), the ability
   to repeat content in multiple languages...
-- Extensions for Ditto, Wayfinder, Jot and eForm.
 - Possible to create custom multilingual template variables.
 
 
 2\. Pre-requisites
 -----------------
 
-YAMS has been developed on MODx v0.9.6.3+ and EVO 1.3+, with PHP >= 5.2.6-3.
+YAMS has been developed on MODx v0.9.6.3+ and EVO 1.4+, with PHP >= 5.2.6-3.
 It will not work on servers running PHP 4.
 
 ManagerManager is not required for YAMS to function, but is recommended. YAMS
@@ -98,6 +100,9 @@ To upgrade/update from a previous version do the following:
    it exists) are writeable by your server user/group.
 5. Make sure that your YAMS plugin is set-up to be active on all the events
    described in the installation instructions below.
+   Caution :
+		- Unchek the event OnBeforeDocFormSave
+		- Check the event OnDocFormSave
 6. Check that YAMS always appears first in your plugin execution order for
    each event that it is active. In particular, if you have phx installed then
    YAMS should appear before it in the OnParseDocument execution order.
@@ -138,7 +143,7 @@ System Events:
   - OnWebPagePrerender
   - OnLoadWebPageCache
   - OnPageNotFound
-  - OnBeforeDocFormSave
+  - OnDocFormSave
   - OnMakeDocUrl
   Note that YAMS should be moved to first place in the execution order for all
   events to which it is associated.
@@ -216,9 +221,33 @@ YAMS in first place - that is before PHx - on all associated events.
 
 7\. History
 ----------
-**Version 1.2.0 RC7**
-- fixed issue #23 - vericode not showing up in eForm on Evo 1.4.x 
-- added install-tpl files for easier installation via Extras-Repository 
+
+**Version 1.3.0**
+- no backward compatibility under Evolution CMS v1.4
+- compatibility with PHP7+
+	 fix count() function only on countable elements
+	 fix undefined constants
+- compatibility with Evolution CMS V2.0+
+	 get rid of global variables (but $modx)
+	 use $modx->getConfig('param') instead of $modx->config['param']
+- files modified :
+  	yams.plugin.inc.php
+  	yams.module.inc.php
+  	yams.module.funcs.inc.php
+  	yams.mm_rules.inc.php
+  	yams.extender.inc.php => not used anymore, let for those who haven't migrated to DocLister yet
+  	snippets\ajaxsearch\yams.ajaxsearch.config.inc.php
+  	snippets\breadcrumbs.101.yams.snippet.php => not used anymore, let for those who haven't migrated to DLCrumb yet
+  	lang\english-british.inc.php
+  	class\yams.class.inc.php
+  	class\yams.config.mgr.class.inc.php
+  	class\yams.error.mgr.class.inc.php
+  	class\yams.module.mgr.class.inc.php
+  	class\yams.utils.class.inc.php
+
+Version 1.2.0 RC7
+- fixed issue #23 - vericode not showing up in eForm on Evo 1.4.x
+- added install-tpl files for easier installation via Extras-Repository
 
 Version 1.2.0 RC6
 - automatically create category YAMS and add YAMS-TVs to it

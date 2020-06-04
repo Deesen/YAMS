@@ -74,7 +74,7 @@ if ( $activeTemplateList != '' )
         $aliasesToHideArray[]
           = YAMSTVDataToMMName( 'alias_' . $langId, $id, 'tv', $mm_version );
       }
-      if ( count( $aliasesToHideArray ) > 0 )
+      if (is_countable($aliasesToHideArray) && ( count( $aliasesToHideArray ) > 0 ))
       {
         $aliasesToHide = implode( ',', $aliasesToHideArray );
         mm_hideFields(
@@ -164,8 +164,8 @@ if ( $activeTemplateList != '' )
       ksort( $standardTVs );
       ksort( $customTVs );
 
-      $nStandardTVs = count( $standardTVs );
-      $nCustomTVs = count( $customTVs );
+      $nStandardTVs = is_countable($standardTVs) ? count( $standardTVs ) : 0 ;
+      $nCustomTVs = is_countable($customTVs) ? count( $customTVs ) : 0 ;
 
       if ( $nStandardTVs == 0 && $nCustomTVs == 0 )
       {

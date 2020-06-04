@@ -259,7 +259,7 @@
         now is the time to do it. It is highly recommended. Once you have done it,
         insert the following line into your mm_Rules configuration file to enable
         YAMS to integrate with it:<br />
-          <code>require( $modx->config[\'base_path\'] . \'assets/modules/yams/yams.mm_rules.inc.php\' );</code></p>
+          <code>require( $modx->getConfig(\'base_path\') . \'assets/modules/yams/yams.mm_rules.inc.php\' );</code></p>
         <p>You will subsequently be able to specify how the fields in your multilingual
         documents will be organised via the settings on the Other Params tab.</p>
         <p>When you convert a document to be a multilingual document the existing

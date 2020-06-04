@@ -32,7 +32,7 @@ switch ( $evt->name )
 {
 case 'OnPageNotFound':
 case 'OnWebPageInit':
-  if(MODX_API_MODE) return; // https://github.com/Deesen/YAMS/issues/23
+  if(defined('MODX_API_MODE') && MODX_API_MODE) return; // https://github.com/Deesen/YAMS/issues/23
   $docIdFoundByYAMS = TRUE;
 
   // If the site is offline and we have arrived here
@@ -56,7 +56,7 @@ case 'OnWebPageInit':
       if ( ! isset( $_GET['id'] ) )
       {
         $langId = $yams->DetermineCurrentLangId();
-        $docId = $modx->config['site_start'];
+        $docId = $modx->getConfig('site_start');
         $docIdFoundByYAMS = FALSE;
       }
       else
@@ -256,358 +256,285 @@ case 'OnWebPagePrerender':
     return;
   }
   break;
-case 'OnBeforeDocFormSave':
-
-  global $template;
-  global $pagetitle;
-  global $tmplvars;
-  global $alias;
-  global $type;
-  global $friendly_urls;
-  global $automatic_alias;
-  global $allow_duplicate_alias;
-  global $use_alias_path;
-  global $actionToTake;
-  global $_lang;
-
-  $docId = $evt->params['id'];
-
-  $isMultilingualDocument =
-    $yams->IsMultilingualDocument( $docId )
-    || $yams->IsMultilingualTemplate( $template );
-
-//  $docAlias = $alias;
-//  if ( $docAlias == '' )
-//  {
-//    $docAlias = 'doc' . $docId;
-//  }
-//
-  while ( $isMultilingualDocument )
-  {
-    foreach ( $yams->GetActiveLangIds() as $langId )
-    {
-      // Update pagetitles...
-      $tvName = 'pagetitle_' . $langId;
-      $tvId = YAMSGetTempVarId( $tvName );
-      if ( $tvId === FALSE )
-      {
-        continue;
-      }
-
-      $tvIdentifier =
-        YAMSTVDataToMMName( $tvName, $tvId, '' );
-      if ( ! array_key_exists( $tvIdentifier, $tmplvars ) )
-      {
-        if ( ! array_key_exists( $tvName, $tmplvars ) )
-        {
-          continue;
-        }
-        else
-        {
-          // The pagetitle has been marked for deletion
-          // because it is empty.
-          // Undo that...
-          unset( $tmplvars[ $tvName ] );
-          // Set it's value to an empty string for the moment...
-          $tmplvars[ $tvIdentifier ] = array(
-            $tvIdentifier
-            , ''
-          );
-        }
-      }
-      if ( $tmplvars[ $tvIdentifier ][1] == '' )
-      {
-        // Use the untitled text...
-        if ( $type == 'reference' )
-        {
-          $tmplvars[ $tvIdentifier ][1] = $yams->GetMODxLangText( 'untitled_weblink', $langId );
-        }
-        else
-        {
-          $tmplvars[ $tvIdentifier ][1] = $yams->GetMODxLangText( 'untitled_document', $langId );
-        }
-      }
-      $langPagetitle = $tmplvars[ $tvIdentifier ][1];
-      
-      // Do pagetitle synchronisation
-      if (
-        $langId == $yams->GetDefaultLangId()
-        && $yams->GetSynchronisePagetitle() )
-      {
-        $pagetitle = $modx->db->escape( $langPagetitle );
-      }      
-
-      // Do menutitle synchronisation
-      $tvName = 'menutitle_' . $langId;
-      $tvId = YAMSGetTempVarId( $tvName );
-      if ( $tvId === FALSE )
-      {
-        continue;
-      }
-
-      $tvIdentifier =
-        YAMSTVDataToMMName( $tvName, $tvId, '' );
-      if ( ! array_key_exists( $tvIdentifier, $tmplvars ) )
-      {
-        if ( ! array_key_exists( $tvName, $tmplvars ) )
-        {
-          continue;
-        }
-        else
-        {
-          // The menutitle has been marked for deletion
-          // because it is empty.
-          // Undo that...
-          unset( $tmplvars[ $tvName ] );
-          // Set it's value to an empty string for the moment...
-          $tmplvars[ $tvIdentifier ] = array(
-            $tvIdentifier
-            , ''
-          );
-        }
-      }
-      if ( $tmplvars[ $tvIdentifier ][1] == '' )
-      {
-        // Use the pagetitle...
-        $tmplvars[ $tvIdentifier ][1] = $langPagetitle;
-      }
-      // $langMenutitle = $tmplvars[ $tvIdentifier ][1];
-      
-      // Get the alias...
-      $tvName = 'alias_' . $langId;
-      $tvId = YAMSGetTempVarId( $tvName );
-      if ( $tvId === FALSE )
-      {
-        continue;
-      }
-      $tvIdentifier = YAMSTVDataToMMName( $tvName, $tvId, '' );
-      if ( ! array_key_exists( $tvIdentifier, $tmplvars ) )
-      {
-        if ( ! array_key_exists( $tvName, $tmplvars ) )
-        {
-          continue;
-        }
-        else
-        {
-          // The alias has been marked for deletion because it is empty
-          // Undo that...
-          unset( $tmplvars[ $tvName ] );
-          // Set it's value to an empty string for the moment...
-          $tmplvars[ $tvIdentifier ] = array (
-            $tvIdentifier,
-            ''
-          );
-        }
-      }
-
-      if ( $friendly_urls )
-      {
-
-        // Do alias auto-completion
-        if ( $automatic_alias )
-        {
-          // Check if the alias is empty...
-          if ( $tmplvars[ $tvIdentifier ][1] == '' )
-          {
-            // Construct an alias from the pagetitle...
-            $langAlias = html_entity_decode(
-              strip_tags( $langPagetitle )
-              , ENT_QUOTES
-              , $modx->config['modx_charset']
-              );
-            $tmplvars[ $tvIdentifier ][1] = $langAlias;
-          }
-
-        }
-
-        // Put the alias through stripAlias...
-        if ( $yams->GetUseStripAlias() )
-        {
-          if ( method_exists( $modx, 'stripAlias' ) )
-          {
-            $tmplvars[ $tvIdentifier ][1]
-              = $modx->stripAlias( $tmplvars[ $tvIdentifier ][1] );
-          }
-          elseif ( function_exists( 'stripAlias' ) )
-          {
-            $tmplvars[ $tvIdentifier ][1]
-              = stripAlias( $tmplvars[ $tvIdentifier ][1] );
-          }
-        }
-
-        if ( $automatic_alias )
-        {
-          // If the alias is now empty... give it a safe value...
-          if ( $tmplvars[ $tvIdentifier ][1] == '' )
-          {
-            if ( $yams->GetUseUniqueMultilingualAliases() )
-            {
-              $tmplvars[ $tvIdentifier ][1] = $langId . '-' . $docId;
-            }
-            else
-            {
-              $tmplvars[ $tvIdentifier ][1] = $docId;
-            }
-          }
-        }
-
-        // Check for duplicate aliases...
-        if ( !$allow_duplicate_alias )
-        {
-          // Check whether the alias is unique... (for this language)
-          $duplicateDocId = $yams->GetDuplicateAliasDocIdMono(
-            $tmplvars[ $tvIdentifier ][1]
-            , $docId
-            , $langId
-          );
-          if ( ! ( $duplicateDocId === FALSE ) && $duplicateDocId > 0 )
-          {
-            if ( $automatic_alias )
-            {
-              // Make the alias unique
-              $counter = 0;
-              // Now try the standard MODx technique
-              do {
-                $counter++;
-                $tempAlias = $tmplvars[ $tvIdentifier ][1] . '-' . $counter;
-                $duplicateDocId = $yams->GetDuplicateAliasDocIdMono(
-                  $tempAlias
-                  , $docId
-                  , $langId
-                  );
-              } while( ! ( $duplicateDocId === FALSE ) && $duplicateDocId > 0 );
-
-              $tmplvars[ $tvIdentifier ][1] = $tempAlias;
-            }
-            else
-            {
-              if ( $actionToTake == 'edit' )
-              {
-                $modx->manager->saveFormValues(27);
-                $url = 'index.php?a=27&id=' . $docId;
-                include_once 'header.inc.php';
-                $modx->webAlert(
-                  sprintf(
-                    $_lang['duplicate_alias_found']
-                    , $duplicateDocId . ' (' . $langId . ')'
-                    , $tmplvars[ $tvIdentifier ][1]
-                  )
-                  , $url);
-                include_once 'footer.inc.php';
-                exit;
-              } else {
-                $modx->manager->saveFormValues(4);
-                $url = 'index.php?a=4';
-                include_once 'header.inc.php';
-                $modx->webAlert(
-                  sprintf(
-                    $_lang['duplicate_alias_found']
-                    , $duplicateDocId . ' (' . $langId . ')'
-                    , $tmplvars[ $tvIdentifier ][1]
-                  )
-                  , $url);
-                include_once 'footer.inc.php';
-                exit;
-              }
-            }
-          }
-        }
-
-        // Now do checks for unique aliases...
-        if ( $yams->GetUseUniqueMultilingualAliases() )
-        {
-          // Check whether the alias is unique... (for this language)
-          $duplicateDocId = $yams->GetDuplicateAliasDocIdMulti(
-            $tmplvars[ $tvIdentifier ][1]
-            , $docId
-            , $langId
-          );
-          if ( ! ( $duplicateDocId === FALSE ) && $duplicateDocId > 0 )
-          {
-            if ( $automatic_alias )
-            {
-              // Make the alias unique
-              $counter = '';
-              // Now try the standard MODx technique
-              do {
-                $tempAlias = $tmplvars[ $tvIdentifier ][1] . '-' . $langId . $counter;
-                $duplicateDocId = $yams->GetDuplicateAliasDocIdMulti(
-                  $tempAlias
-                  , $docId
-                  , $langId
-                  );
-                if ( $counter == '' )
-                {
-                  $counter = 0;
-                }
-                $counter++;
-              } while( ! ( $duplicateDocId === FALSE ) && $duplicateDocId > 0 );
-              $tmplvars[ $tvIdentifier ][1] = $tempAlias;
-            }
-            else
-            {
-              if ( $actionToTake == 'edit' )
-              {
-                $modx->manager->saveFormValues(27);
-                $url = 'index.php?a=27&id=' . $docId;
-                include_once 'header.inc.php';
-                $modx->webAlert(
-                  sprintf(
-                    $_lang['duplicate_alias_found']
-                    , $duplicateDocId
-                    , $tmplvars[ $tvIdentifier ][1]
-                  )
-                  , $url);
-                include_once 'footer.inc.php';
-                exit;
-              } else {
-                $modx->manager->saveFormValues(4);
-                $url = 'index.php?a=4';
-                include_once 'header.inc.php';
-                $modx->webAlert(
-                  sprintf(
-                    $_lang['duplicate_alias_found']
-                    , $duplicateDocId
-                    , $tmplvars[ $tvIdentifier ][1]
-                  )
-                  , $url);
-                include_once 'footer.inc.php';
-                exit;
-              }
-            }
-          }
-        }
-      }
-      else
-      {
-        // Put the alias through stripAlias...
-        if ( $yams->GetUseStripAlias() )
-        {
-          if ( method_exists( $modx, 'stripAlias' ) )
-          {
-            $tmplvars[ $tvIdentifier ][1]
-              = $modx->stripAlias( $tmplvars[ $tvIdentifier ][1] );
-          }
-          elseif ( function_exists( 'stripAlias' ) )
-          {
-            $tmplvars[ $tvIdentifier ][1]
-              = stripAlias( $tmplvars[ $tvIdentifier ][1] );
-          }
-        }
-      }
-    }
-
-    break;
-  }
-  break;
+  
+	case 'OnBeforeDocFormSave':
+		break;
     
-  case 'OnMakeDocUrl':
-    $langId = $yams->DetermineCurrentLangId();
-    $evt->_output = $yams->ConstructURL( $langId, $id );
-    break;
+	case 'OnMakeDocUrl':
+		$langId = $yams->DetermineCurrentLangId();
+		$evt->_output = $yams->ConstructURL( $langId, $id );
+		break;
+	
+	case 'OnDocFormSave':
+		
+		$docId = $evt->params['id'];
+		$actionToTake = 'edit';
+		
+		// get document Object
+		$YamsDocumentObject = $modx->getDocumentObject('id',$docId);
+		
+		// Save document object elements in a table
+		$YamsSaveDocumentObject = array();
+		
+		$isMultilingualDocument = $yams->IsMultilingualDocument( $docId ) || $yams->IsMultilingualTemplate( $YamsDocumentObject['template'] );
+
+		while ( $isMultilingualDocument )
+		{
+			foreach ( $yams->GetActiveLangIds() as $langId )
+			{
+				// Update pagetitles...
+				$tvName = 'pagetitle_' . $langId;
+				$tvId = YAMSGetTempVarId( $tvName );
+				if ( $tvId === FALSE )
+				{
+					continue;
+				}
+				
+				$tvIdentifier = YAMSTVDataToMMName( $tvName, $tvId, '' );
+
+				if ($YamsDocumentObject[$tvName][1] == '')
+				{
+					// The pagetitle has been marked for deletion
+					// because it is empty.
+					// Undo that...
+					
+					// Use the untitled text...
+					if ( $YamsDocumentObject['type'] == 'reference' )
+					{
+						$YamsSaveDocumentObject[$tvName] = array ($tvName,'untitled_weblink','multiTv');
+					}
+					else
+					{
+						$YamsSaveDocumentObject[$tvName] = array ($tvName,'untitled_document','multiTv');
+					}
+					
+					YamsAddTvContentValues( $tvId, $docId, 'untitled_document' );
+					$langPagetitle = $YamsSaveDocumentObject[$tvName][1];
+				}
+				else
+				{
+					$langPagetitle = $YamsDocumentObject[$tvName][1];
+				}
+				// Do pagetitle synchronisation
+				if (
+				$langId == $yams->GetDefaultLangId()
+				&& $yams->GetSynchronisePagetitle() )
+				{
+					YamsEditTvContentValues( $docId, 'pagetitle', $modx->db->escape( $langPagetitle ));
+				}
+				
+				// Do menutitle synchronisation
+				$tvName = 'menutitle_' . $langId;
+				$tvId = YAMSGetTempVarId( $tvName );
+				if ( $tvId === FALSE )
+				{
+				continue;
+				}
+				$tvIdentifier =	YAMSTVDataToMMName( $tvName, $tvId, '' );
+				if ($YamsDocumentObject[$tvName][1] == '')
+				{
+					// The menutitle has been marked for deletion
+					// because it is empty.
+					// Undo that...
+					
+					// Use the pagetitle...
+					YamsAddTvContentValues( $tvId, $docId, $modx->db->escape( $langPagetitle ) );
+				}
+				
+				// Get the alias...
+				$tvName = 'alias_' . $langId;
+				$tvId = YAMSGetTempVarId( $tvName );
+				if ( $tvId === FALSE )
+				{
+				continue;
+				}
+				$tvIdentifier = YAMSTVDataToMMName( $tvName, $tvId, '' );
+				
+				$langAlias = $YamsDocumentObject[$tvName][1];
+				
+				if ( $modx->getConfig('friendly_urls') )
+				{
+					// Do alias auto-completion
+					if ( $modx->getConfig('automatic_alias') )
+					{
+						// Check if the alias is empty...
+						if ( $YamsDocumentObject[$tvName][1] == '' )
+						{
+						// Construct an alias from the pagetitle...
+						$langAlias = html_entity_decode(strip_tags( $langPagetitle ), ENT_QUOTES, $modx->getConfig('modx_charset'));
+						
+						}
+					}
+					
+					// Put the alias through stripAlias...
+					if ( $yams->GetUseStripAlias() )
+					{
+						if ( method_exists( $modx, 'stripAlias' ) )
+						{
+							$langAlias = $modx->stripAlias( $langAlias );
+						}
+						elseif ( function_exists( 'stripAlias' ) )
+						{
+							$langAlias = stripAlias( $langAlias );
+						}
+					}
+					
+					if ( $modx->getConfig('automatic_alias') )
+					{
+					// If the alias is now empty... give it a safe value...
+						if ( $langAlias == '' )
+						{
+							if ( $yams->GetUseUniqueMultilingualAliases() )
+							{
+								$langAlias = $langId . '-' . $docId;
+							}
+							else
+							{
+								$langAlias = $docId;
+							}
+						}
+					}
+					
+					// Check for duplicate aliases...
+					if ( !$modx->getConfig('$allow_duplicate_alias') )
+					{
+						// Check whether the alias is unique... (for this language)
+						$duplicateDocId = $yams->GetDuplicateAliasDocIdMono($langAlias, $docId, $langId);
+						if ( !( $duplicateDocId === FALSE ) && $duplicateDocId > 0 )
+						{
+							if ( $modx->getConfig('automatic_alias') )
+							{
+								// Make the alias unique
+								$counter = 0;
+								// Now try the standard MODx technique
+								do
+								{
+									$counter++;
+									$tempAlias = $langAlias . '-' . $counter;
+									$duplicateDocId = $yams->GetDuplicateAliasDocIdMono($tempAlias, $docId, $langId);
+								}
+								while ( ! ( $duplicateDocId === FALSE ) && $duplicateDocId > 0 );
+
+								$langAlias = $tempAlias;
+							}
+							else
+							{
+								if ( $actionToTake == 'edit' )
+								{
+									$modx->manager->saveFormValues(27);
+									$url = 'index.php?a=27&id=' . $docId;
+									include_once 'header.inc.php';
+									$modx->webAlert(
+											sprintf(
+											$_lang['duplicate_alias_found']
+											, $duplicateDocId . ' (' . $langId . ')'
+											, $langAlias
+											)
+											, $url);
+									include_once 'footer.inc.php';
+									exit;
+								} else {
+									$modx->manager->saveFormValues(4);
+									$url = 'index.php?a=4';
+									include_once 'header.inc.php';
+									$modx->webAlert(
+											sprintf(
+											$_lang['duplicate_alias_found']
+											, $duplicateDocId . ' (' . $langId . ')'
+											, $langAlias
+											)
+											, $url);
+									include_once 'footer.inc.php';
+									exit;
+								}
+							}
+						}
+					}
+					
+					// Now do checks for unique aliases...
+					if ( $yams->GetUseUniqueMultilingualAliases() )
+					{
+						// Check whether the alias is unique... (for this language)
+						$duplicateDocId = $yams->GetDuplicateAliasDocIdMulti($langAlias, $docId, $langId);
+						if ( ! ( $duplicateDocId === FALSE ) && $duplicateDocId > 0 )
+						{
+							if ( $modx->getConfig('automatic_alias') )
+							{
+								// Make the alias unique
+								$counter = '';
+								// Now try the standard MODx technique
+								do
+								{
+									$tempAlias = $langAlias . '-' . $langId . $counter;
+									$duplicateDocId = $yams->GetDuplicateAliasDocIdMulti($tempAlias, $docId, $langId);
+									if ( $counter == '' )
+									{
+										$counter = 0;
+									}
+									$counter++;
+								}
+								while( ! ( $duplicateDocId === FALSE ) && $duplicateDocId > 0 );
+								$langAlias = $tempAlias;
+							}
+							else
+							{
+								if ( $actionToTake == 'edit' )
+								{
+									$modx->manager->saveFormValues(27);
+									$url = 'index.php?a=27&id=' . $docId;
+									include_once 'header.inc.php';
+									$modx->webAlert(
+											sprintf(
+											$_lang['duplicate_alias_found']
+											, $duplicateDocId
+											, $langAlias
+											)
+											, $url);
+									include_once 'footer.inc.php';
+									exit;
+								}
+								else
+								{
+									$modx->manager->saveFormValues(4);
+									$url = 'index.php?a=4';
+									include_once 'header.inc.php';
+									$modx->webAlert(
+											sprintf(
+											$_lang['duplicate_alias_found']
+											, $duplicateDocId
+											, $langAlias
+											)
+											, $url);
+									include_once 'footer.inc.php';
+									exit;
+								}
+							}
+						}
+					}
+				}
+				else
+				{
+					// Put the alias through stripAlias...
+					if ( $yams->GetUseStripAlias() )
+					{
+						if ( method_exists( $modx, 'stripAlias' ) )
+						{
+							$langAlias	= $modx->stripAlias( $langAlias );
+						}
+						elseif ( function_exists( 'stripAlias' ) )
+						{
+						$langAlias = stripAlias( $langAlias );
+						}
+					}
+				}
+				YamsAddTvContentValues( $tvId, $docId, $modx->db->escape( $langAlias ) );
+			}
+			break;
+		}
+		break;
     
-  default:
-    return;
+	default:
+		return;
 }
 
 ?>

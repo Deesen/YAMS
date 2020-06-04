@@ -87,7 +87,7 @@ if ( ! class_exists( 'YAMS' ) )
 
     public function GetVersion()
     {
-      return '1.2.0 RC7';
+      return '1.3.0';
     }
 
     public function GetDuplicateAliasDocIdMono( $alias, $docId, $langId )
@@ -332,7 +332,7 @@ if ( ! class_exists( 'YAMS' ) )
       }
       
       $requestURI = '';
-      if ( count( $get ) > 0 )
+      if (is_countable($get) && ( count( $get ) > 0 ))
       {
         $encodedQueryParams = array();
         foreach ( $get as $name => $value )
@@ -2970,7 +2970,7 @@ if ( ! class_exists( 'YAMS' ) )
           $subdirDocId = $docAliasInfo['parent'];
         };
 
-        if ( count( $path ) > 0 )
+        if (is_countable($path) && ( count( $path ) > 0 ))
         {
           if ( ! $includeSiteStartFilename
             && $docId == $this->itsMODx->config['site_start']
@@ -3140,7 +3140,7 @@ if ( ! class_exists( 'YAMS' ) )
         }
         $aliasList = implode( ',', $aliasNameArray );
         
-        $nMonoDocs = count( $this->itsMonolingualDocIds );
+        $nMonoDocs = (is_countable($this->itsMonolingualDocIds)) ? count( $this->itsMonolingualDocIds ) : 0;
         if ( $nMonoDocs > 0 )
         {
           // Create a list of monolingual document ids...
@@ -3885,7 +3885,7 @@ if ( ! class_exists( 'YAMS' ) )
 
       $langTags = array();
 
-      if ( count( $parsedAcceptLanguageHeader[1] ) > 0 )
+      if (is_countable ($parsedAcceptLanguageHeader[1]) && ( count( $parsedAcceptLanguageHeader[1] ) > 0 ))
       {
         // create a list like 'en' => 0.8
         $langTags = array_combine(
@@ -4411,7 +4411,7 @@ if ( ! class_exists( 'YAMS' ) )
           }
         }
         unset( $matches );
-        if ( count( $fromDB ) > 0 )
+        if (is_countable($fromDB) &&  ( count( $fromDB ) > 0 ))
         {
           $chunkNamesList = implode( ',', $fromDB );
           unset( $fromDB );
@@ -4432,7 +4432,7 @@ if ( ! class_exists( 'YAMS' ) )
             $replace[]= YamsUtils::PregQuoteReplacement( $row['snippet'] );
           }
         }
-        if ( count( $find ) == 0 )
+        if (is_countable($find) && ( count( $find ) == 0 ))
         {
           return FALSE;
         }
@@ -4528,7 +4528,7 @@ if ( ! class_exists( 'YAMS' ) )
           . $this->itsUTF8Modifier;
         $replace[] = YamsUtils::PregQuoteReplacement( $value );
       }
-      if ( count( $find ) == 0 )
+      if (is_countable($find) && ( count( $find ) == 0 ))
       {
         return FALSE;
       }
@@ -4670,7 +4670,7 @@ if ( ! class_exists( 'YAMS' ) )
       // that will grab the information from the database
       // a maximum of YAMS_DOC_LIMIT docs at a time
       $docIds = array_keys( $tvInfo );
-      $nDocs = count( $docIds );
+      $nDocs = (is_countable($docIds)) ? count( $docIds ) : 0;
       $sc   = $this->itsMODx->getFullTableName('site_content');
       $st   = $this->itsMODx->getFullTableName('site_tmplvars');
       $stt  = $this->itsMODx->getFullTableName('site_tmplvar_templates');
@@ -4711,7 +4711,7 @@ if ( ! class_exists( 'YAMS' ) )
               . ' AND sc.deleted = 0'
             . ')';
         }
-        if ( count( $sqlArray ) == 0 )
+        if (is_countable($sqlArray) && ( count( $sqlArray ) == 0 ))
         {
           continue;
         }
@@ -4754,7 +4754,7 @@ if ( ! class_exists( 'YAMS' ) )
             // TO DO: PHx stuff...
           }          
         }
-        if ( count( $find ) == 0 )
+        if (is_countable($find) && ( count( $find ) == 0 ))
         {
           continue;
         }
@@ -4771,7 +4771,7 @@ if ( ! class_exists( 'YAMS' ) )
       // that will grab the information from the database
       // a maximum of YAMS_DOC_LIMIT docs at a time
       $docIds = array_keys( $dvInfo );
-      $nDocs = count( $docIds );
+      $nDocs = (is_countable($docIds)) ? count( $docIds ) : 0;
       $sc   = $this->itsMODx->getFullTableName('site_content');
       $dg   = $this->itsMODx->getFullTableName('document_groups');
       
@@ -4807,7 +4807,7 @@ if ( ! class_exists( 'YAMS' ) )
 
           $colsArray = array();
           $inArray = array_keys( $docCache );
-          if ( count($inArray) == 0 )
+          if (is_countable($inArray) && ( count($inArray) == 0 ))
           {
             continue;
           }
@@ -4836,7 +4836,7 @@ if ( ! class_exists( 'YAMS' ) )
               . ' AND (' . $access . ')'
               . ' LIMIT 1)';
         }
-        if ( count( $sqlArray ) == 0 )
+        if (is_countable($sqlArray) && ( count( $sqlArray ) == 0 ))
         {
           continue;
         }
@@ -4879,7 +4879,7 @@ if ( ! class_exists( 'YAMS' ) )
             }
           }          
         }
-        if ( count( $find ) == 0 )
+        if (is_countable($find) && ( count( $find ) == 0 ))
         {
           continue;
         }
@@ -4943,7 +4943,7 @@ if ( ! class_exists( 'YAMS' ) )
 
       // Loop over the translations and return the
       // one corresponding to the current language if it exists
-      $nTranslations = count( $translations );
+      $nTranslations = (is_countable($translations)) ? count( $translations ) : 0;
       for ( $i = 1; $i < $nTranslations; $i = $i + 2 )
       {
         if ( $translations[ $i ] == $langId )
@@ -5107,7 +5107,7 @@ if ( ! class_exists( 'YAMS' ) )
         );
       
       // If default text was specified..
-      if ( count( $templates ) == 2 )
+      if (is_countable($templates) && ( count( $templates ) == 2 ))
       {
         // recurse...
         $currentLangContent

@@ -587,7 +587,7 @@ if ( $updateTVs )
 //      , 'menutitle' => 'Menu Title'
 //      , 'content' => 'Content'
 //  );
-	
+
 	// Prepare category-ID for TVs
 	$categoryId = checkCategory('YAMS');
 	$categoryId = $categoryId ? $categoryId : newCategory('YAMS');
@@ -704,7 +704,7 @@ if ( $updateTVs )
 
       if ( $yams->GetManageTVs() )
       {
-        if ( count($associatedInactiveTemplates) > 0 )
+        if (is_countable($associatedInactiveTemplates) && ( count($associatedInactiveTemplates) > 0 ))
         {
           $result = YamsRemoveAssociationsForTV( $tvId, $associatedInactiveTemplates );
           if ( ! $result )
@@ -740,7 +740,7 @@ if ( $updateTVs )
             // Create a list of active templates
             $activeTemplates = $yams->GetActiveTemplates();
 
-            if ( count( $activeTemplates ) > 0 )
+            if (is_countable($activeTemplates) && ( count( $activeTemplates ) > 0 ))
             {
               // Get a list of all documents that have these templates
               // Loop over the documents.
@@ -852,7 +852,7 @@ if ( $updateTVs )
                 }
               }
             }
-            
+
             break;
           default:
             // If this is the default lang and this is
@@ -867,7 +867,7 @@ if ( $updateTVs )
             // Create a list of active templates
             $activeTemplates = $yams->GetActiveTemplates();
 
-            if ( count( $activeTemplates ) > 0 )
+            if (is_countable($activeTemplates) && ( count( $activeTemplates ) > 0 ))
             {
               // Get a list of all documents that have these templates
               // Loop over the documents.
@@ -981,7 +981,7 @@ else
 
 $errorOutput = '';
 // Define the placholders
-if ( count( $errorText ) > 0 )
+if (is_countable($errorText) && ( count( $errorText ) > 0 ))
 {
   foreach ( $errorText as $index => $message )
   {
@@ -993,12 +993,12 @@ if ( count( $errorText ) > 0 )
       . '</p>';
 }
 
-?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"> 
-<html xmlns="http://www.w3.org/1999/xhtml" dir="<?php echo $modx->config['manager_direction']; ?>" xml:lang="en"> 
+?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="<?php echo $modx->getConfig('manager_direction'); ?>" xml:lang="en">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $modx->config['modx_charset']; ?>" />
+    <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $modx->getConfig('modx_charset'); ?>" />
     <title>YAMS Module Configuration</title>
-    <link rel="stylesheet" type="text/css" href="media/style/<?php echo $modx->config['manager_theme']; ?>/style.css" ></link>
+    <link rel="stylesheet" type="text/css" href="media/style/<?php echo $modx->getConfig('manager_theme'); ?>/style.css" ></link>
     <script type="text/javascript" src="media/script/scriptaculous/prototype.js"></script>
     <script type="text/javascript" src="media/script/scriptaculous/scriptaculous.js"></script>
     <script type="text/javascript" src="media/script/modx.js" ></script>
@@ -1027,9 +1027,8 @@ if ( count( $errorText ) > 0 )
               <dt><strong>YAMS</strong></dt> <dd>A highly configurable multilingual solution that doesn't require the user to maintain multiple document trees and which allows the user to work with existing document templates.</dd>
               <dt><strong>Version</strong></dt> <dd><?php echo $yams->GetVersion(); ?>. Check <a href="https://github.com/Deesen/YAMS/releases" target="_blank">Github</a> for the latest version.</dd>
               <dt><strong>Author</strong></dt> <dd><a href="http://modxcms.com/forums/index.php?action=profile;u=12570" target="_blank">PMS</a><br />Original multilingual alias code supplied by <a href="http://modxcms.com/forums/index.php?action=profile;u=21916" target="_blank">mgbowman</a></dd>
-              <dt><strong>Documentation</strong></dt> <dd><a target="_blank" href="http://www.evolution-docs.com/extras/yams/">YAMS documentation</a>, including setup instructions, placeholders, snippet parameters and How To? guides are now maintained on the MODx Confluence wiki. There is also lots of information embedded in the <a href="http://modxcms.com/forums/index.php/board,381.0.html" target="_blank">YAMS forums</a>.</dd>
+              <dt><strong>Documentation</strong></dt> <dd><a target="_blank" href="http://docs.evo.im/en/04_extras/yams.html">YAMS documentation</a>, including setup instructions, placeholders, snippet parameters and How To? guides are now maintained on GitHub</dd>
               <dt><strong>Licence</strong></dt> <dd>GPL v3</dd>
-              <dt><strong>Forums</strong></dt> <dd>Lots of information about YAMS, including a showcase of sites using YAMS, planned developments, known bugs and plenty of user questions and comments can be accessed at the <a href="http://modxcms.com/forums/index.php/board,381.0.html" target="_blank">YAMS board on the MODx Forums</a>.</dd>
               <dt><strong>Description</strong>:</dt>
               <dd><p>YAMS allows users to define language groups and specify certain
               templates as multilingual. All documents associated with those
@@ -1062,15 +1061,12 @@ if ( count( $errorText ) > 0 )
               <p>Since snippets are generally responsible for parsing the
               placeholders like <code>[+pagetitle+]</code> in templates supplied to them,
               they wont automatically know to insert the correct multilingual
-              content. For Ditto this can be overcome this by using an extender. An
-              extension is also available for jot and special templates are available for Wayfinder.
-              For the templates of other snippets it is possible to replace the
+              content. It is possible to replace the
               placeholders by special YAMS snippet calls, eg:
                 <br />
-                <code>[[YAMS? &amp;get=`data` &amp;from=`pagetitle` &amp;docid=`[+id+]`]]</code><br />
-              YAMS compatible default templates for Wayfinder already include the appropriate YAMS snippet calls.</p>
+                <code>[[YAMS? &amp;get=`data` &amp;from=`pagetitle` &amp;docid=`[+id+]`]]</code><br /></p>
               <p>As of version 1.0.3, YAMS *should be* fully compatible with <a href="http://modxcms.com/forums/index.php/topic,32807.0.html" target="_blank">EasyLingual</a>. See the Setup tab for instructions on how to migrate a site from EasyLingual to YAMS.</p>
-              <p>YAMS has been developed on MODx Evolution v0.9.6.3 and with the latest version of PHP (5.2.6-3). YAMS will not work with sites running PHP 4.</p></dd>
+              <p>YAMS has been developed on MODx Evolution v0.9.6.3 and has been upgraded to ensure compatibility with Evolution CMS 1.4x and 2.x and with the latest version of PHP (7.x). Latests YAMS v1.3.0 will not work with sites running PHP 4 an Evolution CMS v1.3.x and lower.</p></dd>
               <dt><strong>Credits</strong></dt> <dd><p>The language icons used in the
               language select drop down are from <a href="http://www.languageicon.org/" target="_blank">Language Icon</a>,
               released under the <a href="http://creativecommons.org/licenses/by-sa/3.0/">Attribution-Share Alike 3.0 Unported</a> license.
@@ -1078,389 +1074,8 @@ if ( count( $errorText ) > 0 )
               </dd>
               </dl>
               <p><strong>Version History</strong>:</p>
-              <p>Latest history in README.md: <a href="https://github.com/Deesen/YAMS" target="_blank">https://github.com/Deesen/YAMS</a></p>
-              <p><strong>New in version 1.2.0 RC3</strong>:</p>
-              <ul>
-<li><strong>Feature</strong>: The ((yams_data:...)) placeholder now works with document variables
-  in addition to template variables. As with template variables, if multiple
-  placeholders occur on a single document requesting info from different documents
-  this will be done with a minimal number of mysql queries for efficiency.</li>
-<li>Bug Fix: [[YAMS? &amp;get=`data` ...]] snippet calls will now correctly output
-  data from the document variable fields for monolingual documents rather than
-  the default language template variable.</li>
-<li>The [[YAMS? &amp;get=`content` ...]] options is now officially deprecated.</li>
-</ul>
-              <p><strong>New in version 1.2.0 RC2</strong>:</p>
-<ul>
-<li><strong>Bug Fix</strong>: Fixed a bug whereby YAMS would revert to the default language instead
-  of staying on the current language when using the 'MODx URLs' configuration
-  parameter (set to '*', for example)</li>
-<li><strong>Bug Fix</strong>: Fixed bug with incorrect (over-zealous) use of urldecode and urlencode.
-  $_GET and $_POST are automatically url-decoded by PHP, whereas
-  $_SERVER['REQUEST_URI'] is not.</li>
-</ul>
-              <p><strong>New in version 1.2.0 RC1</strong>:</p>
-<ul>
-<li>Added a file called yams.integration.inc.php that defines a constant
-  containing YAMS configuration parameters that can be used to help
-  integration of YAMS with other multilingual software.</li>
-<li><strong>Bug Fix</strong>: Added protection against errors if the YAMS config file is accessed directly.
-</li>
-<li><strong>Bug Fix</strong>: Fixed a problem whereby nested YAMS placeholders were not getting evaluated.</li>
-<li>Updated the readme.txt.</li>
-<li>Added three new placeholders (yams_multi), (yams_mono) and (yams_type)
-  in order to help filter documents by type.</li>
-<li>Moved the documentation of language settings and configuration options from the
-  module interface to the online documentation.</li>
-<li>Major code tidy up and reorganisation:
-  <ul>
-    <li>Utility methods moved into the a new YamsUtils class (yams.utils.class.inc.php).</li>
-    <li>Some methods have been updated for improved security, by including checks for
-    bad UTF-8 byte streams and by stripping control codes where appropriate.</li>
-    <li>All config file manipulation methods (getters, setters, etc..) have been moved
-    into a YamsConfigMgrAbstract abstract class (yams.config.mgr.class.inc.php),
-    which the main YAMS class now inherets. This in turn inherits from a singleton
-    abstract class.</li>
-    <li><strong>Bug Fix</strong>: The escaping that YAMS was doing when writing the PHP config file was not entirely
-    correct and this could have been taken advantage of by someone with malicious
-    intent that managed to obtain access to the YAMS Module interface. This has
-    now been fixed.</li>
-    </ul>
-</li>
-</ul>
-              <p><strong>New in version 1.1.9</strong>:</p>
-<ul>
-<li><strong>Bug Fix</strong>: Fixed a bug introduced at version 1.1.8, which breaks ((yams_data:..))</li>
-<li><strong>Bug Fix</strong>: Applied <a href="http://modxcms.com/forums/index.php/topic,43821.0.html">kongo09's patch</a>, which fixes a bug whereby default content is not copied over to new fields when multilingual tvs are associated with new templates.</li>
-</ul>
-              <p><strong>New in version 1.1.8</strong>:</p>
-<ul>
-<li>Updated YAMS ManagerManager rules so that when hide fields is on, multilingual aliases are hidden when multilingual aliases are switched off and the standard document alias is hidden when multilingual aliases are switched on.
-</li><li>Updated the documentation for Hide Fields accordingly.
-</li><li>Bug Fix: Fixed a &lt;p&gt; that should have been a &lt;/p&gt; in the module
-</li><li>Updated the forum link to http://modxcms.com/forums/index.php/board,381.0.html
-</li><li>Added a title field to the YAMS ditto extender. This outputs the page title.
-</li><li>Bug Fix: Corrected a typo str2lower -> strtolower.<br />
-  This bug fix is necessary for YAMS to work over HTTPS.<br />
-  Reported by noes: http://modxcms.com/forums/index.php/topic,42752.0.html
-</li><li>Added an additional check to prevent crashing if $modx->documentObject doesn't exist.
-</li><li>Made the Expand function public.
-</li><li>Bug Fix: Fixed a bug whereby the current language would be lost when changing page using ditto pagination and unique multilingual aliases.
-</li><li>Bug Fix: Corrected a problem with switching languages when using unique multilingual aliases.
-</li><li>Improved installation instructions.
-</li><li>Bug Fix: Fixed a bug whereby YAMS ManagerManager rules would be applied to all (rather than no) templates when no multilingual templates are specified.
-</li><li>Documentation updates</li>
-</ul>
-              <p><strong>New in version 1.1.7 alpha RC7</strong>:</p>
-<ul>
-<li>Included <a href="http://modxcms.com/forums/index.php?action=profile;u=16271" target="_blank">@French Fries</a>' Wayfinder breadcrumbs templates and updated the How To?
-documentation.
-</li><li>Included an option to turn off automatic redirection to the correct multilingual
-URL when standard MODx style URLs are encountered for specified document ids.
-</li><li><strong>Bug fix</strong>: MODx default behaviour is that when a document not assigned any alias
-it is instead referred to by its id. This wasn't implemented. Done now, except
-that for multilingual documents with unique aliases on, the documents are
-referred to by <code><em>langId</em>-<em>docId</em></code>.
-</li><li>Removed a system event log command that was added for debugging purposes but
-accidentally left in the code.</li>
-</ul>
-              <p><strong>New in version 1.1.7 alpha RC6</strong>:</p>
-<ul>
-<li>Most of the languageicons have been removed from the distribution. The full
-set can be downloaded from <a href="http://www.languageicon.org/" target="_blank">http://www.languageicon.org/</a>.</li>
-<li>Removed the 'do you want to allow YAMS to manager multilingual variables' option
-from the multilingual templates tab.
-</li><li>Tweaks to the module interface to make it easier to to find submit buttons.
-</li><li>Removed some unneeded checks in frequently executed code for efficiency
-</li><li><strong>Bug fix</strong>: Fixed a couple of errors whereby YAMS was trying to access a regexp match
-that was undefined (rather than empty)
-</li><li><strong>Bug fix</strong>: Fixed an error that could potentially result in YAMS not correctly
-identifying an HTTPS connection.
-</li><li><p>Efficiency improvements.</p>
-<ul>
-<li>YAMS removes empty constructs instead of processing them.</li>
-<li>When loading monolingual documents, now only the default language variant is
- parsed. Previously all language variants were parsed but only one was served.
- Monolingual documents will be served approx 1/n times faster, where n is the
- number of languages.</li>
-<li>As soon as a document is loaded from cache YAMS now strips out superfluous
- language variants. Previously it evaluated all language variants but served
- just one. For documents with a lot of uncachable content this can lead to an
- improvement in speed of approx 1/n, where n is the number of languages.</li>
-</ul>     
-</li><li><strong>Bug fix</strong>: Updated the managermanager rules to fix a bug whereby if more than one
-custom tv was assigned to a language, only the last would be tabified.</li>
-</ul>
-              <p><strong>New in version 1.1.7 alpha RC5</strong>:</p>
-<ul>
-<li><strong>Bug fix</strong>: Fixed a bug whereby on first save of a newly created multilingual
-document, pagetitles and aliases would not get updated.
-</li><li><strong>Bug fix</strong>: Fixed an URL encoding issue. The php header function accepts
-a plain text URL, but YAMS was passing it an HTML encoded URL.
-</li><li><strong>Bug fix</strong>: The new multilingual URL capability had broken query parameter mode
-and non-friendly URLs. Fixed.</li>
-</ul>
-              <p><strong>New in version 1.1.7 alpha RC4</strong>:</p>
-<ul>
-<li>Now, if YAMS doesn't recognise an URL as being valid, but MODx does, then YAMS
-will redirect from the MODx recognised URL to the correct URL using the status
-codes defined on the 'Configuration' tab, rather than generating 404 not found.
-(This aids compatibility with existing MODx resources that don't understand
-multilingual URLs and is what YAMS used to do in previous versions before I broke
-it!)</li>
-</ul>
-              <p><strong>New in version 1.1.7 alpha RC3</strong>:</p>
-<ul>
-<li><strong>Bug fix</strong>: Corrected an <a href="http://modxcms.com/forums/index.php/topic,36513.msg243901.html#msg243901" target="_blank">.htaccess bug</a>.</li>
-</ul>
-              <p><strong>New in version 1.1.7 alpha RC2</strong>:</p>
-<ul>
-<li><strong>Bug fix</strong>: Corrected a small URL encoding bug.</li>
-<li>Included an option to make MODx stripAlias optional for multilingual aliases.</li>
-<li>YAMS now does automatic updating of aliases, checking for unique aliases and
-checking for duplicate aliases.</li>
-<li>Updated the YAMS managermanager rules so that they work with the latest version
-of managermanager (0.3.4), which refers to tvs by name instead of id like MODx.
-YAMS should be backwards compatible with older versions of both mm and MODx.
-</li><li><strong>Bug fix</strong>: Corrected a dodgy regexp which was causing URL resolution problems
-when installing into a subdirectory.
-</li><li>Updated the friendly URL config to include standard MODx stuff (avoids
-confusion about whether it should be there or not)
-</li><li>Updated the root name trailing slash redirection to be consistent with apache
-guidelines.
-</li><li>stripAlias is now implemented for multilingual URLs. Need to check that it
-works on pre-Evo installs.
-</li><li>stripAlias can result in empty aliases. Need to handle that.
-</li><li>Implemented automatic pagetitle update
-</li><li>Implemented better document pagetitle synchronisation
-</li><li>Started implementing automatic alias updating.
-</li><li><strong>Bug fix</strong>: YAMS could return HTTP OK for monolingual documents with an extra
-root name prefix. Fixed. Now permanent redirects to correct monolingual URL.
-</li><li>Implemented mime dependent aliases. Currently not possible to set the
-mime-alias map via the module interface.
-</li><li>Modified the YAMS to encode tv names in the same way that MODx does for
-0.9.6.3 and earlier versions. (Previously the encoding was not done in
-completely the same way.)
-</li><li>Altered the PreParse method to prevent the recursion limit from being reached
-on complicated documents. It now returns a flag that says whether it needs to
-be called again.
-</li><li>Tidied up the comments in the code a bit.
-</li><li><strong>Bug fix</strong>: Corrected a missing variable declaration in yams.module.inc.php</li>
-</ul>
-              <p><strong>New in version 1.1.7 alpha RC1</strong>:</p>
-<ul>
-<li><strong>Bug Fix</strong>: Corrected (I hope) and URL bug which would affect documents nested
-at level 2 and greater when using friendly alias paths.
-</li>
-</ul>
-              <p><strong>New in version 1.1.6 alpha</strong>:</p>
-              <ul>
-<li>Added SEO Strict style URL functionality. YAMS will now permanent redirect
-to the correct URL when:<br />
-* slashes are incorrectly specified (multiple slashes or missing trailing slash)<br />
-* the prefix and suffix of a filename are missed<br />
-* the prefix and suffix are included for a folder<br />
-In addition, there is now a new option that allows the re-writing of containers
-as folders:<br />
-<code>.../mycontainer.html code</code> -> <code>.../mycontainer/</code><br />
-Currently there is no facility for overriding this on a document by document
-basis.
-</li><li>Introduced a new URL redirection mode: "current else browser". When redirecting to
-a multilingual page, if the site has been visited previously and a language
-cookie has been saved, the visitor will be redirected to a page in that language.
-Otherwise they will be redirected to a page based on their browser settings.</li>
-</ul>
-              <p><strong>New in version 1.1.6 alpha RC1</strong>:</p>
-<ul>
-<li><strong>Bug Fix</strong>: Fixed a problem whereby documents could break when loading them from
-the cache.
-</li><li><strong>Bug Fix</strong>: Fixed a server config bug affecting rootname to rootname/ redirection.
-</li><li><strong>Bug Fix</strong>: Repaired a missing space in a mysql query.
-</li>
-</ul>
-              <p><strong>New in version 1.1.5 alpha</strong>:</p>
-<ul>
-<li><strong>Bug Fix</strong>: Fixed a parse bug which could occasionally involve a regular
-expression grabbing too much and breaking YAMS constructs.
-</li>
-</ul>
-              <p><strong>New in version 1.1.5 alpha RC 3</strong>:</p>
-<ul>
-<li><strong>Bug Fix</strong>: Corrected a bug in breadcrumbs.101.yams.snippet.php
-</li><li>Made use of the new ((yams_data:...)) construct to optimise
-breadcrumbs.101.yams.snippet.php by minimising database queries.
-</li><li>Renamed breadcrumbs.101.yams.snippet.php to give it the php extension.
-Also included code to protect it against direct execution.
-</li><li>PreParseOptimise is fairly resource intensive, so only call it if
-pre-parse-optimisation is really required (that is, if there is more than one
-nested yams-select construct.)
-</li><li>yams_doc and yams_docr were really inefficient, because each document alias
-was requiring at least one database query. Now use a cache which stores the alias
-of each document in each language, as well as its parent. This can bring result
-in major performance enhancements
-</li><li>Updated the server config to include redirection from mysite.com/root to
-mysite.com/root/
-</li><li><strong>Bug Fix</strong>: Made sure yams-in blocks get parsed on the
-final PostParse call. As a
-result of this fix Ditto will no longer complain that it can't find the language
-file when using <code>&amp;language=`(yams_mname)`</code>.
-</li><li>It is not necessary for PostParse to be called recursively. Fixed.
-</li><li>YAMS was executing on the OnWebPageComplete event... but this was completely
-unnecessary. Fixed.
-</li><li><strong>Bug Fix</strong>: Fixed misplaced PostParse argument.
-</li><li><strong>Bug Fix</strong>: Corrected a bug which would cause the current language block of a
-repeat construct to be output as blank when no currentTpl was specified. (In
-this case, the repeatTpl should be used.)
-</li><li>Updated the StoreYamsInCallback and StoreYamsRepeatCallback to use a new
-YamsCounter number rather than using the number of the block being cached.
-</li>
-</ul>
-              <p><strong>New in version 1.1.5 alpha RC 2</strong>:</p>
-<ul>
-<li><strong>Bug Fix</strong>: Corrected another URL encoding bug that would prevent incorrect
-changing of language and which sometimes gave rise to blank pages.</li>
-</ul>
-              <p><strong>New in version 1.1.5 alpha RC 1</strong>:</p>
-<ul>
-<li><strong>Bug Fix</strong>: Corrected an URL encoding bug that would prevent incorrect changing
-of language.
-</li><li>Updated the Wayfinder and Ditto extensions to use <code>[[YAMS? &amp;get=`data`</code>.
-</li><li>Updated the manager manager rules to ensure that the template variables are
-moved to tabs in the correct order. Wasn't sure if the existing array_merge
-was simply concatenating the sorted arrays.
-</li><li>Updated the YAMS snippet cal to make use of the <code>((yams_data:...</code> syntax.
-<code>[[YAMS? &amp;get=`content`</code> is now depracated and <code>[[YAMS? &amp;get=`data`</code> should be
-used in its place
-</li><li>First implementation of the <code>((yams_data:docId:tvname:phx))</code> syntax for improved
-performace through minimisation of the number of sql queries. Does not
-support PHx yet. Loads data from a maximum of YAMS_DOC_LIMIT documents at time.
-</li><li><strong>Bug Fix</strong>: Fixed several bugs introduced when updating the parsing. YAMS
-placeholders can now go almost anywhere.
-</li><li><p>Fairly major changes to parsing:</p>
-<ul>
-<li>YAMS now ensures that all chunks and tvs - which may contain YAMS placholders
-- are parsed on the PreParse step before handing over to MODx.</li>
-<li>It should now be possible to include yams placeholders in cacheable AND
-uncacheable snippet calls and in chunk and tv names...
-</li>
-</ul>
-</li><li>Updated documentation to describe multilingual alias modes in more detail.
-</li><li>Modified to allow the monolingual URL and (one of) the multilingual URLs
-to coincide. Now, when unique multilingual aliases are not being used it
-is only necessary for the multilingual language variants to be unique.
-</li><li><strong>Bug Fix</strong>: Fixed a bug whereby tv's would be incorrectly sorted in the document
-view.
-</li><li>Included a How TO? for custom multilingual tvs/chunks/snippets.
-</li><li>Updated the multilingual URL generation and checking so as to exclude deleted
-documents.
-</li><li>Bug Fix: Corrected a bug whereby YAMS would not change language when on the
-site start document.</li>
-</ul>
-              
-              <p><strong>New in version 1.1.4 alpha</strong>:</p>
-              <ul>
-<li><b>Bug Fix</b>: Corrected the Wayfinder How To? module documentation.
-</li><li>Implemented automatic redirection of weblinks. This wasn't implemented before.
-This works with multilingual weblinks too. In the content fields of a
-multilingual weblink it is possible to specify the same or different URLs or docIds
-for each language. When using a docId, the target document will be displayed
-in the same language as the source document, or the default language if the
-final document is monolingual.
-</li><li>Made the <code>$yams->ConstructURL( $langId, $docId )</code> method public so that it can
-be used as a replacement for <code>$modx->makeUrl( $docId )</code> when YAMSifying existing
-snippets etc.
-</li><li><b>Bug Fix</b>: Correct a bug in the implementation of friendly url suffixes and prefixes.
-This bug made the suffixes and prefixes active at every level instead of just
-the filename.
-</li><li><b>Bug Fix</b>: Updated the server config. It now displays the correct output when
-unique multilingual aliases only are being used. It also advises on virtual
-host configuration when server name mode is being used.
-</li><li>Corrected a potential bug whereby the second argument of preg_quote was not
-specified.
-</li><li>Reorganised the params on the 'Configuration' tab and updated the multilingual
-alias text a bit.</li>
-              </ul>
-              <p><strong>New in version 1.1.3 alpha</strong>:</p>
-              <ul>
-<li>Added support for friendly alias prefixes and friendly alias suffixes.
-</li><li><strong>Bug Fix</strong>: Corrected server config bug. ${...} should have been %{...}
-</li><li>Added support for phx modifiers on multilingual document variables. The
-following are examples of accepted syntax:<br />
-<code>[*#content:lcase*]</code><br />
-<code>[*introtext:limit=`50`*]</code>
-</li><li>Replaced YAMS' own recursive chunk parsing call an iterative call to
-MODx's mergeChunkContent. Seemed silly not to reuse existing code.
-</li><li>Now YAMS maintains a list of monolingual document ids, to avoid having to
-look up whether a document is multilingual in the database each time.
-</li><li><strong>Bug Fix</strong>: Fixed a bug in the server config. Was using the output query param
-separator instead of the input one. As a result was getting double encoded
-ampersands.
-</li><li>Modified the default output query separator (used when it is not defined by
-PHP) to be &amp;amp; rather than &amp;.
-</li><li><strong>Bug Fix</strong>: Fixed problem whereby invalid monolingual URLs which are invalid due
-to a multilingual servername being used would redirected to themselves.
-</li><li><strong>Bug Fix</strong>: Fixed a bug whereby the alias of the site-start document was being
-included in the URL when using friendly alias paths and when it shouldn't have
-been because of a YAMS setting.
-</li><li><strong>Sort of Bug Fix</strong>: I have removed the mb_strtolower function from the URL
-comparison since mbstring library is not active by default in PHP. Was going
-to replace it by strtolower - which would have been safe on the encoded URL.
-However, since MODx does not support case insensitive URLs anyway - so I have
-removed it. True support for case insensitive URLs would be possible but would
-require a bit more thought.
-</li><li><strong>Bug Fix</strong>: Fixed bug active when friendly alias paths is on which was causing
-docs lower than the root to not be found.
-</li>
-              </ul>
-              <p><strong>New in version 1.1.2 alpha</strong>:</p>
-              <ul>
-<li>Now possible to view document using index.php?id=... So, preview from the document
-tree now works again.</li>
-<li>Fixed a bug wherby callbacks were being registered statically when they shouldn't
-have been.</li>
-              </ul>
-              <p><strong>New in version 1.1.1 alpha</strong>:</p>
-              <ul>
-<li>Modified the default multilingual URLs generated by YAMS so that the alias
-of the default language variant is the same as that of the document variable.</li>
-<li>Implemented a 'Unique Multilingual Aliases' mode. This mode is activated if
-unique multilingual aliases are being used. In that case it is not
-necessary to specify root names or server names. YAMS can determine the language
-group id and document id directly from the alias. The documentation needs
-updating now.</li>
-<li>Improved commenting of the code a little.</li>
-<li>Applied proper URL encoding to the subdirectory and root name.</li>
-              </ul>
-              <p><strong>New in version 1.1.0 alpha</strong>:</p>
-              <ul>
-<li>Generalised generated query strings to use the php defined argument separator</li>
-<li>Added a parameter for specifying whether aliases are unique or not.</li>
-<li>Updated the copying over of default content for multilingual aliases.</li>
-<li>Now does proper encoding of URLs. Multibyte URLs are correctly encoded.</li>
-<li>Added correct conversion from native encoding to utf-8 to rawurlencoded and
-back again for URLs and query parameters.</li>
-<li>Added methods for escaping and cleaning strings for embedding in (x)html/xml
-documents and updated all occurrences of htmlspecialchars to use them.</li>
-<li>Arranged it so that the current language cookie is only set if a valid document
-is found and it is multilingual.</li>
-<li>If a multilingual alias has not been specified, then nothing is output for the
-URL.</li>
-<li><p>Incorporated mbowman's YAMS_UX code into YAMS.</p>
-<ul>
-<li>Generalised it to function with and without friendly alias paths.</li>
-<li>Generalised it to function with or without multilingual alias mode</li>
-<li>Generalised it to take into account absent filename for site start (only
-default language if using multilingual aliases).</li>
-<li>Fixed incorrect langId specification.</li>
-</ul></li>
-<li>YAMS now manages the alias document variable associated with multilingual
-aliases.</li>
-<li>Default descriptions for Multilingual TVs created by YAMS are now in the correct
-language.</li>
-<li>YAMS now manages a list of supported document variable types.</li>
-<li>Allowed (*.)localhost as a valid server name</li>
-              </ul>
-            </div>
+              <p>Latest history in README.md: <a href="https://github.com/Deesen/YAMS/blob/master/assets/modules/yams/README.md" target="_blank">https://github.com/Deesen/YAMS</a></p>
+            </ >
 
 
             <div class="tab-page" id="tabLanguages">
@@ -1474,7 +1089,7 @@ if ( $yams->GetUseLanguageDependentServerNames() )
                       else
 { ?>
                 <li>Language dependent server name mode is currently <strong>OFF</strong>. To enable this mode it is necessary to specify a monolingual server name and a multilingual server name for each active language.</li>
-<?php  
+<?php
 }
 if ( $yams->GetUseLanguageDependentRootNames() )
 { ?>
@@ -1484,7 +1099,7 @@ if ( $yams->GetUseLanguageDependentRootNames() )
 else
 { ?>
                 <li>Language dependent root name mode is currently <strong>OFF</strong>. To enable this mode it is necessary to specify at least one root name.</li>
-<?php  
+<?php
 }
 if ( $yams->GetUseUniqueMultilingualAliases() )
 { ?>
@@ -1795,7 +1410,7 @@ if ( $yams->GetUseLanguageQueryParam() )
                     <th class="<?php echo $rowClass; ?>"><a href="http://www.evolution-docs.com/extras/yams/yams-language-settings#YAMSLanguageSettings-MODxLanguageName" target="_blank">MODx Language Name</a></th><?php
                     // Get the listing of all MODx langs...
                     $modxLangFiles = scandir(
-                        $modx->config['base_path']
+                        $modx->getConfig('base_path')
                         . 'manager/includes/lang/'
                       );
                     $modxLangArray = array( '' => '(none)');
