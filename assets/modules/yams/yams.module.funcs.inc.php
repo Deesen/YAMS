@@ -189,7 +189,7 @@ if ( !function_exists( 'YamsRemoveAssociationsForTV' ) )
     {
       return FALSE;
     }
-    if ( count( $templateIds ) == 0 )
+    if (is_countable($templateIds) && ( count( $templateIds ) == 0 ))
     {
       return TRUE;
     }
@@ -214,6 +214,39 @@ if ( !function_exists( 'YamsRemoveAssociationsForTV' ) )
       );
     return $result;
   }
+}
+
+if ( !function_exists( 'YamsAddTvContentValues' ) )
+{	// add Tv content value
+	function YamsAddTvContentValues( $tvId, $contentId, $value )
+	{
+		global $modx;
+		
+		$YamsFields = array (	'tmplvarid' => $tvId,
+								'contentid' => $contentId,
+								'value' => $value
+							);
+		$tblName =	$modx->getFullTableName( 'site_tmplvar_contentvalues' );
+		
+		$result = $modx->db->insert($YamsFields, $tblName);
+		
+		return $result;
+	}
+}
+
+if ( !function_exists( 'YamsEditSiteContentValues' ) )
+{	// add Tv content value
+	function YamsEditTvContentValues( $contentId, $contentField, $value )
+	{
+		global $modx;
+		
+		$YamsFields = array (	$contentField => $value);
+		$tblName =	$modx->getFullTableName( 'site_content' );
+		
+		$result = $modx->db->update($YamsFields, $tblName, 'id = "' . $contentId . '"');
+		
+		return $result;
+	}
 }
 
 // if ( !function_exists( 'YamsCreateTV' ) )

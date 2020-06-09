@@ -24,7 +24,7 @@
 // 
 // the first line.
 
-require_once( $modx->config['base_path'] . 'assets/modules/yams/class/yams.class.inc.php' );
+require_once( $modx->getConfig('base_path') . 'assets/modules/yams/class/yams.class.inc.php' );
 if ( ! function_exists( 'asParseYAMS' ) )
 {
   function asParseYAMS( $results )

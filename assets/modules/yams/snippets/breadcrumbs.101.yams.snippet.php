@@ -15,7 +15,7 @@ if ( !isset( $modx ) || ! $modx->isFrontend() )
 
 // -----------------------------------------------------------------------------
 // YAMS
-include_once( $modx->config['site_path'] . 'assets/modules/yams/class/yams.class.inc.php' );
+include_once( $modx->getConfig('site_path') . 'assets/modules/yams/class/yams.class.inc.php' );
 $yams = YAMS::GetInstance();
 // -----------------------------------------------------------------------------
 
@@ -153,7 +153,7 @@ $yamsMultiTVNameArray = array(
  * considered the home page. But if you would like to use some other document,
  * you may explicitly define it.
  */
-( isset($homeId) ) ? (int)$homeId : $homeId = $modx->config['site_start'];
+( isset($homeId) ) ? (int)$homeId : $homeId = $modx->getConfig('site_start');
 
 /* $homeCrumbTitle [ string ]
  * If you'd like to use something other than the menutitle (or pagetitle) for
@@ -432,7 +432,7 @@ foreach ( $crumbs as $c )
 {
 
     // Skip if we've exceeded our crumb limit but we're waiting to get to home
-    if ( count($pretemplateCrumbs) > $maxCrumbs && $c['id'] != $homeId )
+    if (is_countable($pretemplateCrumbs) && ( count($pretemplateCrumbs) > $maxCrumbs && $c['id'] != $homeId ))
     {
         continue;
     }
@@ -449,13 +449,20 @@ foreach ( $crumbs as $c )
     else
     // Determine appropriate span/link text: home link not specified
     {
-        for ($i = 0; !$text && $i < count($linkTextField); $i++)
-        {
-            if ( $c[$linkTextField[$i]] )
-            {
-                $text = $c[$linkTextField[$i]];
-            }
-        }
+        if (is_countable($linkTextField))
+		{
+			for ($i = 0; !$text && $i < count($linkTextField); $i++)
+			{
+				if ( $c[$linkTextField[$i]] )
+				{
+					$text = $c[$linkTextField[$i]];
+				}
+			}
+		}
+		else
+		{
+			$text = '';
+		}
     }
 
     // Determine link/span class(es)
@@ -486,13 +493,20 @@ foreach ( $crumbs as $c )
         else
         // Determine appropriate title for link: home link not specified
         {
-            for ($i = 0; !$title && $i < count($linkDescField); $i++)
-            {
-                if ( $c[$linkDescField[$i]] )
-                {
-                    $title = htmlspecialchars($c[$linkDescField[$i]]);
-                }
-            }
+            if (is_countable($linkDescField))
+			{
+				for ($i = 0; !$title && $i < count($linkDescField); $i++)
+				{
+					if ( $c[$linkDescField[$i]] )
+					{
+						$title = htmlspecialchars($c[$linkDescField[$i]]);
+					}
+				}
+			}
+			else
+			{
+				$title = '';
+			}
         }
 
 
@@ -512,9 +526,9 @@ foreach ( $crumbs as $c )
     $pretemplateCrumbs[] = $pretemplateCrumb;
 
     // If we have hit the crumb limit
-    if ( count($pretemplateCrumbs) == $maxCrumbs )
+    if (is_countable($pretemplateCrumbs) && ( count($pretemplateCrumbs) == $maxCrumbs ))
     {
-        if ( count($crumbs) > ($maxCrumbs + (($showHomeCrumb) ? 1 : 0)) )
+        if (is_countable ($crumbs) && ( count($crumbs) > ($maxCrumbs + (($showHomeCrumb) ? 1 : 0)) ))
         {
             // Add gap
             $pretemplateCrumbs[] = '<span class="'.$stylePrefix.'hideCrumb'.'">'.$crumbGap.'</span>';

@@ -30,7 +30,7 @@ if ( ! class_exists( 'YamsErrorMgr' ) )
     {
       $yams = YAMS::GetInstance();
       $errorList = '';
-      if ( count( $this->itsErrorMessages ) > 0 )
+      if (is_countable($this->itsErrorMessages) && ( count( $this->itsErrorMessages ) > 0 ))
       {
         $errorList .= '<ul>';
         foreach ( $this->itsErrorMessages as $msg )

@@ -70,9 +70,9 @@ if ( ! class_exists( 'YamsModuleMgr' ) )
       
       // Register global placeholders...
       $tpl->RegisterPlaceholder( 'request_url', $requestURL );
-      $tpl->RegisterPlaceholder( 'modx_manager_theme', $modx->config['manager_theme'] );
-      $tpl->RegisterPlaceholder( 'modx_site_url', $modx->config['site_url'] );
-      $tpl->RegisterPlaceholder( 'modx_charset', $modx->config['modx_charset'] );
+      $tpl->RegisterPlaceholder( 'modx_manager_theme', $modx->getConfig('manager_theme') );
+      $tpl->RegisterPlaceholder( 'modx_site_url', $modx->getConfig('site_url') );
+      $tpl->RegisterPlaceholder( 'modx_charset', $modx->getConfig('modx_charset') );
       $tpl->RegisterPlaceholder( 'yams_contact_en_url', 'http://nashi.podzone.org/en/contact.xhtml' );
       $tpl->RegisterPlaceholder( 'yams_contact_fr_url', 'http://nashi.podzone.org/fr/contact.xhtml' );
       $tpl->RegisterPlaceholder( 'yams_contact_ja_url', 'http://nashi.podzone.org/ja/contact.xhtml' );
